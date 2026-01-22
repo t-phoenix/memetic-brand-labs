@@ -227,7 +227,7 @@
 /* Mobile: < 768px */
 @media (max-width: 767px) {
     .turn-ordinary {
-        height: 100vh;
+        min-height: 100vh;
         padding: var(--spacing-lg) var(--spacing-md);
         position: relative;
         display: flex;

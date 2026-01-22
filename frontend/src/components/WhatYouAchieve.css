@@ -222,13 +222,13 @@
 /* Mobile: < 768px */
 @media (max-width: 767px) {
     .what-you-achieve {
-        height: 100vh;
+        min-height: 100vh;
         padding-top: var(--spacing-3xl);
     }
 
     .achievements-container {
         flex-direction: column;
-        gap: var(--spacing-md);
+        gap: 0;
         text-align: center;
         padding: var(--spacing-md);
         margin-top: 16%;
@@ -253,8 +253,8 @@
     .achievements-right {
         align-items: flex-start;
         text-align: left;
-        padding-top: var(--spacing-md);
-        gap: var(--spacing-md);
+        padding-top: var(--spacing-sm);
+        gap: var(--spacing-sm);
     }
 
     .achievements-intro {
@@ -263,13 +263,18 @@
         width: 100%;
     }
 
+    .achievements-list {
+        flex-direction: column;
+        gap: 0;
+    }
+
     .achievement-icon {
         width: 32px;
         height: 32px;
     }
 
     .achievement-text {
-        font-size: clamp(17px, 4.8vw, 22px);
+        font-size: clamp(12px, 3.6vw, 18px);
     }
 
     .achievements-footer {

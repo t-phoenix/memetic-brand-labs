@@ -204,8 +204,7 @@
 /* Mobile: < 768px */
 @media (max-width: 767px) {
     .who-this-is-for {
-        height: auto;
-        min-height: 90vh;
+        min-height: 100vh;
         padding: var(--spacing-xl) 0;
     }
 
@@ -214,6 +213,10 @@
         gap: var(--spacing-sm);
         text-align: center;
         padding: 0 var(--spacing-md);
+    }
+
+    .who-left {
+        margin-top: -20%;
     }
 
     .who-title-container {
@@ -246,6 +249,7 @@
     .who-right {
         gap: var(--spacing-sm);
         padding-left: 4%;
+        margin-top: -20%;
     }
 
     .who-subtitle {

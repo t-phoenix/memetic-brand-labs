@@ -287,13 +287,13 @@
 /* Mobile: < 768px */
 @media (max-width: 767px) {
     .how-it-works {
-        height: 100vh;
+        min-height: 100vh;
         padding: var(--spacing-xl) 0;
     }
 
     .how-it-works-grid {
         grid-template-columns: 1fr;
-        gap: var(--spacing-md);
+        gap: 0;
         text-align: center;
         margin-inline: 0;
         width: 100%;
@@ -329,6 +329,7 @@
     .follow-steps-title {
         font-size: clamp(16px, 4.5vw, 20px);
         margin-left: 0;
+        margin-bottom: 0;
         text-align: center;
     }
 
@@ -339,6 +340,7 @@
     .how-step-item {
         text-align: left;
         width: 100%;
+        padding: 0;
     }
 
     .step-icon-wrapper {

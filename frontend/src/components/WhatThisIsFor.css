@@ -210,7 +210,7 @@
 /* Mobile: < 768px */
 @media (max-width: 767px) {
     .what-this-is-for {
-        height: 100vh;
+        min-height: 100vh;
         padding: var(--spacing-2xl) var(--spacing-md);
         display: flex;
         align-items: center;

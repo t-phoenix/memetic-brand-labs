@@ -195,7 +195,7 @@
 
     .sun-character {
         width: clamp(280px, 42vw, 360px);
-        top: 5%;
+        top: 0%;
         left: 30%;
         transform: translateX(-50%);
     }
