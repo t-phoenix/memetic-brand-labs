@@ -1,0 +1,239 @@
+.final-cta {
+    background: #EFC960;
+    color: var(--color-black);
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.final-cta .container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 40px;
+}
+
+.cta-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Left half */
+.cta-left {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-right: 6%;
+}
+
+.apply-for-graphic {
+    width: clamp(380px, 50vw, 520px);
+    height: auto;
+    position: absolute;
+    z-index: 0;
+    top: -12%
+}
+
+.logo-2-graphic {
+    width: clamp(280px, 50vw, 500px);
+    height: auto;
+    margin-right: -6%;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 8%;
+}
+
+/* Right half */
+.cta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+
+}
+
+.limited-text {
+    font-size: clamp(22px, 2vw, 20px);
+    line-height: 1.4;
+    font-weight: 500;
+    color: #8E4ED5;
+    max-width: 450px;
+    font-family: var(--font-body);
+    margin-left: 10%;
+    text-align: center;
+    margin-bottom: -20%;
+    margin-top: 20%
+}
+
+.limited-text .highlight {
+    font-weight: 800;
+    color: #8E4ED5;
+}
+
+.cta-button-graphic {
+    width: clamp(380px, 60vw, 720px);
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.1));
+    margin-left: -20%;
+}
+
+.cta-button-graphic:hover {
+    transform: scale(1.05);
+}
+
+.cta-button-graphic:active {
+    transform: scale(0.98);
+}
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .final-cta {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .final-cta .container {
+        padding: 50px 30px;
+    }
+
+    .cta-split {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .cta-left {
+        align-items: center;
+        justify-content: center;
+        margin-right: 0;
+    }
+
+    .apply-for-graphic {
+        width: clamp(320px, 60vw, 480px);
+        position: relative;
+        top: 0;
+    }
+
+    .logo-2-graphic {
+        width: clamp(240px, 50vw, 420px);
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+
+    .cta-right {
+        align-items: center;
+        gap: var(--spacing-md);
+    }
+
+    .limited-text {
+        font-size: clamp(19px, 3.5vw, 24px);
+        margin-left: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        max-width: 100%;
+    }
+
+    .cta-button-graphic {
+        width: clamp(340px, 65vw, 600px);
+        margin-left: 0;
+    }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+    .final-cta {
+        height: 100vh;
+        padding: var(--spacing-lg) 0;
+    }
+
+    .final-cta .container {
+        padding: var(--spacing-2xl) var(--spacing-md);
+    }
+
+    .cta-split {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .cta-left {
+        align-items: center;
+        justify-content: center;
+        margin-right: 0;
+    }
+
+    .apply-for-graphic {
+        width: clamp(280px, 75vw, 420px);
+        position: relative;
+        top: 10%;
+        max-width: 380px;
+    }
+
+    .logo-2-graphic {
+        width: clamp(240px, 70vw, 350px);
+        margin-right: 0;
+        margin-bottom: 0;
+        margin-top: -30%;
+        max-width: 320px;
+    }
+
+    .cta-right {
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .limited-text {
+        font-size: clamp(17px, 4.8vw, 22px);
+        margin-left: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        max-width: 100%;
+    }
+
+    .cta-button-graphic {
+        width: clamp(340px, 100vw, 440px);
+        margin-left: 0;
+        max-width: 380px;
+        margin-top: -20%;
+    }
+}
+
+/* Monitor: > 1440px */
+@media (min-width: 1441px) {
+    .final-cta .container {
+        max-width: 1600px;
+        padding: 80px 60px;
+    }
+
+    .cta-split {
+        gap: 100px;
+    }
+
+    .apply-for-graphic {
+        width: clamp(420px, 45vw, 600px);
+    }
+
+    .logo-2-graphic {
+        width: clamp(320px, 45vw, 580px);
+    }
+
+    .limited-text {
+        font-size: clamp(24px, 1.8vw, 28px);
+        max-width: 550px;
+    }
+
+    .cta-button-graphic {
+        width: clamp(420px, 55vw, 800px);
+    }
+}

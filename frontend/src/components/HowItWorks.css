@@ -1,0 +1,329 @@
+.how-it-works {
+    background-color: var(--color-purple);
+    padding: var(--spacing-3xl) 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.how-it-works-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--spacing-xl);
+    align-items: center;
+    margin-inline: 10vw;
+}
+
+/* Left Section */
+.how-it-works-left {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+}
+
+.gears-wrapper {
+    position: relative;
+    width: 140%;
+    height: 100%;
+}
+
+.gears-img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+    animation: rotate-gears 40s linear infinite;
+}
+
+.how-it-works-title {
+    position: absolute;
+    top: 38%;
+    left: 28%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    pointer-events: none;
+    z-index: 2;
+    text-align: left;
+}
+
+.how-it-works-title span {
+    font-family: var(--font-heading);
+    font-size: clamp(60px, 8vw, 100px);
+    color: var(--color-yellow);
+    line-height: 0.9;
+    text-transform: capitalize;
+    display: block;
+}
+
+@keyframes rotate-gears {
+    from {
+        transform: rotate(0deg);
+    }
+}
+
+/* Right Section */
+.how-it-works-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.follow-steps-title {
+    font-size: clamp(18px, 2vw, 24px);
+    color: var(--color-peach);
+    text-transform: none;
+    margin-bottom: var(--spacing-md);
+    margin-left: var(--spacing-xl);
+    font-weight: 400;
+    font-style: italic;
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.how-step-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.how-step-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(10px);
+}
+
+.how-step-item:hover .step-arrow-img {
+    transform: translateX(5px);
+}
+
+.step-icon-wrapper {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-number-icon {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.step-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.step-text-main {
+    font-size: clamp(22px, 2.8vw, 24px);
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--color-peach);
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.step-text-sub {
+    font-size: clamp(22px, 2.8vw, 24px);
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--color-peach);
+    line-height: 1.1;
+}
+
+.step-arrow-wrapper {
+    flex-shrink: 0;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    /* margin-left: var(--spacing-md); */
+}
+
+.step-arrow-img {
+    width: auto;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .how-it-works {
+        height: auto;
+        min-height: 100vh;
+        padding: var(--spacing-2xl) 0;
+    }
+
+    .how-it-works-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        text-align: center;
+        margin-inline: 5vw;
+    }
+
+    .how-it-works-left {
+        display: flex;
+        justify-content: center;
+    }
+
+    .gears-wrapper {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .how-it-works-title {
+        left: 50%;
+        top: 40%;
+    }
+
+    .how-it-works-title span {
+        font-size: clamp(65px, 9vw, 90px);
+    }
+
+    .how-it-works-right {
+        align-items: center;
+    }
+
+    .follow-steps-title {
+        font-size: clamp(18px, 3.5vw, 22px);
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .steps-list {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .how-step-item {
+        text-align: left;
+    }
+
+    .step-icon-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+
+    .step-text-main,
+    .step-text-sub {
+        font-size: clamp(20px, 4vw, 22px);
+    }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+    .how-it-works {
+        height: 100vh;
+        padding: var(--spacing-xl) 0;
+    }
+
+    .how-it-works-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        text-align: center;
+        margin-inline: 0;
+        width: 100%;
+    }
+
+    .how-it-works-left {
+        display: flex;
+        justify-content: center;
+    }
+
+    .gears-wrapper {
+        width: 100%;
+    }
+
+    .gears-img {
+        margin-left: 12%;
+    }
+
+    .how-it-works-title {
+        left: 42%;
+        top: 38%;
+    }
+
+    .how-it-works-title span {
+        font-size: clamp(50px, 12vw, 70px);
+    }
+
+    .how-it-works-right {
+        align-items: center;
+        width: 100%;
+    }
+
+    .follow-steps-title {
+        font-size: clamp(16px, 4.5vw, 20px);
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .steps-list {
+        width: 100%;
+    }
+
+    .how-step-item {
+        text-align: left;
+        width: 100%;
+    }
+
+    .step-icon-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+
+    .step-text-main,
+    .step-text-sub {
+        font-size: clamp(12px, 4vw, 14px);
+        font-weight: 700;
+    }
+
+    .step-arrow-wrapper {
+        width: 80px;
+    }
+}
+
+/* Monitor: > 1440px */
+@media (min-width: 1441px) {
+    .how-it-works-grid {
+        margin-inline: 12vw;
+        gap: var(--spacing-2xl);
+    }
+
+    .gears-wrapper {
+        width: 150%;
+    }
+
+    .how-it-works-title span {
+        font-size: clamp(70px, 7vw, 120px);
+    }
+
+    .follow-steps-title {
+        font-size: clamp(20px, 1.8vw, 28px);
+    }
+
+    .step-icon-wrapper {
+        width: 140px;
+        height: 140px;
+    }
+
+    .step-text-main,
+    .step-text-sub {
+        font-size: clamp(24px, 2.2vw, 28px);
+    }
+
+    .step-arrow-wrapper {
+        width: 120px;
+    }
+}

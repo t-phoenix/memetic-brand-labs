@@ -1,0 +1,330 @@
+.turn-ordinary {
+    background: linear-gradient(135deg, #FF80D2 0%, #E875C9 100%);
+    color: var(--color-white);
+    padding: var(--spacing-xl) 0;
+    height: 100vh;
+    position: relative;
+}
+
+.turn-ordinary-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.turn-ordinary-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+}
+
+/* Main Heading */
+.main-heading {
+    font-family: var(--font-heading);
+    font-size: clamp(48px, 6vw, 90px);
+    line-height: 1;
+    color: #FFFABD;
+    text-transform: capitalize;
+    text-align: start;
+    font-weight: 400;
+    margin-left: -12%;
+}
+
+/* Content Grid */
+.content-grid {
+    display: grid;
+    width: 80%;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    align-items: center;
+    margin-top: var(--spacing-lg);
+    margin-left: 0%;
+}
+
+/* Left Side - Sun Graphic */
+.left-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sun-graphic {
+    width: 100%;
+    height: auto;
+    margin-top: -28%;
+    animation: rotate 5s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-10deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+
+
+}
+
+/* Right Side - Content */
+.right-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    color: var(--color-white);
+}
+
+.intro-text {
+    font-size: clamp(14px, 1.8vw, 24px);
+    line-height: 1.4;
+    margin: 0;
+    color: #8E4ED5;
+}
+
+.intro-text .highlight {
+    font-weight: 700;
+    color: #8E4ED5;
+    font-size: clamp(16px, 2vw, 26px);
+}
+
+.description-text {
+    font-size: clamp(14px, 1.8vw, 24px);
+    line-height: 1.4;
+    margin: 0;
+    color: #8E4ED5;
+}
+
+/* Emphasis Block */
+.emphasis-block {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.crossed-text {
+    font-size: clamp(16px, 2vw, 26px);
+    font-style: italic;
+    font-weight: 700;
+    margin: 0;
+    color: #8E4ED5;
+    line-height: 1.4;
+}
+
+.crossed-text .indent {
+    margin-left: 18%;
+    display: inline-block;
+}
+
+.brand-systems {
+    font-size: clamp(16px, 2vw, 26px);
+    font-style: italic;
+    margin: 0;
+    color: #8E4ED5;
+}
+
+.brand-systems .highlight {
+    font-weight: 700;
+    font-style: italic;
+    color: #8E4ED5;
+}
+
+/* CTA Wrapper */
+.cta-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: -2%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.cta-graphic {
+    width: clamp(120px, 20vw, 180px);
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.cta-graphic:hover {
+    transform: scale(1.05);
+}
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .turn-ordinary {
+        /* height: auto; */
+        height: 100vh;
+        /* padding: var(--spacing-2xl) 0; */
+    }
+
+    .main-heading {
+        font-size: clamp(42px, 5.5vw, 80px);
+        margin-left: -8%;
+        text-align: center;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        margin-left: 0;
+        margin-top: var(--spacing-xl);
+    }
+
+    .left-side {
+        order: 2;
+    }
+
+    .right-side {
+        order: 1;
+    }
+
+    .sun-graphic {
+        width: 80%;
+        margin-top: 0;
+    }
+
+    .cta-wrapper {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+    .turn-ordinary {
+        height: 100vh;
+        padding: var(--spacing-lg) var(--spacing-md);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .turn-ordinary-content {
+        /* padding-top: 40%; */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-heading {
+        font-size: clamp(48px, 12vw, 72px);
+        margin-left: 0;
+        text-align: left;
+        line-height: 0.9;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-left: 0;
+        margin-top: 0;
+        width: 100%;
+        position: relative;
+        flex: 1;
+    }
+
+    .left-side {
+        order: 1;
+        position: absolute;
+        top: -110%;
+        right: -20%;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .right-side {
+        order: 2;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 100%;
+        margin-top: var(--spacing-sm);
+    }
+
+    .sun-graphic {
+        width: 100%;
+        max-width: 200px;
+        margin: 0;
+        margin-top: 0;
+    }
+
+    .intro-text,
+    .description-text {
+        font-size: clamp(16px, 4.2vw, 22px);
+        text-align: left;
+    }
+
+    .intro-text .highlight {
+        font-size: clamp(17px, 4.5vw, 24px);
+    }
+
+    .crossed-text,
+    .brand-systems {
+        font-size: clamp(17px, 4.5vw, 24px);
+    }
+
+    .crossed-text .indent {
+        margin-left: 0;
+    }
+
+    .cta-wrapper {
+        position: absolute;
+        bottom: var(--spacing-lg);
+        right: 0%;
+        justify-content: flex-end;
+        margin-top: 0;
+    }
+
+    .cta-graphic {
+        width: clamp(120px, 30vw, 180px);
+    }
+}
+
+/* Monitor: > 1440px */
+@media (min-width: 1441px) {
+    .turn-ordinary-container {
+        max-width: 1800px;
+    }
+
+    .main-heading {
+        font-size: clamp(60px, 6.5vw, 110px);
+    }
+
+    .intro-text,
+    .description-text {
+        font-size: clamp(16px, 1.6vw, 28px);
+    }
+
+    .intro-text .highlight {
+        font-size: clamp(18px, 1.8vw, 30px);
+    }
+
+    .crossed-text,
+    .brand-systems {
+        font-size: clamp(18px, 1.8vw, 30px);
+    }
+
+    .cta-graphic {
+        width: clamp(140px, 18vw, 220px);
+    }
+}

@@ -1,0 +1,158 @@
+/* Design System - Memetic Brand Labs */
+
+/* Font Declarations */
+@font-face {
+  font-family: 'Anton';
+  src: url('./assets/fonts/Anton-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Reyhans';
+  src: url('./assets/fonts/Reyhans.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CSS Variables - Color Palette */
+:root {
+  /* Brand Colors */
+  --color-purple: #8E4ED5;
+  --color-red: #D8474D;
+  --color-yellow: #EFC960;
+  --color-pink: #FF80D2;
+  --color-blue: #828DE0;
+  --color-coral: #DE5F64;
+  --color-peach: #F2DDB6;
+  --color-magenta: #C24A8C;
+  --color-dark-blue: #246EAF;
+  --color-black: #211D16;
+  --color-white: #FFFFFF;
+
+  /* Typography */
+  --font-heading: 'Anton', sans-serif;
+  --font-body: 'Urbanist', sans-serif;
+  --font-decorative: 'Reyhans', cursive;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 64px;
+  --spacing-2xl: 96px;
+  --spacing-3xl: 128px;
+
+  /* Responsive Breakpoints */
+  --breakpoint-mobile: 767px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-laptop: 1025px;
+  --breakpoint-monitor: 1441px;
+
+  /* Container Widths */
+  --container-mobile: 100%;
+  --container-tablet: 100%;
+  --container-laptop: 1400px;
+  --container-monitor: 1800px;
+}
+
+/* CSS Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+html {
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
