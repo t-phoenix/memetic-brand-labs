@@ -89,6 +89,13 @@
     top: 72%;
     transform: translateY(-50%);
     z-index: 2;
+    transition: transform 0.3s ease-out, filter 0.3s ease-out;
+    cursor: pointer;
+}
+
+.thumbs-up:hover {
+    transform: translateY(-50%) rotate(-5deg) scale(1.05);
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
 }
 
 .hand-pointer {
@@ -96,9 +103,16 @@
     height: auto;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.15));
     position: absolute;
-    bottom: -46%;
+    bottom: -52%;
     left: 16%;
     z-index: 1;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), filter 0.3s ease-out;
+    cursor: pointer;
+}
+
+.hand-pointer:hover {
+    transform: translateX(15px);
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
 }
 
 @keyframes fadeInUp {
@@ -122,6 +136,18 @@
 
     50% {
         transform: translateY(-20px);
+    }
+}
+
+@keyframes sunGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+    }
+
+    50% {
+        filter: drop-shadow(0 10px 40px rgba(255, 200, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 200, 0, 0.2));
     }
 }
 

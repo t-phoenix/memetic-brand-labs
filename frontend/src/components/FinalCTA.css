@@ -51,6 +51,13 @@
     position: relative;
     z-index: 1;
     margin-bottom: 8%;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+}
+
+.logo-2-graphic:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 8px 20px rgba(142, 78, 213, 0.3));
 }
 
 /* Right half */
@@ -85,13 +92,35 @@
     width: clamp(380px, 60vw, 720px);
     height: auto;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
     filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.1));
     margin-left: -20%;
 }
 
 .cta-button-graphic:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 30px rgba(142, 78, 213, 0.5)) drop-shadow(0 0 60px rgba(142, 78, 213, 0.3));
+    animation: ctaWiggle 0.6s ease-in-out;
+}
+
+@keyframes ctaWiggle {
+
+    0%,
+    100% {
+        transform: scale(1.08) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.08) rotate(-1deg);
+    }
+
+    50% {
+        transform: scale(1.08) rotate(1deg);
+    }
+
+    75% {
+        transform: scale(1.08) rotate(-1deg);
+    }
 }
 
 .cta-button-graphic:active {

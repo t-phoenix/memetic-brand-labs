@@ -34,6 +34,19 @@
     left: -24%;
     z-index: 1;
     pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(2deg);
+    }
 }
 
 .brand-logo-graphic {
@@ -41,6 +54,11 @@
     z-index: 2;
     width: clamp(280px, 35vw, 450px);
     height: auto;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hero-graphic-group:hover .brand-logo-graphic {
+    transform: scale(1.05);
 }
 
 .question-mark-blob {
@@ -50,6 +68,8 @@
     right: -4%;
     z-index: 1;
     pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+    animation-delay: 1s;
 }
 
 .what-is-right {
@@ -83,6 +103,20 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+.feature-item:hover {
+    transform: translateY(-8px);
+}
+
+.feature-item img {
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.feature-item:hover img {
+    transform: scale(1.15) rotate(5deg);
 }
 
 .icon-container img {
@@ -97,6 +131,11 @@
     color: var(--color-red);
     line-height: 1;
     margin: 0;
+    transition: color 0.3s ease;
+}
+
+.feature-item:hover .feature-label {
+    color: var(--color-purple);
 }
 
 .decorative-text {
@@ -105,6 +144,11 @@
     display: inline-block;
     vertical-align: middle;
     line-height: 0.8;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover .decorative-text {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .description-text.bottom {

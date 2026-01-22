@@ -37,16 +37,41 @@
     font-family: var(--font-heading);
     letter-spacing: -0.02em;
     margin-bottom: -20%;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    cursor: default;
+}
+
+.achievements-title:hover {
+    transform: scale(1.02);
+    text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .achievements-bags {
     width: 80%;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
 }
 
+.achievements-bags:hover {
+    transform: scale(1.05) rotate(-3deg);
+}
 
 .achievements-bags img {
     width: 100%;
     height: auto;
+    animation: sway 4s ease-in-out infinite;
+}
+
+@keyframes sway {
+
+    0%,
+    100% {
+        transform: rotate(-2deg);
+    }
+
+    50% {
+        transform: rotate(2deg);
+    }
 }
 
 .achievements-right {
@@ -75,6 +100,28 @@
 .achievements-list li {
     display: flex;
     align-items: center;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.achievements-list li::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.achievements-list li:hover {
+    transform: translateX(12px);
+}
+
+.achievements-list li:hover::before {
+    opacity: 1;
 }
 
 .achievement-icon {
@@ -82,6 +129,14 @@
     height: 38px;
     flex-shrink: 0;
     margin-top: 2px;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), filter 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.achievements-list li:hover .achievement-icon {
+    transform: scale(1.3) rotate(10deg);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .achievement-icon img {
@@ -95,6 +150,13 @@
     font-weight: 700;
     line-height: 1.1;
     font-family: var(--font-body);
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.achievements-list li:hover .achievement-text {
+    color: var(--color-yellow);
 }
 
 .achievements-footer {
