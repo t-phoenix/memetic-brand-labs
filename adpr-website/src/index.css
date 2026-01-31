@@ -1,0 +1,65 @@
+#root body,
+body {
+    margin: 0 !important;
+    font-family: "Crimson Text", serif !important;
+    font-size: 18px !important;
+    line-height: 1.7 !important;
+    color: #495057 !important;
+    font-weight: 400 !important;
+}
+
+#root h1,
+#root h2,
+#root h3,
+#root h4,
+#root h5,
+#root h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: "Montserrat", sans-serif !important;
+    font-weight: 400 !important;
+    /* Force extra bold (Black) */
+    color: #0007a3 !important;
+}
+
+#section-services h1,
+#section-services h2,
+#section-services h3,
+#section-home h1,
+#section-home h2,
+#section-home h3 {
+    color: #fff !important;
+}
+
+#root p,
+p {
+    font-family: "Crimson Text", serif !important;
+}
+
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+
+.font-weight-black {
+    font-weight: 900 !important;
+}
+
+/* Specific override for style.css 1034 */
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+    font-weight: 400 !important;
+}
