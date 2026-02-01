@@ -127,9 +127,27 @@
     line-height: 1.4;
 }
 
-.crossed-text .indent {
-    margin-left: 18%;
+.cycling-word {
     display: inline-block;
+    color: #FFFABD;
+    text-decoration-thickness: 3px;
+    text-decoration: underline;
+    animation: fadeInWord 0.5s ease-in-out;
+    min-width: 120px;
+    /* Prevent layout shift */
+    text-align: left;
+}
+
+@keyframes fadeInWord {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .brand-systems {

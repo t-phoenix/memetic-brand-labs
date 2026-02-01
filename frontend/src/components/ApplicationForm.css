@@ -1,0 +1,424 @@
+.application-form-page {
+    min-height: 100vh;
+    width: 100%;
+    transition: background-color 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.application-form-page.step-1 {
+    background-color: var(--color-blue);
+}
+
+.application-form-page.step-2 {
+    background-color: var(--color-peach);
+}
+
+.application-form-page.step-3 {
+    background-color: var(--color-red);
+    /* Red */
+}
+
+/* Navbar Customizations per step */
+/* Navbar Customizations per step */
+.step-1-nav .logo-adpr,
+.step-1-nav .logo-memetics,
+.step-1-nav .navbar-links a,
+.step-1-nav .navbar-menu span {
+    color: var(--color-white) !important;
+}
+
+.step-2-nav .logo-adpr,
+.step-2-nav .logo-memetics,
+.step-2-nav .navbar-links a,
+.step-2-nav .navbar-menu span {
+    color: var(--color-blue) !important;
+}
+
+.step-3-nav .logo-adpr,
+.step-3-nav .logo-memetics,
+.step-3-nav .navbar-links a,
+.step-3-nav .navbar-menu span {
+    color: var(--color-white) !important;
+}
+
+
+/* Remove step 2 and 3 blocks from original as they are rewritten above in merged block */
+
+
+/* Main Content Wrapper */
+.form-content-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    /* Adjust for navbar height */
+    margin-top: 80px;
+}
+
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    width: 100%;
+    align-items: center;
+}
+
+.fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Left Panel generic */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: var(--spacing-xl);
+}
+
+/* Titles */
+.title-yellow {
+    font-family: var(--font-heading);
+    color: var(--color-yellow);
+    font-size: clamp(60px, 8vw, 120px);
+    line-height: 0.9;
+    margin-bottom: var(--spacing-md);
+    text-transform: uppercase;
+}
+
+.title-blue {
+    font-family: var(--font-heading);
+    color: var(--color-blue);
+    font-size: clamp(60px, 8vw, 120px);
+    line-height: 0.9;
+    margin-bottom: var(--spacing-md);
+    text-transform: uppercase;
+}
+
+/* Images */
+.handshake-container {
+    width: 100%;
+    max-width: 450px;
+    margin-top: -20px;
+    z-index: 1;
+}
+
+.handshake-pink,
+.handshake-yellow {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform: rotate(-10deg);
+    /* Slight rotation if needed to match image */
+}
+
+/* Right Panel generic */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: var(--spacing-xl);
+}
+
+.instruction {
+    font-family: var(--font-body);
+    font-size: 20px;
+    color: var(--color-blue);
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-lg);
+    align-self: flex-start;
+    /* Match design left align */
+}
+
+/* Inputs */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 550px;
+}
+
+.input-field {
+    background: transparent;
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: var(--font-body);
+    font-size: 18px;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+/* Step 1 Styles */
+.step-1 .input-field {
+    border-color: var(--color-peach);
+    color: var(--color-white);
+}
+
+.step-1 .input-field::placeholder {
+    color: var(--color-peach);
+    opacity: 1;
+    /* Match design clearly */
+    font-weight: 500;
+}
+
+.next-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+    margin-top: var(--spacing-lg);
+    transition: opacity 0.3s;
+}
+
+.next-action:hover {
+    opacity: 0.8;
+}
+
+.secure-text {
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--color-yellow);
+    /* Yellow/Orange */
+    font-style: italic;
+    font-size: 24px;
+    letter-spacing: 0.5px;
+}
+
+.arrow-btn-img img {
+    width: 40px;
+    height: auto;
+    margin-top: 5px;
+}
+
+/* Step 2 Styles */
+.step-2 .input-field {
+    border-color: #828DE0;
+    /* Specific blue border */
+    color: var(--color-blue);
+    border-width: 2px;
+}
+
+.step-2 .input-field::placeholder {
+    color: var(--color-blue);
+    opacity: 0.5;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.submit-btn {
+    background: var(--color-blue);
+    color: var(--color-white);
+    padding: 16px 64px;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    width: fit-content;
+    border: none;
+    cursor: pointer;
+    margin-top: var(--spacing-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Step 3 Styles */
+.step-3 .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+.thank-you-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.sun-wrapper {
+    margin-bottom: var(--spacing-sm);
+    z-index: 2;
+}
+
+.sun-icon {
+    width: 400px;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.thumbs-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* Overlap sun slightly if needed or pull up */
+}
+
+.thumb-left img,
+.thumb-right img {
+    position: absolute;
+    width: 280px;
+    height: auto;
+    top: 200px;
+    left: 200px;
+}
+
+.thumb-right img {
+    transform: scaleX(-1);
+    right: 200px;
+    left: auto;
+    /* Mirror */
+}
+
+/* Specific fix for "Thank You" spacing */
+.thank-you-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    margin: 0 -20px;
+    /* Pull thumbs closer */
+}
+
+.thank-you-text h1 {
+    font-family: var(--font-heading);
+    color: #FF80D2;
+    /* Pink color from design */
+    font-size: clamp(90px, 8vw, 160px);
+    margin-top: -50px;
+    line-height: 0.9;
+    text-transform: capitalize;
+}
+
+.thank-you-text p {
+    font-family: var(--font-body);
+    color: var(--color-white);
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Footer Bar */
+.footer-bar {
+    width: 100%;
+    height: 80px;
+    /* or whatever height handles the logo */
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: flex-end;
+    background-color: #08148a;
+    /* Dark Blue */
+    padding: 0 var(--spacing-xl);
+}
+
+.footer-bar.active {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+.footer-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.footer-logo-img {
+    height: 60px;
+    width: auto;
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .form-container {
+        grid-template-columns: 1fr;
+        text-align: left;
+        gap: var(--spacing-lg);
+    }
+
+    .left-panel {
+        padding-left: 0;
+        align-items: center;
+    }
+
+    .right-panel {
+        padding-right: 0;
+        align-items: center;
+    }
+
+    .handshake-container {
+        max-width: 300px;
+    }
+
+    .input-group {
+        max-width: 100%;
+    }
+
+    .thumbs-row {
+        gap: var(--spacing-md);
+    }
+
+    .thumb-left img,
+    .thumb-right img {
+        width: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .thank-you-text h1 {
+        font-size: 80px;
+    }
+
+    .sun-icon {
+        width: 120px;
+    }
+
+    .thumbs-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .title-yellow,
+    .title-blue {
+        text-align: center;
+    }
+}

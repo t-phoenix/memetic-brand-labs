@@ -1,10 +1,44 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './TurnOrdinary.css';
 import sun from '../assets/graphics/Adpr Memetic Brand Labs_Sun 2.svg';
 import ctaButton from '../assets/graphics/Adpr Memetic Brand Labs_CTA 2.svg';
 
 function TurnOrdinary() {
+    const navigate = useNavigate();
+    const [text, setText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [loopNum, setLoopNum] = useState(0);
+    const [typingSpeed, setTypingSpeed] = useState(150);
+
+    const words = ["logos", "campaigns"];
+
+    useEffect(() => {
+        const handleTyping = () => {
+            const i = loopNum % words.length;
+            const fullText = words[i];
+
+            setText(isDeleting
+                ? fullText.substring(0, text.length - 1)
+                : fullText.substring(0, text.length + 1)
+            );
+
+            setTypingSpeed(isDeleting ? 80 : 150);
+
+            if (!isDeleting && text === fullText) {
+                setTimeout(() => setIsDeleting(true), 1500);
+            } else if (isDeleting && text === '') {
+                setIsDeleting(false);
+                setLoopNum(loopNum + 1);
+            }
+        };
+
+        const timer = setTimeout(handleTyping, typingSpeed);
+        return () => clearTimeout(timer);
+    }, [text, isDeleting, loopNum]);
+
     return (
-        <section className="turn-ordinary" id="turn-ordinary">
+        <section className="turn-ordinary" id="about">
             <div className="turn-ordinary-container">
                 <div className="turn-ordinary-content">
                     {/* Main Heading */}
@@ -33,8 +67,7 @@ function TurnOrdinary() {
 
                             <div className="emphasis-block">
                                 <p className="crossed-text">
-                                    Not just logos<br />
-                                    <span className="indent">campaigns</span>
+                                    Not just <span className="cycling-word">{text}</span>
                                 </p>
                                 <p className="brand-systems">
                                     It is <strong className="highlight">Memetic brand systems</strong>
@@ -49,7 +82,13 @@ function TurnOrdinary() {
             </div>
             {/* CTA Button */}
             <div className="cta-wrapper">
-                <img src={ctaButton} alt="Apply Now" className="cta-graphic" />
+                <img
+                    src={ctaButton}
+                    alt="Apply Now"
+                    className="cta-graphic"
+                    onClick={() => navigate('/application-form')}
+                    style={{ cursor: 'pointer' }}
+                />
             </div>
         </section>
     );

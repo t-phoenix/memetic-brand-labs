@@ -1,11 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import './FinalCTA.css';
 import applyFor from '../assets/graphics/Adpr Memetic Brand Labs_Apply for.png';
 import ctaButton from '../assets/graphics/Adpr Memetic Brand Labs_CTA 1.svg';
 import logo2 from '../assets/graphics/Adpr Memetic Brand Labs_Logo 2.svg';
 
 function FinalCTA() {
+    const navigate = useNavigate();
+
     return (
-        <section className="final-cta">
+        <section className="final-cta" id="final-cta">
             <div className="container">
                 <div className="cta-split">
                     {/* Left half */}
@@ -19,7 +22,12 @@ function FinalCTA() {
                         <p className="limited-text">
                             We're onboarding a <br /><span className="highlight">limited number of teams</span><br /> in this phase.
                         </p>
-                        <img src={ctaButton} alt="Apply Now" className="cta-button-graphic" />
+                        <img
+                            src={ctaButton}
+                            alt="Apply Now"
+                            className="cta-button-graphic"
+                            onClick={() => navigate('/application-form')}
+                        />
                     </div>
                 </div>
 

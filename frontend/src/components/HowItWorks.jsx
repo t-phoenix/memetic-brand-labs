@@ -25,7 +25,7 @@ function HowItWorks() {
     ];
 
     return (
-        <section id="how-it-works" className="how-it-works">
+        <section id="works" className="how-it-works">
             <div className="container">
                 <div className="how-it-works-grid">
                     {/* Left Section: How It Works Heading and Gears */}
@@ -44,7 +44,16 @@ function HowItWorks() {
                         <h3 className="follow-steps-title">Follow the Steps</h3>
                         <div className="steps-list">
                             {steps.map((step, index) => (
-                                <div key={index} className="how-step-item">
+                                <div
+                                    key={index}
+                                    className="how-step-item"
+                                    onClick={() => {
+                                        if (index === 0) {
+                                            document.getElementById('final-cta')?.scrollIntoView({ behavior: 'smooth' });
+                                        }
+                                    }}
+                                    style={{ cursor: index === 0 ? 'pointer' : 'default' }}
+                                >
                                     <div className="step-icon-wrapper">
                                         <img src={step.icon} alt={`Step ${index + 1}`} className="step-number-icon" />
                                     </div>

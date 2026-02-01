@@ -1,26 +1,37 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
-function Navbar() {
+function Navbar({ className = "navbar" }) {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleNavClick = (e, sectionId) => {
+        e.preventDefault();
+        if (location.pathname === '/' || location.pathname === '') {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', `#${sectionId}`);
+            }
+        } else {
+            navigate('/', { state: { scrollTo: sectionId } });
+        }
+    };
+
     return (
-        <nav className="navbar">
+        <nav className={className}>
             <div className="navbar-container">
-                <div className="navbar-logo">
+                <a href="#home" className="navbar-logo" onClick={(e) => handleNavClick(e, 'home')}>
                     <span className="logo-adpr">adpr</span>
                     <span className="logo-memetics">Memetics<br />Brand<br />Labs</span>
-                </div>
+                </a>
 
                 <div className="navbar-links">
-                    <a href="#home">home</a>
-                    <a href="#works">works</a>
-                    <a href="#about">about us</a>
-                    <a href="#adpr">adpr</a>
+                    <a href="#home" onClick={(e) => handleNavClick(e, 'home')}>home</a>
+                    <a href="#works" onClick={(e) => handleNavClick(e, 'works')}>works</a>
+                    <a href="#about" onClick={(e) => handleNavClick(e, 'about')}>about us</a>
+                    <a href="#adpr" onClick={(e) => handleNavClick(e, 'adpr')}>adpr</a>
                 </div>
-
-                {/* <button className="navbar-menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button> */}
             </div>
         </nav>
     );

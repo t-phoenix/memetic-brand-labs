@@ -6,13 +6,13 @@ import text from '../assets/graphics/Adpr Memetic Brand Labs_Logo 1.png';
 
 function Hero() {
     return (
-        <section className="hero">
+        <section className="hero" id="home">
             <div className="hero-container">
                 <div className="hero-content">
                     {/* Left side - Text */}
                     <div className='hero-left'>
                         <img src={text} alt="adpr Memetics Brand Labs" className="hero-text" />
-                        <p className="hero-tagline">A new initiative from <span>adpr</span></p>
+                        <p className="hero-tagline">A new initiative from <a href="https://www.adpr.work" target="_blank" rel="noopener noreferrer">adpr.work</a></p>
                     </div>
 
                     {/* Right side - Graphics */}
