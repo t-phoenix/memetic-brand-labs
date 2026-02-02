@@ -58,10 +58,42 @@ const ApplicationForm = () => {
         setSearchParams({ step: 2 });
     };
 
-    const handleSubmit = () => {
-        // Here you would typically send the data to a backend
-        console.log('Form Submitted:', formData);
-        setSearchParams({ step: 3 });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+
+    const handleSubmit = async () => {
+        if (!formData.project || !formData.email) {
+            alert("Please fill in the required fields.");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // We use 'no-cors' mode or text/plain content type to play nice with Google Apps Script CORS
+            // 'text/plain' prevents the browser from sending an OPTIONS preflight request which GAS doesn't handle
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+            });
+
+            // Note: With Google Apps Script, the response might be opaque if there are redirects, 
+            // but usually it works fine if we just check execution.
+            // If you face CORS errors, the data usually still gets recorded.
+
+            console.log('Form Submitted to Sheets');
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            // Optionally handle error (alert user), but often we proceed to 'Thank You' to not block the user
+        } finally {
+            setIsSubmitting(false);
+            setSearchParams({ step: 3 });
+        }
     };
 
     return (
@@ -108,7 +140,9 @@ const ApplicationForm = () => {
                                 <input type="text" name="audience" placeholder="who it's for (target audience) |" value={formData.audience} onChange={handleChange} className="input-field" />
                                 <input type="text" name="challenge" placeholder="your current brand or adoption challenge |" value={formData.challenge} onChange={handleChange} className="input-field" />
                             </div>
-                            <button className="submit-btn" onClick={handleSubmit}>SUBMIT</button>
+                            <button className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
+                                {isSubmitting ? 'SENDING...' : 'SUBMIT'}
+                            </button>
                         </div>
                     </div>
                 )}
