@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import './FinalCTA.css';
 import applyFor from '../assets/graphics/Adpr Memetic Brand Labs_Apply for.png';
 import ctaButton from '../assets/graphics/Adpr Memetic Brand Labs_CTA 1.svg';
-import logo2 from '../assets/graphics/Adpr Memetic Brand Labs_Logo 2.svg';
+import logo2 from '../assets/graphics/Adpr Memetic Brand Labs_Workshop.png';
 
 function FinalCTA() {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ function FinalCTA() {
                     {/* Left half */}
                     <div className="cta-left">
                         <img src={applyFor} alt="Apply for the" className="apply-for-graphic" />
-                        <img src={logo2} alt="adpr Memetics Brand Labs" className="logo-2-graphic" />
+                        <img src={logo2} alt="adpr Memetics Brand Workshop" className="logo-2-graphic" />
                     </div>
 
                     {/* Right half */}

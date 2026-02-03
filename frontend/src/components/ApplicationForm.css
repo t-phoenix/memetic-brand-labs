@@ -422,3 +422,62 @@
         text-align: center;
     }
 }
+
+/* Validation Styles */
+.input-field.error {
+    border-color: #FF0000 !important;
+    /* Bright red */
+    animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.error-text {
+    font-size: 14px;
+    margin-top: -15px;
+    /* Pull it up closer to the input */
+    margin-bottom: 15px;
+    /* Add some space before the next input */
+    font-weight: 700;
+    text-align: left;
+    width: 100%;
+    padding-left: 12px;
+    font-family: var(--font-body);
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+/* Ensure step 1 error text is readable on blue */
+.step-1 .error-text {
+    color: #FF8585;
+    /* Lighter red/pink for blue bg */
+}
+
+/* Ensure step 2 error text is readable on peach */
+.step-2 .error-text {
+    color: #D32F2F;
+    /* Darker red for peach bg */
+}
+
+/* Shake animation */
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}

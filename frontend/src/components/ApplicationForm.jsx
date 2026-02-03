@@ -50,12 +50,47 @@ const ApplicationForm = () => {
         }
     }, [step, navigate]);
 
+    const [errors, setErrors] = useState({});
+
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validateStep1 = () => {
+        const newErrors = {};
+        if (!formData.firstName.trim()) newErrors.firstName = 'First Name is required';
+        if (!formData.lastName.trim()) newErrors.lastName = 'Second Name is required';
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!validateEmail(formData.email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const validateStep2 = () => {
+        const newErrors = {};
+        if (!formData.project.trim()) newErrors.project = 'Project details are required';
+        if (!formData.audience.trim()) newErrors.audience = 'Target audience is required';
+        if (!formData.challenge.trim()) newErrors.challenge = 'Challenge details are required';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        // Clear error for this field when user types
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
 
     const handleNext = () => {
-        setSearchParams({ step: 2 });
+        if (validateStep1()) {
+            setSearchParams({ step: 2 });
+        }
     };
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,8 +99,7 @@ const ApplicationForm = () => {
     const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
 
     const handleSubmit = async () => {
-        if (!formData.project || !formData.email) {
-            alert("Please fill in the required fields.");
+        if (!validateStep2()) {
             return;
         }
 
@@ -111,9 +145,18 @@ const ApplicationForm = () => {
                         </div>
                         <div className="right-panel">
                             <div className="input-group">
-                                <input type="text" name="firstName" placeholder="First Name |" value={formData.firstName} onChange={handleChange} className="input-field" />
-                                <input type="text" name="lastName" placeholder="Second Name |" value={formData.lastName} onChange={handleChange} className="input-field" />
-                                <input type="email" name="email" placeholder="Mail Id |" value={formData.email} onChange={handleChange} className="input-field" />
+                                <div>
+                                    <input type="text" name="firstName" placeholder="First Name |" value={formData.firstName} onChange={handleChange} className={`input-field ${errors.firstName ? 'error' : ''}`} />
+                                    {errors.firstName && <span className="error-text">{errors.firstName}</span>}
+                                </div>
+                                <div>
+                                    <input type="text" name="lastName" placeholder="Second Name |" value={formData.lastName} onChange={handleChange} className={`input-field ${errors.lastName ? 'error' : ''}`} />
+                                    {errors.lastName && <span className="error-text">{errors.lastName}</span>}
+                                </div>
+                                <div>
+                                    <input type="email" name="email" placeholder="Mail Id |" value={formData.email} onChange={handleChange} className={`input-field ${errors.email ? 'error' : ''}`} />
+                                    {errors.email && <span className="error-text">{errors.email}</span>}
+                                </div>
                             </div>
                             <div className="next-action" onClick={handleNext}>
                                 <span className="secure-text">Secure your spot</span>
@@ -136,9 +179,18 @@ const ApplicationForm = () => {
                         <div className="right-panel">
                             <p className="instruction">Fill in the application,<br />so we understand you more.</p>
                             <div className="input-group">
-                                <input type="text" name="project" placeholder="What you're building |" value={formData.project} onChange={handleChange} className="input-field" />
-                                <input type="text" name="audience" placeholder="who it's for (target audience) |" value={formData.audience} onChange={handleChange} className="input-field" />
-                                <input type="text" name="challenge" placeholder="your current brand or adoption challenge |" value={formData.challenge} onChange={handleChange} className="input-field" />
+                                <div>
+                                    <input type="text" name="project" placeholder="What you're building |" value={formData.project} onChange={handleChange} className={`input-field ${errors.project ? 'error' : ''}`} />
+                                    {errors.project && <span className="error-text">{errors.project}</span>}
+                                </div>
+                                <div>
+                                    <input type="text" name="audience" placeholder="who it's for (target audience) |" value={formData.audience} onChange={handleChange} className={`input-field ${errors.audience ? 'error' : ''}`} />
+                                    {errors.audience && <span className="error-text">{errors.audience}</span>}
+                                </div>
+                                <div>
+                                    <input type="text" name="challenge" placeholder="your current brand or adoption challenge |" value={formData.challenge} onChange={handleChange} className={`input-field ${errors.challenge ? 'error' : ''}`} />
+                                    {errors.challenge && <span className="error-text">{errors.challenge}</span>}
+                                </div>
                             </div>
                             <button className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
                                 {isSubmitting ? 'SENDING...' : 'SUBMIT'}
