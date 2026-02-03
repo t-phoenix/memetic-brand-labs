@@ -1,0 +1,34 @@
+# Memetic Brand Labs by adpr
+
+## Project Overview
+Memetic Brand Labs is a specialized branding initiative by **adpr.work**. We focus on turning ordinary memes into viral content that drives engagement, specifically tailored for Web3 and AI companies. We do not just create logos or campaigns; we build **Memetic Brand Systems**.
+
+## Core Mission
+To turn complex technical ideas into culture that spreads. We build shared language, recognizable narratives, and repeatable cultural signals so that ideas don't just reach people—they resonate, repeat, and stick.
+
+## What We Do
+We help founders transform deep, technical ideas into culture-first branding systems. Think of it as **creative intelligence for the attention economy**, where branding meets behavior, community, and code.
+
+### Key Features
+- **Shared Language**: Creating a vocabulary that community members adopt and spread.
+- **Recognizable Narratives**: Stories that are easy to understand and retell.
+- **Repeatable Cultural Signals**: Visual and verbal hooks that are engineered for virality.
+
+## Target Audience
+- Web3 Founders
+- AI Companies
+- Deep Tech Innovators
+- Brands looking to leverage internet culture
+
+## Website Structure
+- **/**: Landing page explaining the value proposition, methodology ("Turn Ordinary"), and process.
+- **/application-form**: A guided form for interested clients to apply for the program.
+
+## Technology Stack
+- **Frontend**: React (Vite)
+- **Styling**: Modern CSS
+- **Routing**: React Router
+
+## Contact / Creator
+- **Creator**: adpr
+- **Website**: [adpr.work](https://www.adpr.work)
