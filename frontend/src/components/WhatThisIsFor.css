@@ -35,6 +35,12 @@
     z-index: 1;
     pointer-events: none;
     animation: float 6s ease-in-out infinite;
+    transition: filter 0.3s ease;
+}
+
+/* Note: transform on hover would conflict with animation float */
+.hero-graphic-group:hover .what-is-blob {
+    transform: scale(1.05);
 }
 
 @keyframes float {
@@ -70,6 +76,11 @@
     pointer-events: none;
     animation: float 6s ease-in-out infinite;
     animation-delay: 1s;
+    transition: filter 0.3s ease;
+}
+
+.what-is-right:hover .question-mark-blob {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
 }
 
 .what-is-right {
@@ -86,6 +97,13 @@
     color: var(--color-red);
     line-height: 1.2;
     font-weight: 500;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    cursor: default;
+}
+
+.what-description-text:hover {
+    transform: translateX(5px);
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
 .description-text.top {
@@ -108,7 +126,7 @@
 }
 
 .feature-item:hover {
-    transform: translateY(-8px);
+    transform: translateY(0px);
 }
 
 .feature-item img {
@@ -135,7 +153,8 @@
 }
 
 .feature-item:hover .feature-label {
-    color: var(--color-purple);
+    transform: translateX(0px);
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
 .decorative-text {

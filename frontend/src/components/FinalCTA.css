@@ -41,7 +41,14 @@
     height: auto;
     position: absolute;
     z-index: 0;
-    top: -12%
+    top: -12%;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.apply-for-graphic:hover {
+    transform: scale(1.05) rotate(-3deg);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
 }
 
 .logo-2-graphic {

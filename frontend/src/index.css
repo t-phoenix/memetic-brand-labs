@@ -60,17 +60,18 @@
 /* CSS Variables - Color Palette */
 :root {
   /* Brand Colors */
-  --color-purple: #8E4ED5;
-  --color-red: #D8474D;
-  --color-yellow: #EFC960;
-  --color-pink: #FF80D2;
-  --color-blue: #828DE0;
-  --color-coral: #DE5F64;
-  --color-peach: #F2DDB6;
-  --color-magenta: #C24A8C;
-  --color-dark-blue: #246EAF;
-  --color-black: #211D16;
+  --color-purple: #9a44de;
+  --color-red: #e83648;
+  --color-yellow: #f5c948;
+  --color-pink: #ff74d6;
+  --color-blue: #818ae7;
+  --color-coral: #ef5560;
+  --color-peach: #f7ddb1;
+  --color-magenta: #d33c8f;
+  --color-dark-blue: #006eb3;
+  --color-black: #231d16;
   --color-white: #FFFFFF;
+  --color-dull-peach: #f8dcb1;
 
   /* Typography */
   --font-heading: 'Anton', sans-serif;

@@ -41,6 +41,12 @@
     flex-direction: column;
     margin: 10px 0;
     z-index: 2;
+    transition: transform 0.3s ease;
+    cursor: default;
+}
+
+.who-title:hover {
+    transform: scale(1.02);
 }
 
 .who-text {
@@ -127,6 +133,13 @@
     font-size: clamp(20px, 1.7vw, 28px);
     font-weight: 700;
     line-height: 1.2;
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: default;
+}
+
+.who-list-item:hover {
+    transform: translateX(10px);
+    color: var(--color-yellow);
 }
 
 .who-bullet {

@@ -98,27 +98,31 @@
 .title-yellow {
     font-family: var(--font-heading);
     color: var(--color-yellow);
-    font-size: clamp(60px, 8vw, 120px);
+    font-size: clamp(40px, 6vw, 100px);
     line-height: 0.9;
-    margin-bottom: var(--spacing-md);
-    text-transform: uppercase;
+    margin-bottom: -22%;
+    text-transform: capitalize;
+    z-index: 10;
 }
 
 .title-blue {
     font-family: var(--font-heading);
     color: var(--color-blue);
-    font-size: clamp(60px, 8vw, 120px);
+    font-size: clamp(40px, 6vw, 100px);
     line-height: 0.9;
     margin-bottom: var(--spacing-md);
-    text-transform: uppercase;
+    text-transform: none;
+    margin-bottom: -22%;
+    z-index: 10;
 }
 
 /* Images */
 .handshake-container {
     width: 100%;
     max-width: 450px;
-    margin-top: -20px;
+    margin-top: -10px;
     z-index: 1;
+    margin-left: 10%;
 }
 
 .handshake-pink,
@@ -126,7 +130,7 @@
     width: 100%;
     height: auto;
     display: block;
-    transform: rotate(-10deg);
+    transform: rotate(0deg);
     /* Slight rotation if needed to match image */
 }
 
@@ -180,6 +184,62 @@
     color: var(--color-peach);
     opacity: 1;
     /* Match design clearly */
+    font-weight: 500;
+}
+
+/* Step 1 Styles - Persistent Placeholder Inputs */
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 20px 24px;
+    width: 100%;
+    transition: all 0.3s ease;
+    cursor: text;
+}
+
+.step-1 .input-wrapper {
+    color: var(--color-white);
+}
+
+.input-prefix {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 500;
+    margin-right: 4px;
+    /* Optional spacing after pipe */
+}
+
+.input-content {
+    background: transparent !important;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 18px;
+    flex: 1;
+    padding: 0;
+    width: 100%;
+    margin-left: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    color: inherit;
+}
+
+/* Remove background from autofill */
+.input-content:-webkit-autofill,
+.input-content:-webkit-autofill:hover,
+.input-content:-webkit-autofill:focus,
+.input-content:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-blue) inset !important;
+    -webkit-text-fill-color: var(--color-white) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.input-content::placeholder {
+    opacity: 0.5;
+    /* If we ever use placeholder here */
     font-weight: 500;
 }
 
@@ -367,6 +427,23 @@
     opacity: 0.9;
 }
 
+/* Input Labels with Titles */
+.input-block {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.input-label {
+    font-family: var(--font-body);
+    font-size: 20px;
+    color: var(--color-blue);
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: left;
+    margin-left: 4px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .form-container {
@@ -424,7 +501,8 @@
 }
 
 /* Validation Styles */
-.input-field.error {
+.input-field.error,
+.input-wrapper.error {
     border-color: #FF0000 !important;
     /* Bright red */
     animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;

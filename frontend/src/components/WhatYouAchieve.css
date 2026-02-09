@@ -33,7 +33,7 @@
     font-size: clamp(80px, 4vw, 80px);
     color: var(--color-pink);
     line-height: 1.04;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-family: var(--font-heading);
     letter-spacing: -0.02em;
     margin-bottom: -20%;
@@ -147,7 +147,7 @@
 .achievement-text {
     font-size: clamp(20px, 2vw, 24px);
     color: var(--color-peach);
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.1;
     font-family: var(--font-body);
     transition: color 0.3s ease;

@@ -19,12 +19,27 @@ const ApplicationForm = () => {
 
     const [formData, setFormData] = useState(() => {
         const saved = localStorage.getItem('applicationFormData');
-        return saved ? JSON.parse(saved) : {
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                return {
+                    firstName: parsed.firstName || '',
+                    lastName: parsed.lastName || '',
+                    email: parsed.email || '',
+                    project: parsed.project || '',
+                    description: parsed.description || '',
+                    challenge: parsed.challenge || ''
+                };
+            } catch (e) {
+                console.error("Error parsing saved form data", e);
+            }
+        }
+        return {
             firstName: '',
             lastName: '',
             email: '',
             project: '',
-            audience: '',
+            description: '',
             challenge: ''
         };
     });
@@ -71,8 +86,8 @@ const ApplicationForm = () => {
 
     const validateStep2 = () => {
         const newErrors = {};
-        if (!formData.project.trim()) newErrors.project = 'Project details are required';
-        if (!formData.audience.trim()) newErrors.audience = 'Target audience is required';
+        if (!formData.project.trim()) newErrors.project = 'Brand name & link is required';
+        if (!formData.description.trim()) newErrors.description = 'Product description is required';
         if (!formData.challenge.trim()) newErrors.challenge = 'Challenge details are required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -146,15 +161,24 @@ const ApplicationForm = () => {
                         <div className="right-panel">
                             <div className="input-group">
                                 <div>
-                                    <input type="text" name="firstName" placeholder="First Name |" value={formData.firstName} onChange={handleChange} className={`input-field ${errors.firstName ? 'error' : ''}`} />
+                                    <label className={`input-wrapper ${errors.firstName ? 'error' : ''}`}>
+                                        <span className="input-prefix">First Name |</span>
+                                        <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-content" />
+                                    </label>
                                     {errors.firstName && <span className="error-text">{errors.firstName}</span>}
                                 </div>
                                 <div>
-                                    <input type="text" name="lastName" placeholder="Second Name |" value={formData.lastName} onChange={handleChange} className={`input-field ${errors.lastName ? 'error' : ''}`} />
+                                    <label className={`input-wrapper ${errors.lastName ? 'error' : ''}`}>
+                                        <span className="input-prefix">Second Name |</span>
+                                        <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-content" />
+                                    </label>
                                     {errors.lastName && <span className="error-text">{errors.lastName}</span>}
                                 </div>
                                 <div>
-                                    <input type="email" name="email" placeholder="Mail Id |" value={formData.email} onChange={handleChange} className={`input-field ${errors.email ? 'error' : ''}`} />
+                                    <label className={`input-wrapper ${errors.email ? 'error' : ''}`}>
+                                        <span className="input-prefix">Mail Id |</span>
+                                        <input type="email" name="email" value={formData.email} onChange={handleChange} className="input-content" />
+                                    </label>
                                     {errors.email && <span className="error-text">{errors.email}</span>}
                                 </div>
                             </div>
@@ -179,16 +203,19 @@ const ApplicationForm = () => {
                         <div className="right-panel">
                             <p className="instruction">Fill in the application,<br />so we understand you more.</p>
                             <div className="input-group">
-                                <div>
-                                    <input type="text" name="project" placeholder="What you're building |" value={formData.project} onChange={handleChange} className={`input-field ${errors.project ? 'error' : ''}`} />
+                                <div className="input-block">
+                                    <label className="input-label">Brand name + link</label>
+                                    <input type="text" name="project" placeholder="(website / repo / deck link)" value={formData.project} onChange={handleChange} className={`input-field ${errors.project ? 'error' : ''}`} />
                                     {errors.project && <span className="error-text">{errors.project}</span>}
                                 </div>
-                                <div>
-                                    <input type="text" name="audience" placeholder="who it's for (target audience) |" value={formData.audience} onChange={handleChange} className={`input-field ${errors.audience ? 'error' : ''}`} />
-                                    {errors.audience && <span className="error-text">{errors.audience}</span>}
+                                <div className="input-block">
+                                    <label className="input-label">What are you building?</label>
+                                    <input type="text" name="description" placeholder="(Explain your product in simple terms.)" value={formData.description} onChange={handleChange} className={`input-field ${errors.description ? 'error' : ''}`} />
+                                    {errors.description && <span className="error-text">{errors.description}</span>}
                                 </div>
-                                <div>
-                                    <input type="text" name="challenge" placeholder="your current brand or adoption challenge |" value={formData.challenge} onChange={handleChange} className={`input-field ${errors.challenge ? 'error' : ''}`} />
+                                <div className="input-block">
+                                    <label className="input-label">Your current brand challenge</label>
+                                    <input type="text" name="challenge" placeholder="Adoption, Narrative clarity, Community traction, Differentiation, Positioning" value={formData.challenge} onChange={handleChange} className={`input-field ${errors.challenge ? 'error' : ''}`} />
                                     {errors.challenge && <span className="error-text">{errors.challenge}</span>}
                                 </div>
                             </div>

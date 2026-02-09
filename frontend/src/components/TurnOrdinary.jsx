@@ -6,36 +6,18 @@ import ctaButton from '../assets/graphics/Adpr Memetic Brand Labs_CTA 2.svg';
 
 function TurnOrdinary() {
     const navigate = useNavigate();
-    const [text, setText] = useState('');
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [loopNum, setLoopNum] = useState(0);
-    const [typingSpeed, setTypingSpeed] = useState(150);
-
-    const words = ["logos", "campaigns"];
+    const [index, setIndex] = useState(0);
+    const words = ["Logos", "Campaigns"];
 
     useEffect(() => {
-        const handleTyping = () => {
-            const i = loopNum % words.length;
-            const fullText = words[i];
+        const interval = setInterval(() => {
+            setIndex((prevIndex) => (prevIndex + 1) % words.length);
+        }, 2000); // Change every 2 seconds
 
-            setText(isDeleting
-                ? fullText.substring(0, text.length - 1)
-                : fullText.substring(0, text.length + 1)
-            );
+        return () => clearInterval(interval);
+    }, []);
 
-            setTypingSpeed(isDeleting ? 80 : 150);
-
-            if (!isDeleting && text === fullText) {
-                setTimeout(() => setIsDeleting(true), 1500);
-            } else if (isDeleting && text === '') {
-                setIsDeleting(false);
-                setLoopNum(loopNum + 1);
-            }
-        };
-
-        const timer = setTimeout(handleTyping, typingSpeed);
-        return () => clearTimeout(timer);
-    }, [text, isDeleting, loopNum]);
+    const text = words[index];
 
     return (
         <section className="turn-ordinary" id="about">
@@ -67,7 +49,7 @@ function TurnOrdinary() {
 
                             <div className="emphasis-block">
                                 <p className="crossed-text">
-                                    Not just <span className="cycling-word">{text}</span>
+                                    Not just <span className="cycling-word" key={text}>{text}</span>
                                 </p>
                                 <p className="brand-systems">
                                     It is <strong className="highlight">Memetic brand systems</strong>
