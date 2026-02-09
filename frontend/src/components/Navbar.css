@@ -78,6 +78,11 @@
     transform: scale(1.1);
 }
 
+.navbar-links a[href*="adpr.work"]:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 .navbar-menu {
     background: none;
     border: none;

@@ -99,7 +99,9 @@ function LandingPage() {
             <HowItWorks />
             <FinalCTA />
             <div className="footer-logo" id="adpr">
-                <img src={adpr} alt="adpr" />
+                <a href="https://adpr.work" target="_blank" rel="noopener noreferrer">
+                    <img src={adpr} alt="adpr" />
+                </a>
             </div>
         </>
     );

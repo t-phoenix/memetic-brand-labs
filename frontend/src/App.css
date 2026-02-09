@@ -83,6 +83,13 @@
   width: auto;
   margin: 0 2rem;
   opacity: 0.85;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-logo img:hover {
+  transform: scale(1.05);
+  opacity: 1;
 }
 
 /* Tablet */

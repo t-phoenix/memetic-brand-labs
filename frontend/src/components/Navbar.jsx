@@ -30,7 +30,7 @@ function Navbar({ className = "navbar" }) {
                     <a href="#home" onClick={(e) => handleNavClick(e, 'home')}>home</a>
                     <a href="#works" onClick={(e) => handleNavClick(e, 'works')}>works</a>
                     <a href="#about" onClick={(e) => handleNavClick(e, 'about')}>about us</a>
-                    <a href="#adpr" onClick={(e) => handleNavClick(e, 'adpr')}>adpr</a>
+                    <a href="https://adpr.work" target="_blank" rel="noopener noreferrer">adpr</a>
                 </div>
             </div>
         </nav>
