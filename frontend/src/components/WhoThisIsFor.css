@@ -43,6 +43,7 @@
     z-index: 2;
     transition: transform 0.3s ease;
     cursor: default;
+    gap: 26px;
 }
 
 .who-title:hover {
@@ -51,7 +52,6 @@
 
 .who-text {
     display: block;
-    margin-bottom: 4%;
 }
 
 .this-is-for-text {

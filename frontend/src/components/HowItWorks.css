@@ -57,6 +57,7 @@
     pointer-events: none;
     z-index: 2;
     text-align: left;
+    gap: 10px;
 }
 
 .how-it-works-title span {

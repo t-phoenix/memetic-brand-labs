@@ -33,6 +33,7 @@
 }
 
 .logo-adpr {
+    font-family: var(--font-body);
     font-size: 14px;
     color: #8E4ED5;
     line-height: 1.2;

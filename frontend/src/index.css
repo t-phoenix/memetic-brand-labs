@@ -60,7 +60,7 @@
 /* CSS Variables - Color Palette */
 :root {
   /* Brand Colors */
-  --color-purple: #9a44de;
+  /* --color-purple: #9a44de;
   --color-red: #e83648;
   --color-yellow: #f5c948;
   --color-pink: #ff74d6;
@@ -70,6 +70,19 @@
   --color-magenta: #d33c8f;
   --color-dark-blue: #006eb3;
   --color-black: #231d16;
+  --color-white: #FFFFFF;
+  --color-dull-peach: #f8dcb1; */
+
+  --color-purple: #8e4ed5;
+  --color-red: #d8474d;
+  --color-yellow: #efc960;
+  --color-pink: #ff80d2;
+  --color-blue: #828de0;
+  --color-coral: #de5f64;
+  --color-peach: #f2ddb6;
+  --color-magenta: #c24a8c;
+  --color-dark-blue: #246eaf;
+  --color-black: #211d16;
   --color-white: #FFFFFF;
   --color-dull-peach: #f8dcb1;
 
