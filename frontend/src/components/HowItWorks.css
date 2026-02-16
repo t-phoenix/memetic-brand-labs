@@ -58,6 +58,7 @@
     z-index: 2;
     text-align: left;
     gap: 10px;
+
 }
 
 .how-it-works-title span {
@@ -65,7 +66,7 @@
     font-size: clamp(60px, 8vw, 100px);
     color: var(--color-yellow);
     line-height: 0.9;
-    text-transform: capitalize;
+    text-transform: none;
     display: block;
     transition: transform 0.3s ease, text-shadow 0.3s ease;
 }

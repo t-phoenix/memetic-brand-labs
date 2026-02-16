@@ -41,6 +41,10 @@
     cursor: default;
 }
 
+.achievements-title-span {
+    text-transform: lowercase;
+}
+
 .achievements-title:hover {
     transform: scale(1.02);
     text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);

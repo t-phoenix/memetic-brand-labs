@@ -33,8 +33,8 @@ function HowItWorks() {
                         <div className="gears-wrapper">
                             <img src={gears} alt="Gears" className="gears-img" />
                             <h2 className="how-it-works-title">
-                                <span>How It</span>
-                                <span>Works</span>
+                                <span>How it</span>
+                                <span>works</span>
                             </h2>
                         </div>
                     </div>

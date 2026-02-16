@@ -145,7 +145,7 @@
     display: inline-block;
     color: #FFFABD;
     text-decoration-thickness: 3px;
-    text-decoration: underline;
+    text-decoration: none;
     animation: fadeCycle 2s ease-in-out forwards;
     min-width: 120px;
     /* Prevent layout shift */
@@ -210,8 +210,8 @@
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
     /* Default: Sharp wiggle and Brand Colors Shadow (formerly hover) */
-    filter: drop-shadow(0 0 30px var(--color-peach));
-    animation: sharpWiggle 0.5s infinite linear;
+    filter: drop-shadow(0 0 0px var(--color-peach));
+    animation: none 0.5s infinite linear;
 }
 
 .cta-graphic:hover {
@@ -220,6 +220,7 @@
     transform: scale(1.15) !important;
     /* Ensure it overrides any keyframe transform */
     filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
+    animation: sharpWiggle 1s infinite linear;
 }
 
 @keyframes sharpWiggle {

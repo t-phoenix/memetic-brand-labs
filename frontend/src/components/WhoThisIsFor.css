@@ -57,6 +57,8 @@
 .this-is-for-text {
     display: block;
     white-space: nowrap;
+    text-transform: lowercase;
+
 }
 
 .finger {

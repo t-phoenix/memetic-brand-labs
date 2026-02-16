@@ -1,5 +1,5 @@
 import './WhatYouAchieve.css';
-import bags from '../assets/graphics/Adpr Memetic Brand Labs_Bags.svg';
+import bags from '../assets/graphics/Adpr Memetic Brand Labs_Bags.png';
 import icon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 5.svg';
 
 function WhatYouAchieve() {
@@ -14,7 +14,7 @@ function WhatYouAchieve() {
         <section id="what-you-achieve" className="what-you-achieve">
             <div className="container achievements-container">
                 <div className="achievements-left">
-                    <h2 className="achievements-title">What You<br />Achieve</h2>
+                    <h2 className="achievements-title">What <span className="achievements-title-span">You<br />Achieve</span></h2>
                     <div className="achievements-bags">
                         <img src={bags} alt="Bags graphic" />
                     </div>
