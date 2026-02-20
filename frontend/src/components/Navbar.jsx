@@ -23,7 +23,7 @@ function Navbar({ className = "navbar" }) {
             <div className="navbar-container">
                 <a href="#home" className="navbar-logo" onClick={(e) => handleNavClick(e, 'home')}>
                     <span className="logo-adpr">adpr</span>
-                    <span className="logo-memetics">Memetics<br />Brand<br />Labs</span>
+                    <span className="logo-memetics">Memetic<br />Brand<br />Labs</span>
                 </a>
 
                 <div className="navbar-links">
