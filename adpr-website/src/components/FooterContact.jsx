@@ -56,7 +56,7 @@ export const Footer = () => {
                 <div className="row">
                     <div className="col text-center">
                         <p className="pb_font-14">© 2024. All Rights Reserved.</p>
-                        <a className="pb_font-14" href="https://adpr.work/privacy-policy.html">Privacy Policy</a>
+                        <a className="pb_font-14" href="#/privacy">Privacy Policy</a>
                     </div>
                 </div>
             </div>

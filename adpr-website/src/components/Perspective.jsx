@@ -22,10 +22,11 @@ const Perspective = () => {
                         <br />
                         <div className="row">
                             <div className="col-md-12 col-sm-12 text-center">
-                                <video autoPlay loop muted playsInline className="img-fluid mb-4">
+                                {/* <video autoPlay loop muted playsInline className="img-fluid mb-4">
                                     <source src="/assets/video/adpr_fisherman.mp4" type="video/mp4" />
                                     Your browser does not support the video tag.
-                                </video>
+                                </video> */}
+                                <img src="/assets/img/adpr_fisherman.jpg" alt="Fisherman" className="img-fluid mb-4" />
                             </div>
                             <div className="col-md-12 col-sm-12">
                                 <p>Do age-old professions like fishing have anything to teach new-age entrepreneurs? They do! Having the
@@ -41,10 +42,11 @@ const Perspective = () => {
                         <br />
                         <div className="row">
                             <div className="col-md-12 col-sm-12 text-center">
-                                <video autoPlay loop muted playsInline className="img-fluid mb-4">
+                                {/* <video autoPlay loop muted playsInline className="img-fluid mb-4">
                                     <source src="/assets/video/adpr_farmer.mp4" type="video/mp4" />
                                     Your browser does not support the video tag.
-                                </video>
+                                </video> */}
+                                <img src="/assets/img/adpr_shepherd.jpg" alt="Shepherd" className="img-fluid mb-4" />
                             </div>
                             <div className="col-md-12 col-sm-12">
                                 <p>Do age-old professions like sheepherding have anything to teach new-age entrepreneurs? They do! Knowing
@@ -62,10 +64,11 @@ const Perspective = () => {
                         <br />
                         <div className="row">
                             <div className="col-md-12 col-sm-12 text-center">
-                                <video autoPlay loop muted playsInline className="img-fluid mb-4">
+                                {/* <video autoPlay loop muted playsInline className="img-fluid mb-4">
                                     <source src="/assets/video/adpr_explorer.mp4" type="video/mp4" />
                                     Your browser does not support the video tag.
-                                </video>
+                                </video> */}
+                                <img src="/assets/img/adpr_explorer.jpg" alt="Explorer" className="img-fluid mb-4" />
                             </div>
                             <div className="col-md-12 col-sm-12">
                                 <p>Exploration has never been more popular than today. An Explorer is somebody who makes risky and

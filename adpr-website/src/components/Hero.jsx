@@ -19,6 +19,9 @@ const Hero = () => {
                                 <li className="list-inline-item"><a href="https://www.linkedin.com/in/anand-peter-916b863/" target="_blank" className="p-2"><i className="fa fa-linkedin"></i></a></li>
                                 <li className="list-inline-item"><a href="https://www.behance.net/adpr142" target="_blank" className="p-2"><i className="fa fa-behance"></i></a></li>
                             </ul>
+                            <p style={{ textAlign: 'center', marginTop: '40px', color: '#fff', fontSize: '1.2rem', fontWeight: '500' }}>
+                                Check out our new initiative <a href="https://memetic.adpr.work/" target="_blank" rel="noopener noreferrer" style={{ color: '#4ba0ff', textDecoration: 'none' }}>adpr Memetic Brand Labs</a>
+                            </p>
                         </div>
                     </div>
                 </div>
