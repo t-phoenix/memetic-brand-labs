@@ -1,7 +1,195 @@
+/* ============================================
+   ADPR BRAND FONTS — Self-hosted
+   Poppins: Body, Headings, All Text
+   Lack: Logo usage only
+   ============================================ */
+
+/* --- Poppins --- */
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Thin.otf") format("opentype");
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-ThinItalic.otf") format("opentype");
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-ExtraLight.otf") format("opentype");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-ExtraLightItalic.otf") format("opentype");
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Light.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-LightItalic.otf") format("opentype");
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Italic.otf") format("opentype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-MediumItalic.otf") format("opentype");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-SemiBold.otf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-SemiBoldItalic.otf") format("opentype");
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-BoldItalic.otf") format("opentype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-ExtraBold.otf") format("opentype");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-ExtraBoldItalic.otf") format("opentype");
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-Black.otf") format("opentype");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("/ADPR FAMILY FONTS/ADPR BC AND SEAL FONT/Poppins-BlackItalic.otf") format("opentype");
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* --- Lack (Logo Font) --- */
+@font-face {
+    font-family: "Lack";
+    src: url("/ADPR FAMILY FONTS/ADPR LOGO FONT/lack-regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lack";
+    src: url("/ADPR FAMILY FONTS/ADPR LOGO FONT/lack-italic.otf") format("opentype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lack Line";
+    src: url("/ADPR FAMILY FONTS/ADPR LOGO FONT/lack-line-regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lack Line";
+    src: url("/ADPR FAMILY FONTS/ADPR LOGO FONT/lack-line-italic.otf") format("opentype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* ============================================
+   GLOBAL TYPE RULES
+   ============================================ */
+
 #root body,
 body {
     margin: 0 !important;
-    font-family: "Robot", serif !important;
+    font-family: "Poppins", sans-serif !important;
     font-size: 18px !important;
     line-height: 1.7 !important;
     color: #495057 !important;
@@ -26,9 +214,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-    font-family: "Montserrat", sans-serif !important;
-    font-weight: 400 !important;
-    /* Force extra bold (Black) */
+    font-family: "Poppins", sans-serif !important;
     color: #0007a3 !important;
 }
 
@@ -43,9 +229,20 @@ h6,
 
 #root p,
 p {
-    font-family: "Crimson Text", serif !important;
+    font-family: "Poppins", sans-serif !important;
 }
 
+/* Specific override for style.css */
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+    font-weight: 400 !important;
+}
+
+/* Weight utility classes */
 .font-weight-bold {
     font-weight: 700 !important;
 }
@@ -54,12 +251,11 @@ p {
     font-weight: 900 !important;
 }
 
-/* Specific override for style.css 1034 */
-section h1,
-section h2,
-section h3,
-section h4,
-section h5,
-section h6 {
-    font-weight: 400 !important;
+/* Logo font utility class */
+.font-lack {
+    font-family: "Lack", sans-serif !important;
+}
+
+.font-lack-line {
+    font-family: "Lack Line", sans-serif !important;
 }
