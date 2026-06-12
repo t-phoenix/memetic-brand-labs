@@ -1,0 +1,184 @@
+/* ── Who Are The Crows Section ──────────────────────── */
+
+.who-crows {
+  position: relative;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  min-height: var(--section-min-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 6vw, 5rem) 0;
+  overflow: hidden;
+}
+
+.who-crows__grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url('/svg/TCT_Landing Page_Grid_White.svg');
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.who-crows__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+/* ── Heading ────────────────────────────────────────── */
+.who-crows__pre {
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  font-weight: 400;
+  color: var(--color-black);
+  margin-bottom: 0.5rem;
+}
+
+.who-crows__heading {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.who-crows__crows-img {
+  height: clamp(1.8rem, 5.5vw, 4.2rem);
+  width: auto;
+  display: block;
+}
+
+.who-crows__question {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: clamp(1.2rem, 3.5vw, 2.8rem);
+  font-weight: 300;
+  line-height: 0.8;
+  align-self: flex-end;
+  margin-bottom: clamp(0.1rem, 0.4vw, 0.4rem);
+  color: var(--color-black);
+}
+
+/* ── Subtitle ───────────────────────────────────────── */
+.who-crows__subtitle {
+  font-family: var(--font-sans);
+  font-size: clamp(0.875rem, 1.3vw, 1.05rem);
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 1.75rem;
+}
+
+/* ── Pill grid ──────────────────────────────────────── */
+.who-crows__pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 680px;
+  margin-bottom: 2rem;
+}
+
+.who-crows__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1.1rem;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+  font-weight: 400;
+  color: var(--color-black);
+  background: transparent;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  animation: pillPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--pill-delay, 0ms) both;
+  cursor: default;
+}
+
+.who-crows__pill:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+  transform: translateY(-2px);
+}
+
+/* ── Tagline ────────────────────────────────────────── */
+.who-crows__tagline {
+  font-family: var(--font-sans);
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 2.5rem;
+}
+
+/* ── CTA Button ─────────────────────────────────────── */
+.who-crows__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  border: 1.5px solid rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-black);
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  position: relative;
+  overflow: hidden;
+  transition: color var(--transition-base), border-color var(--transition-base), background var(--transition-base), transform var(--transition-base);
+}
+
+.who-crows__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-black);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.who-crows__cta:hover {
+  color: var(--color-white);
+  border-color: var(--color-black);
+  transform: translateY(-2px);
+}
+
+.who-crows__cta:hover::before {
+  transform: scaleX(1);
+}
+
+.who-crows__cta span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Keyframes ──────────────────────────────────────── */
+@keyframes pillPop {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .who-crows {
+    padding: clamp(3rem, 8vw, 4rem) 0;
+  }
+
+  .who-crows__heading {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .who-crows__pills {
+    max-width: 100%;
+  }
+}

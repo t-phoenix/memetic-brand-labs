@@ -1,0 +1,213 @@
+/* ── Footer Section ─────────────────────────────────── */
+
+.footer {
+  position: relative;
+  background-color: #0d0e1a;
+  color: var(--color-white);
+  min-height: var(--section-min-height);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: clamp(4rem, 8vw, 7rem);
+  padding-bottom: 2rem;
+  border-top: 1px solid var(--color-border-dark);
+  overflow: hidden;
+}
+
+.footer__grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url('/svg/TCT_Landing Page_Grid_Dark.svg');
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer .container,
+.footer__divider {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Intro ──────────────────────────────────────────── */
+.footer__top {
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.footer__intro-heading {
+  font-family: var(--font-sans);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: var(--color-white);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.footer__intro-body {
+  font-family: var(--font-sans);
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Large logo ─────────────────────────────────────── */
+.footer__logo-wrap {
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+
+.footer__logo {
+  user-select: none;
+}
+
+.footer__logo-img--desktop {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+}
+
+.footer__logo-img--mobile {
+  display: none;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.footer__divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border-dark);
+  margin-bottom: 2rem;
+}
+
+/* ── Bottom row ─────────────────────────────────────── */
+.footer__bottom {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Nav links ──────────────────────────────────────── */
+.footer__nav {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.footer__nav-link {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer__nav-link:hover {
+  color: var(--color-white);
+}
+
+/* ── Business inquiries center ──────────────────────── */
+.footer__inquiries {
+  text-align: center;
+}
+
+.footer__label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+}
+
+/* ── Contact details ────────────────────────────────── */
+.footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.footer__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer__contact-link:hover {
+  color: var(--color-white);
+}
+
+.footer__contact-icon-img {
+  width: 14px;
+  height: 14px;
+  display: block;
+  object-fit: contain;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.footer__contact-link:hover .footer__contact-icon-img {
+  opacity: 0.95;
+}
+
+/* ── Copyright ──────────────────────────────────────── */
+.footer__copy {
+  border-top: 1px solid var(--color-border-dark);
+  padding-top: 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .footer {
+    padding-top: clamp(3rem, 8vw, 5rem);
+    padding-bottom: 2rem;
+  }
+
+  .footer__bottom {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer__inquiries {
+    text-align: left;
+  }
+
+  .footer__contact {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__nav {
+    gap: 1rem;
+  }
+
+  .footer__logo-img--desktop {
+    display: none;
+  }
+
+  .footer__logo-img--mobile {
+    display: block;
+  }
+}

@@ -1,0 +1,163 @@
+/* =====================================================
+   THE CROW THEORY — Global Design System
+   ===================================================== */
+
+/* ── Reset ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+  background-color: #0e0e0e;
+  color: #ffffff;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── Design Tokens ──────────────────────────────────── */
+:root {
+  /* Colors */
+  --color-black:       #0e0e0e;
+  --color-black-deep:  #0d0e1a;
+  --color-dark:        #141414;
+  --color-dark-mid:    #1a1a1a;
+  --color-dark-card:   #1e1e1e;
+  --color-white:       #ffffff;
+  --color-off-white:   #f5f5f3;
+  --color-gray-light:  #e8e8e4;
+  --color-gray-mid:    #aaaaaa;
+  --color-gray-dim:    #666666;
+  --color-border-dark: rgba(255,255,255,0.08);
+  --color-border-light:rgba(0,0,0,0.10);
+  --color-grid:        rgba(0,0,0,0.06);
+
+  /* Designer graph paper (1440px desk canvas) */
+  --grid-design-width:       1322.95;
+  --grid-design-height:      425.9;
+  --grid-cell-major:         69px;
+  --grid-cell-minor:         13.8px;
+  --grid-page-inset-left:    12.9px;   /* PDF grid origin */
+  --grid-page-inset-right:   46.5px;   /* 1440 − 1393.5 */
+  --grid-bg-on-light:        url('/svg/TCT_Landing%20Page_Grid_Dark.svg');
+  --grid-bg-on-dark:         url('/svg/TCT_Landing%20Page_Grid_White.svg');
+
+  /* Typography */
+  --font-script:  'Caveat', cursive;
+  --font-sans:    'DM Sans', 'Inter', sans-serif;
+
+  /* Spacing */
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  2rem;
+  --space-lg:  4rem;
+  --space-xl:  6rem;
+  --space-xxl: 10rem;
+
+  /* Border radius */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  20px;
+  --radius-pill: 999px;
+
+  /* Transitions */
+  --transition-fast:   150ms ease;
+  --transition-base:   300ms ease;
+  --transition-slow:   600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Max content width */
+  --max-width: 1440px;
+  --page-padding: clamp(1.5rem, 9vw, 130px);
+
+  /* Full viewport section height (dvh accounts for mobile browser chrome) */
+  --section-min-height: 100vh;
+  --section-min-height: 100dvh;
+}
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-black); }
+::-webkit-scrollbar-thumb { background: var(--color-dark-mid); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gray-dim); }
+
+/* ── Selection ──────────────────────────────────────── */
+::selection { background: rgba(255,255,255,0.2); color: #fff; }
+
+/* ── Utility classes ────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--page-padding);
+}
+
+.script {
+  font-family: var(--font-script);
+  font-style: italic;
+}
+
+/* ── Scroll-reveal animations ───────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+
+/* ── Designer grid overlay (shared) ─────────────────── */
+.designer-grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--page-padding) + var(--grid-page-inset-left));
+  width: calc(100% + 2 * var(--page-padding) - var(--grid-page-inset-left) - var(--grid-page-inset-right));
+  background-repeat: repeat-y;
+  background-position: left top;
+  background-size: 100% auto;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* White strokes — dark sections (Capabilities, Hero, Footer) */
+.designer-grid--on-dark {
+  background-image: var(--grid-bg-on-dark);
+}
+
+/* Dark strokes — light sections (Philosophy, WhoAreTheCrows) */
+.designer-grid--on-light {
+  background-image: var(--grid-bg-on-light);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Favicon SVG (inline) ───────────────────────────── */

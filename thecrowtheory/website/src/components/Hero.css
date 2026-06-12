@@ -1,0 +1,183 @@
+/* ══════════════════════════════════════════════════════════
+   HERO — pixel-perfect match to TCT_Landing Page_Desk.pdf
+   ══════════════════════════════════════════════════════════
+
+   DESIGN MEASUREMENTS (from 3000×800 crop of the PDF):
+   ─────────────────────────────────────────────────────────
+   Total page width  ≈ 3000px (design canvas)
+   Hero height       ≈ 380px out of 800px crop
+     → on a 16:9 screen that's ≈ 47-52vh  (compact banner)
+
+   Logo block:
+     Left edge offset  ≈ 290px / 3000 = ~10% (matches container padding)
+     Logo block width  ≈ 1100px / 3000 = ~37% of page
+     "the"  height     ≈  90px → / 800 × 100 = 11vh ≈ 4.5vw at 16:9
+     "crow" height     ≈ 235px → / 800 × 100 = 29vh ≈ 12vw at 16:9
+     "theory" height   ≈  90px → / 800 × 100 = 11vh ≈ 4.5vw (same as "the")
+
+   Right text block:
+     Start at ≈ 1450px from left = ~48% of page
+     Tagline "A Creative Ecosystem…" → bold, ~1.7vw
+     Body copy → monospace, ~0.9vw
+
+   Content is vertically CENTRED inside the hero banner.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Section ─────────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  background-color: #0a0d16;
+  min-height: var(--section-min-height);
+  display: flex;
+  align-items: center; /* vertically centre all content */
+  overflow: hidden;
+}
+
+/* ── Video ───────────────────────────────────────────── */
+.hero__video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%; /* show more of the top where crows fly */
+}
+
+/* Dark navy overlay matching the design's deep indigo-navy tone */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 11, 22, 0.50);
+}
+
+/* ── Content row ─────────────────────────────────────── */
+.hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* both columns centred vertically */
+  /* Gap between logo and tagline — design shows ~10% of page width gap */
+  gap: clamp(2rem, 5vw, 5rem);
+  /* Vertical padding lets the hero breathe */
+  padding-top: clamp(2.5rem, 5vh, 4.5rem);
+  padding-bottom: clamp(2.5rem, 5vh, 4.5rem);
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOGO WORDMARK
+   ══════════════════════════════════════════════════════════
+
+   All three words are display-block, stacked vertically.
+   Each word is left-aligned.
+
+   Font choices:
+     "the"    → DM Sans ExtraBold (800) — matches the rounded
+                 grotesque in the design
+     "crow"   → Caveat Bold italic — closest web match to the
+                 thick brush-script used in the design
+     "theory" → DM Sans ExtraBold (800) — same as "the"
+
+   Size ratios (from pixel measurements):
+     "the"    ≈ 4.5vw  (90px / ~2000px effective width)
+     "crow"   ≈ 12vw   (235px / ~2000px)
+     "theory" ≈ 4.5vw  (90px / ~2000px)
+   ══════════════════════════════════════════════════════════ */
+.hero__logo {
+  flex: 0 0 clamp(220px, 32%, 440px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  user-select: none;
+}
+
+.hero__logo-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image: url('/svg/TCT_Landing Page_Grid_Dark.svg');
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Right Text ──────────────────────────────────────── */
+.hero__right {
+  flex: 1;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.hero__tagline {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 1.6vw, 1.375rem);
+  line-height: 1.4;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.hero__description {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 400;
+  font-size: clamp(0.65rem, 0.88vw, 0.8125rem);
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.60);
+  margin: 0;
+}
+
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero {
+    align-items: flex-end;
+  }
+
+  .hero__content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
+    padding-top: clamp(2.5rem, 8vw, 4rem);
+    padding-bottom: clamp(2.5rem, 8vw, 4rem);
+  }
+
+  .hero__logo {
+    flex: none;
+    width: 60%;
+    max-width: 280px;
+  }
+
+  .hero__right {
+    max-width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero__tagline {
+    font-size: clamp(0.9rem, 4.5vw, 1.15rem);
+    line-height: 1.45;
+  }
+
+  .hero__description {
+    font-size: clamp(0.72rem, 3vw, 0.85rem);
+    line-height: 1.75;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__logo {
+    width: 80%;
+  }
+}
