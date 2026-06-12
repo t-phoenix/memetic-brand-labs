@@ -59,12 +59,14 @@
 .hero__content {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center; /* both columns centred vertically */
-  /* Gap between logo and tagline — design shows ~10% of page width gap */
-  gap: clamp(2rem, 5vw, 5rem);
-  /* Vertical padding lets the hero breathe */
+  /* Logo SVG viewBox: 500×365 — "theory" caps begin at y≈222 */
+  --hero-logo-width: clamp(280px, 40vw, 580px);
+  --hero-logo-height-ratio: 0.73;   /* 365 / 500 */
+  --hero-theory-top-ratio: 0.608;   /* 222 / 365 */
+  display: grid;
+  grid-template-columns: var(--hero-logo-width) 1fr;
+  align-items: start;
+  column-gap: clamp(3rem, 9vw, 8.5rem);
   padding-top: clamp(2.5rem, 5vh, 4.5rem);
   padding-bottom: clamp(2.5rem, 5vh, 4.5rem);
 }
@@ -89,7 +91,8 @@
      "theory" ≈ 4.5vw  (90px / ~2000px)
    ══════════════════════════════════════════════════════════ */
 .hero__logo {
-  flex: 0 0 clamp(220px, 32%, 440px);
+  width: var(--hero-logo-width);
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -98,6 +101,7 @@
 
 .hero__logo-img {
   width: 100%;
+  max-width: 100%;
   height: auto;
   display: block;
 }
@@ -112,32 +116,39 @@
   z-index: 1;
 }
 
-/* ── Right Text ──────────────────────────────────────── */
+/* ── Right Text — top aligns with "theory" row in logo SVG ── */
 .hero__right {
-  flex: 1;
-  max-width: 480px;
+  max-width: 30rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  align-items: flex-start;
+  gap: clamp(0.625rem, 0.9vw, 0.875rem);
+  /* Offset = logo rendered height × theory-start ratio */
+  padding-top: calc(
+    var(--hero-logo-width) * var(--hero-logo-height-ratio) * var(--hero-theory-top-ratio)
+  );
 }
 
 .hero__tagline {
-  font-family: 'Space Mono', 'Courier New', monospace;
-  font-weight: 700;
-  font-size: clamp(0.85rem, 1.6vw, 1.375rem);
-  line-height: 1.4;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(1.0625rem, 1.7vw, 1.5rem);
+  line-height: 1.15;
   color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   margin: 0;
+  text-align: left;
 }
 
 .hero__description {
-  font-family: 'Space Mono', 'Courier New', monospace;
+  font-family: var(--font-sans);
   font-weight: 400;
-  font-size: clamp(0.65rem, 0.88vw, 0.8125rem);
-  line-height: 1.85;
-  color: rgba(255, 255, 255, 0.60);
+  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
+  line-height: 1.5;
+  color: #ffffff;
   margin: 0;
+  max-width: 28rem;
+  text-align: left;
 }
 
 /* ── Mobile Responsive ─────────────────────────────────── */
@@ -147,37 +158,37 @@
   }
 
   .hero__content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.75rem;
+    grid-template-columns: 1fr;
+    row-gap: 1.75rem;
     padding-top: clamp(2.5rem, 8vw, 4rem);
     padding-bottom: clamp(2.5rem, 8vw, 4rem);
   }
 
   .hero__logo {
-    flex: none;
-    width: 60%;
-    max-width: 280px;
+    width: min(72%, 320px);
+    max-width: none;
   }
 
   .hero__right {
     max-width: 100%;
+    padding-top: 0;
     gap: 0.75rem;
   }
 
   .hero__tagline {
-    font-size: clamp(0.9rem, 4.5vw, 1.15rem);
-    line-height: 1.45;
+    font-size: clamp(1rem, 4.5vw, 1.2rem);
+    line-height: 1.4;
   }
 
   .hero__description {
-    font-size: clamp(0.72rem, 3vw, 0.85rem);
-    line-height: 1.75;
+    font-size: clamp(0.8125rem, 3.4vw, 0.9375rem);
+    line-height: 1.6;
+    max-width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .hero__logo {
-    width: 80%;
+    width: min(85%, 300px);
   }
 }
