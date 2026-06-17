@@ -1,14 +1,14 @@
-/* ── Footer Section ─────────────────────────────────── */
+/* ── Footer — Figma Contact frame (1440×570) ─────────── */
 
 .footer {
   position: relative;
   background-color: #0d0e1a;
   color: var(--color-white);
-  min-height: var(--section-min-height);
+  min-height: var(--footer-height);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-top: clamp(4rem, 8vw, 7rem);
+  justify-content: flex-start;
+  padding-top: clamp(3rem, 7.15vw, 103px);
   padding-bottom: 2rem;
   border-top: 1px solid var(--color-border-dark);
   overflow: hidden;
@@ -17,9 +17,10 @@
 .footer__grid-overlay {
   position: absolute;
   inset: 0;
-  background-image: url('/svg/TCT_Landing Page_Grid_Dark.svg');
-  background-size: cover;
-  background-position: center;
+  background-image: url('/svg/TCT_Landing Page_Grid_White.svg');
+  background-repeat: no-repeat;
+  background-size: calc(var(--grid-design-width) / 1440 * 100%) auto;
+  background-position: center top;
   pointer-events: none;
   z-index: 0;
 }
@@ -30,32 +31,31 @@
   z-index: 1;
 }
 
-/* ── Intro ──────────────────────────────────────────── */
 .footer__top {
-  margin-bottom: clamp(3rem, 6vw, 5rem);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
 .footer__intro-heading {
-  font-family: var(--font-sans);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.025em;
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 1.67vw, 1.5rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
   color: var(--color-white);
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
+  margin-bottom: 1rem;
+  line-height: 1.25;
 }
 
 .footer__intro-body {
   font-family: var(--font-sans);
-  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  font-size: 1rem;
   font-weight: 300;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.5);
+  line-height: 22px;
+  color: var(--color-white);
+  max-width: 531px;
 }
 
-/* ── Large logo ─────────────────────────────────────── */
 .footer__logo-wrap {
-  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
 .footer__logo {
@@ -65,7 +65,7 @@
 .footer__logo-img--desktop {
   display: block;
   width: 100%;
-  max-width: 800px;
+  max-width: 1222px;
   height: auto;
 }
 
@@ -76,24 +76,20 @@
   height: auto;
 }
 
-/* ── Divider ────────────────────────────────────────── */
 .footer__divider {
   width: 100%;
   height: 1px;
   background: var(--color-border-dark);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-/* ── Bottom row ─────────────────────────────────────── */
 .footer__bottom {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: start;
   gap: 2rem;
-  margin-bottom: 2rem;
 }
 
-/* ── Nav links ──────────────────────────────────────── */
 .footer__nav {
   display: flex;
   flex-direction: row;
@@ -104,38 +100,53 @@
 
 .footer__nav-link {
   font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 22px;
+  color: var(--color-white);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
 
 .footer__nav-link:hover {
-  color: var(--color-white);
+  opacity: 0.75;
 }
 
-/* ── Business inquiries center ──────────────────────── */
 .footer__inquiries {
   text-align: center;
 }
 
 .footer__label {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 22px;
+  color: var(--color-white);
   white-space: nowrap;
 }
 
-/* ── Contact details ────────────────────────────────── */
 .footer__contact {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   align-items: flex-end;
+}
+
+.footer__phones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.footer__phone-sep {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 22px;
+  color: var(--color-white);
+  opacity: 0.6;
 }
 
 .footer__contact-link {
@@ -143,15 +154,20 @@
   align-items: center;
   gap: 0.45rem;
   font-family: var(--font-sans);
-  font-size: 0.825rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 22px;
+  color: var(--color-white);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: opacity var(--transition-fast);
+}
+
+.footer__contact-link--phone {
+  gap: 0;
 }
 
 .footer__contact-link:hover {
-  color: var(--color-white);
+  opacity: 0.75;
 }
 
 .footer__contact-icon-img {
@@ -159,48 +175,35 @@
   height: 14px;
   display: block;
   object-fit: contain;
-  opacity: 0.5;
+  opacity: 0.7;
   transition: opacity var(--transition-fast);
 }
 
 .footer__contact-link:hover .footer__contact-icon-img {
-  opacity: 0.95;
+  opacity: 1;
 }
 
-/* ── Copyright ──────────────────────────────────────── */
-.footer__copy {
-  border-top: 1px solid var(--color-border-dark);
-  padding-top: 1.25rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.25);
-}
-
-/* ── Responsive ─────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .footer {
-    padding-top: clamp(3rem, 8vw, 5rem);
+    min-height: auto;
+    padding-top: 3rem;
     padding-bottom: 2rem;
   }
 
-  .footer__bottom {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .footer__top {
+    margin-bottom: 2rem;
   }
 
-  .footer__inquiries {
-    text-align: left;
+  .footer__intro-heading {
+    font-size: 1.5rem;
   }
 
-  .footer__contact {
-    align-items: flex-start;
+  .footer__intro-body {
+    max-width: 355px;
   }
-}
 
-@media (max-width: 480px) {
-  .footer__nav {
-    gap: 1rem;
+  .footer__logo-wrap {
+    margin-bottom: 2.5rem;
   }
 
   .footer__logo-img--desktop {
@@ -209,5 +212,47 @@
 
   .footer__logo-img--mobile {
     display: block;
+    max-width: 280px;
+  }
+
+  .footer__bottom {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer__inquiries {
+    text-align: left;
+    order: 1;
+  }
+
+  .footer__contact {
+    align-items: flex-start;
+    order: 2;
+  }
+
+  .footer__phones {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .footer__phone-sep {
+    display: none;
+  }
+
+  .footer__contact-link--phone {
+    padding-left: 1.6rem;
+  }
+
+  .footer__nav {
+    order: 3;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__nav {
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 }

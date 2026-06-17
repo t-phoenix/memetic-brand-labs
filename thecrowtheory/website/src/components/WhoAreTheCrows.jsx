@@ -5,8 +5,6 @@ import './WhoAreTheCrows.css'
 const disciplines = [
   'Artists', 'Designers', 'Writers', 'Thinkers',
   'Engineers', 'Architects', 'Filmmakers', 'Musicians',
-  'Graphic Designers', 'Motion Designers', 'Type Designers', 'Industrial Designers',
-  'Interaction Designers', 'Product Designers', 'Fashion Designers', 'Sound Designers',
   'Makers', 'Investors', '& more',
 ]
 

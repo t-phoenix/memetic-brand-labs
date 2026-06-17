@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import Nav from './Nav'
 import './Hero.css'
 
 export default function Hero() {
@@ -12,6 +13,7 @@ export default function Hero() {
 
   return (
     <section className="hero" id="hero">
+      <Nav />
 
       {/* Full-bleed background video */}
       <div className="hero__video-wrap" aria-hidden="true">
@@ -39,7 +41,9 @@ export default function Hero() {
         {/* RIGHT COLUMN — Tagline & description */}
         <div className="hero__right">
           <h1 className="hero__tagline">
-            A Creative Ecosystem for Art, Design &amp; Innovation
+            A Creative Ecosystem for Art,{' '}
+            <br className="hero__tagline-br" />
+            Design &amp; Innovation
           </h1>
           <p className="hero__description">
             A multidisciplinary studio working across applied art, design systems

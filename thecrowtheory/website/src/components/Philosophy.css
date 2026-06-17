@@ -1,150 +1,113 @@
-/* ── Philosophy Section ─────────────────────────────── */
+/* ── Philosophy Section — Desktop: 1440×657 ── */
 
 .philosophy {
   position: relative;
   background-color: var(--color-white);
-  color: var(--color-black);
-  min-height: var(--section-min-height);
+  color: var(--color-text-on-light);
+  min-height: var(--philosophy-height);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 6vw, 5rem) 0;
+  padding: clamp(2rem, 4vw, 3rem) 0;
   overflow: hidden;
 }
 
-/* Background video style block removed */
-
-/* ── Graph paper grid ───────────────────────────────── */
 .philosophy__grid {
   position: absolute;
   inset: 0;
   z-index: 0;
   background-image: url('/svg/TCT_Landing Page_Grid_Dark.svg');
-  background-size: cover;
-  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(var(--grid-design-width) / 1440 * 100%) auto;
+  background-position: center top;
   pointer-events: none;
 }
 
-/* ── Inner layout ───────────────────────────────────── */
 .philosophy__inner {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(3rem, 6vw, 5rem);
-}
-
-/* ── Bracket row ────────────────────────────────────── */
-.philosophy__bracket-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1rem, 3vw, 3rem);
+  gap: clamp(2rem, 4vw, 3rem);
   width: 100%;
 }
 
-/* ── Side labels ────────────────────────────────────── */
-.philosophy__labels {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.philosophy__labels span {
-  font-family: var(--font-sans);
-  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
-  font-weight: 500;
-  color: var(--color-black);
-  letter-spacing: -0.01em;
-  line-height: 1.5;
-}
-
-.philosophy__labels--left {
-  text-align: right;
-}
-
-.philosophy__labels--right {
-  text-align: left;
-}
-
-/* ── Center block ───────────────────────────────────── */
-.philosophy__center {
+.philosophy__visual {
   width: 100%;
-  display: block;
+  max-width: 1154px;
+  margin-inline: auto;
 }
 
-.philosophy__video-element {
+.philosophy__animation {
   width: 100%;
-  max-width: 100%;
   height: auto;
-  aspect-ratio: 1920 / 800;
   display: block;
-  mix-blend-mode: multiply;
+  aspect-ratio: 1920 / 800;
+  object-fit: contain;
 }
 
-/* ── Tagline ────────────────────────────────────────── */
 .philosophy__tagline-wrap {
-  text-align: left;
-  max-width: 640px;
   width: 100%;
-}
-
-@media (min-width: 1025px) {
-  .philosophy__tagline-wrap {
-    margin-left: auto;
-    margin-right: 0;
-    max-width: 540px;
-  }
+  max-width: 568px;
+  margin-left: auto;
+  margin-right: 0;
+  text-align: left;
 }
 
 .philosophy__tagline {
-  font-family: var(--font-sans);
-  font-size: clamp(1.3rem, 2.8vw, 2rem);
-  font-weight: 500;
-  color: var(--color-black);
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  margin-bottom: 1.25rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-heading-size);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--color-text-on-light);
+  line-height: normal;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
 }
 
 .philosophy__body {
   font-family: var(--font-sans);
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: var(--text-body-size);
   font-weight: 300;
-  color: rgba(0, 0, 0, 0.65);
-  line-height: 1.75;
+  color: var(--color-text-on-light);
+  line-height: var(--text-body-leading);
   max-width: 100%;
 }
 
-/* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 768px) {
   .philosophy {
-    padding: clamp(3rem, 8vw, 4rem) 0;
+    min-height: auto;
+    padding: clamp(3rem, 10vw, 4.5rem) 0;
+    align-items: center;
   }
 
-  .philosophy__bracket-row {
-    flex-direction: column;
-    gap: 1.5rem;
+  .philosophy__inner {
+    gap: clamp(2rem, 6vw, 2.75rem);
   }
 
-  .philosophy__labels {
-    flex-direction: row;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+  .philosophy__visual {
+    max-width: none;
+    margin-inline: calc(-1 * var(--page-padding));
+    width: calc(100% + 2 * var(--page-padding));
   }
 
-  .philosophy__labels--left,
-  .philosophy__labels--right {
-    text-align: center;
+  .philosophy__animation {
+    aspect-ratio: 1920 / 800;
+    max-height: none;
   }
 
-  .philosophy__brace {
-    font-size: 3rem;
+  .philosophy__tagline-wrap {
+    margin-inline: 0;
+    max-width: 100%;
   }
 
-  .philosophy__center {
-    gap: 0.75rem;
+  .philosophy__tagline {
+    max-width: 321px;
+    margin-bottom: 0.875rem;
+  }
+
+  .philosophy__body {
+    max-width: 367px;
   }
 }

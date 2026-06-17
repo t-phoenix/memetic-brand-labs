@@ -80,7 +80,7 @@ const pillars = [
     kicker: 'Product Development',
     subtitle: 'Problem Solving',
     description:
-      'New products and design-led solutions for existing and emerging problems — physical, digital, licensable, or proprietary.',
+      'New products and design led solutions for existing and emerging problems — physical, digital, licensable or proprietary.',
   },
   {
     id: 'brand-ownership',
@@ -88,14 +88,14 @@ const pillars = [
     kicker: 'Brand Ownership',
     subtitle: 'Brand Creation',
     description:
-      'Brands built as long-term ventures, with equity participation where design, strategy & execution drive value creation.',
+      'Brands built as long term ventures, with equity participation where design, strategy & execution drive value creation.',
   },
 ]
 
 export default function Capabilities() {
   const sectionRef = useRef(null)
   useScrollReveal(sectionRef)
-  const [expandedCol, setExpandedCol] = useState(null)
+  const [expandedCol, setExpandedCol] = useState('systems')
 
   return (
     <section className="capabilities" id="capabilities" ref={sectionRef}>
@@ -107,13 +107,22 @@ export default function Capabilities() {
         <div className="container capabilities__content">
           <div className="capabilities__header reveal">
             <h2 className="capabilities__heading">
-              The <em className="script capabilities__crows">crows</em> are capable of
+              The{' '}
+              <img
+                src="/svg/TCT_Landing Page_Crows_W.svg"
+                alt="crows"
+                className="capabilities__crows-img"
+              />{' '}
+              are capable of
             </h2>
             <p className="capabilities__intro reveal reveal-delay-2">
-              Observe, Adapt, and Build with purpose. Inspired by that intelligence,{' '}
-              <span className="script capabilities__intro-script">thecrowtheory</span> was built on a belief that great design happensthe
-              same way by looking deeply, working collectively, and making
-              things that last.
+              Observe, Adapt and Build with purpose. Inspired by that intelligence,{' '}
+              <img
+                src="/svg/TCT_Landing Page_TCT_H Logo.svg"
+                alt="the crow theory"
+                className="capabilities__intro-logo"
+              />{' '}
+              was built on a belief that great design happens the same way by looking deeply, working collectively and making things that last.
             </p>
           </div>
 
@@ -142,11 +151,12 @@ export default function Capabilities() {
               </div>
               <p className="capabilities__col-desc">{col.description}</p>
               
-              <button 
-                className="capabilities__know-more mobile-only"
+              <button
+                type="button"
+                className="capabilities__toggle-link mobile-only"
                 onClick={() => setExpandedCol(expandedCol === col.id ? null : col.id)}
               >
-                {expandedCol === col.id ? 'Show less' : 'Know more'}
+                {expandedCol === col.id ? 'Show less...' : 'Show more...'}
               </button>
 
               <div className={`capabilities__services ${expandedCol === col.id ? 'capabilities__services--open' : ''}`}>
@@ -170,7 +180,7 @@ export default function Capabilities() {
             <div className="build-beyond__header reveal">
               <h2 className="build-beyond__heading">Build Beyond Client Work</h2>
               <p className="build-beyond__intro reveal reveal-delay-2">
-                We also develop original products, concepts, and ventures of our own.<br />
+                We also develop original products, concepts and ventures of our own.
                 Through product development and selective brand partnerships.
               </p>
             </div>

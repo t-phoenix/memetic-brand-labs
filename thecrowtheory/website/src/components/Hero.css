@@ -1,40 +1,18 @@
 /* ══════════════════════════════════════════════════════════
-   HERO — pixel-perfect match to TCT_Landing Page_Desk.pdf
-   ══════════════════════════════════════════════════════════
-
-   DESIGN MEASUREMENTS (from 3000×800 crop of the PDF):
-   ─────────────────────────────────────────────────────────
-   Total page width  ≈ 3000px (design canvas)
-   Hero height       ≈ 380px out of 800px crop
-     → on a 16:9 screen that's ≈ 47-52vh  (compact banner)
-
-   Logo block:
-     Left edge offset  ≈ 290px / 3000 = ~10% (matches container padding)
-     Logo block width  ≈ 1100px / 3000 = ~37% of page
-     "the"  height     ≈  90px → / 800 × 100 = 11vh ≈ 4.5vw at 16:9
-     "crow" height     ≈ 235px → / 800 × 100 = 29vh ≈ 12vw at 16:9
-     "theory" height   ≈  90px → / 800 × 100 = 11vh ≈ 4.5vw (same as "the")
-
-   Right text block:
-     Start at ≈ 1450px from left = ~48% of page
-     Tagline "A Creative Ecosystem…" → bold, ~1.7vw
-     Body copy → monospace, ~0.9vw
-
-   Content is vertically CENTRED inside the hero banner.
+   HERO — Desktop: 1440×816 | Mobile: 430×962
    ══════════════════════════════════════════════════════════ */
 
-/* ── Section ─────────────────────────────────────────── */
 .hero {
   position: relative;
   width: 100%;
   background-color: #0a0d16;
-  min-height: var(--section-min-height);
+  min-height: var(--hero-height);
+  height: var(--hero-height);
   display: flex;
-  align-items: center; /* vertically centre all content */
+  align-items: center;
   overflow: hidden;
 }
 
-/* ── Video ───────────────────────────────────────────── */
 .hero__video-wrap {
   position: absolute;
   inset: 0;
@@ -45,51 +23,29 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%; /* show more of the top where crows fly */
+  object-position: center 30%;
 }
 
-/* Dark navy overlay matching the design's deep indigo-navy tone */
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(8, 11, 22, 0.50);
+  background: rgba(8, 11, 22, 0.35);
 }
 
-/* ── Content row ─────────────────────────────────────── */
 .hero__content {
   position: relative;
   z-index: 1;
-  /* Logo SVG viewBox: 500×365 — "theory" caps begin at y≈222 */
-  --hero-logo-width: clamp(280px, 40vw, 580px);
-  --hero-logo-height-ratio: 0.73;   /* 365 / 500 */
-  --hero-theory-top-ratio: 0.608;   /* 222 / 365 */
+  --hero-logo-width: clamp(260px, 34.72vw, 500px);
+  --hero-logo-height-ratio: 0.73;
+  --hero-theory-top-ratio: 0.608;
   display: grid;
   grid-template-columns: var(--hero-logo-width) 1fr;
   align-items: start;
-  column-gap: clamp(3rem, 9vw, 8.5rem);
-  padding-top: clamp(2.5rem, 5vh, 4.5rem);
-  padding-bottom: clamp(2.5rem, 5vh, 4.5rem);
+  column-gap: clamp(2rem, 4.86vw, 70px);
+  padding-top: clamp(4rem, 17.36vw, 250px);
+  padding-bottom: clamp(2rem, 8.33vw, 120px);
 }
 
-/* ══════════════════════════════════════════════════════════
-   LOGO WORDMARK
-   ══════════════════════════════════════════════════════════
-
-   All three words are display-block, stacked vertically.
-   Each word is left-aligned.
-
-   Font choices:
-     "the"    → DM Sans ExtraBold (800) — matches the rounded
-                 grotesque in the design
-     "crow"   → Caveat Bold italic — closest web match to the
-                 thick brush-script used in the design
-     "theory" → DM Sans ExtraBold (800) — same as "the"
-
-   Size ratios (from pixel measurements):
-     "the"    ≈ 4.5vw  (90px / ~2000px effective width)
-     "crow"   ≈ 12vw   (235px / ~2000px)
-     "theory" ≈ 4.5vw  (90px / ~2000px)
-   ══════════════════════════════════════════════════════════ */
 .hero__logo {
   width: var(--hero-logo-width);
   max-width: 100%;
@@ -106,52 +62,44 @@
   display: block;
 }
 
-.hero__grid {
-  position: absolute;
-  inset: 0;
-  background-image: url('/svg/TCT_Landing Page_Grid_Dark.svg');
-  background-size: cover;
-  background-position: center;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ── Right Text — top aligns with "theory" row in logo SVG ── */
 .hero__right {
-  max-width: 30rem;
+  max-width: 568px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(0.625rem, 0.9vw, 0.875rem);
-  /* Offset = logo rendered height × theory-start ratio */
+  gap: 1rem;
   padding-top: calc(
     var(--hero-logo-width) * var(--hero-logo-height-ratio) * var(--hero-theory-top-ratio)
   );
 }
 
 .hero__tagline {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(1.0625rem, 1.7vw, 1.5rem);
-  line-height: 1.15;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--text-heading-size);
+  line-height: normal;
   color: #ffffff;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   margin: 0;
   text-align: left;
+}
+
+.hero__tagline-br {
+  display: none;
 }
 
 .hero__description {
   font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
-  line-height: 1.5;
+  font-weight: 300;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
   color: #ffffff;
   margin: 0;
-  max-width: 28rem;
+  max-width: 568px;
   text-align: left;
 }
 
-/* ── Mobile Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
   .hero {
     align-items: flex-end;
@@ -159,36 +107,35 @@
 
   .hero__content {
     grid-template-columns: 1fr;
-    row-gap: 1.75rem;
-    padding-top: clamp(2.5rem, 8vw, 4rem);
-    padding-bottom: clamp(2.5rem, 8vw, 4rem);
+    row-gap: 1.5rem;
+    padding-top: clamp(5rem, 20vw, 6.5rem);
+    padding-bottom: clamp(2.5rem, 10vw, 3.5rem);
   }
 
   .hero__logo {
-    width: min(72%, 320px);
+    width: min(91%, 390px);
     max-width: none;
   }
 
   .hero__right {
     max-width: 100%;
     padding-top: 0;
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .hero__tagline {
-    font-size: clamp(1rem, 4.5vw, 1.2rem);
-    line-height: 1.4;
+    font-size: var(--text-heading-size);
+    line-height: normal;
+    max-width: 380px;
+  }
+
+  .hero__tagline-br {
+    display: block;
   }
 
   .hero__description {
-    font-size: clamp(0.8125rem, 3.4vw, 0.9375rem);
-    line-height: 1.6;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero__logo {
-    width: min(85%, 300px);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-leading);
+    max-width: 364px;
   }
 }

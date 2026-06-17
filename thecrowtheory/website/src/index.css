@@ -17,11 +17,13 @@ html {
 }
 
 body {
-  font-family: 'DM Sans', 'Inter', sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
   background-color: #0e0e0e;
   color: #ffffff;
   overflow-x: hidden;
-  line-height: 1.6;
 }
 
 /* ── Design Tokens ──────────────────────────────────── */
@@ -51,9 +53,16 @@ body {
   --grid-bg-on-light:        url('/svg/TCT_Landing%20Page_Grid_Dark.svg');
   --grid-bg-on-dark:         url('/svg/TCT_Landing%20Page_Grid_White.svg');
 
-  /* Typography */
-  --font-script:  'Caveat', cursive;
-  --font-sans:    'DM Sans', 'Inter', sans-serif;
+  /* Typography — Figma: Inter Tight Regular (headings), Inter Light (body) */
+  --font-script:       'Caveat', cursive;
+  --font-sans:         'Inter', system-ui, sans-serif;
+  --font-heading:      'Inter Tight', 'Inter', system-ui, sans-serif;
+  --text-heading-size: 1.5rem;   /* 24px */
+  --text-body-size:    1rem;     /* 16px */
+  --text-body-leading: 22px;
+  --text-nav-size:     0.875rem; /* 14px */
+  --text-nav-leading:  1.125rem; /* 18px */
+  --color-text-on-light: #0d0e1a;
 
   /* Spacing */
   --space-xs:  0.5rem;
@@ -76,11 +85,26 @@ body {
 
   /* Max content width */
   --max-width: 1440px;
-  --page-padding: clamp(1.5rem, 9vw, 130px);
+  --page-padding: clamp(1.25rem, 8.4vw, 121px);
 
-  /* Full viewport section height (dvh accounts for mobile browser chrome) */
-  --section-min-height: 100vh;
-  --section-min-height: 100dvh;
+  /* Figma Desktop - 1 section heights (1440px canvas) */
+  --hero-height: clamp(480px, 56.67vw, 816px);
+  --philosophy-height: clamp(400px, 45.625vw, 657px);
+  --capabilities-height: clamp(900px, 103.47vw, 1490px);
+  --who-crows-height: clamp(320px, 28.82vw, 415px);
+  --footer-height: clamp(400px, 39.58vw, 570px);
+}
+
+@media (max-width: 768px) {
+  :root {
+    /* Figma Mobile - 1 (430px canvas) */
+    --page-padding: 24px;
+    --hero-height: clamp(560px, 224vw, 962px);
+    --philosophy-height: auto;
+    --capabilities-height: auto;
+    --who-crows-height: auto;
+    --footer-height: auto;
+  }
 }
 
 /* ── Scrollbar ──────────────────────────────────────── */
