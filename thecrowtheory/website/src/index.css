@@ -64,6 +64,12 @@ body {
   --text-nav-leading:  1.125rem; /* 18px */
   --color-text-on-light: #0d0e1a;
 
+  /* Nav — Figma Group 69 (desktop) / Group 70 (mobile) */
+  --nav-padding-top:   clamp(24px, 2.71vw, 39px);
+  --nav-logo-width:    clamp(118px, 10.42vw, 150px);
+  --nav-logo-height:   clamp(18px, 1.67vw, 24px);
+  --nav-link-gap:      clamp(1.5rem, 2.78vw, 2.5rem); /* 40px @ 1440 */
+
   /* Spacing */
   --space-xs:  0.5rem;
   --space-sm:  1rem;
@@ -99,6 +105,9 @@ body {
   :root {
     /* Figma Mobile - 1 (430px canvas) */
     --page-padding: 24px;
+    --nav-padding-top: 29px;
+    --nav-logo-width: 118px;
+    --nav-logo-height: 18px;
     --hero-height: clamp(560px, 224vw, 962px);
     --philosophy-height: auto;
     --capabilities-height: auto;

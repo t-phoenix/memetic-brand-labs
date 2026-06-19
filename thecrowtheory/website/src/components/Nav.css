@@ -1,4 +1,4 @@
-/* ── Site navigation — Desktop: Group 69 | Mobile: Group 70 ── */
+/* ── Site navigation — Figma Group 69 (desktop) / Group 70 (mobile) ── */
 
 .site-nav {
   position: absolute;
@@ -12,8 +12,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 72px;
-  padding-block: 0.75rem;
+  padding-top: var(--nav-padding-top);
+  padding-bottom: 0;
 }
 
 .site-nav__logo {
@@ -21,32 +21,36 @@
   line-height: 0;
   position: relative;
   z-index: 3;
+  flex-shrink: 0;
 }
 
 .site-nav__logo-img {
   display: block;
-  width: 165px;
-  height: auto;
+  width: var(--nav-logo-width);
+  height: var(--nav-logo-height);
+  object-fit: contain;
+  object-position: left center;
 }
 
 .site-nav__menu-btn {
   display: none;
   position: relative;
   z-index: 3;
-  width: 48px;
-  height: 48px;
-  margin-right: -8px;
+  width: 40px;
+  height: 40px;
+  margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .site-nav__menu-icon,
 .site-nav__menu-icon::before,
 .site-nav__menu-icon::after {
   display: block;
-  width: 22px;
+  width: 19px;
   height: 2px;
   background: #ffffff;
   border-radius: 1px;
@@ -65,11 +69,11 @@
 }
 
 .site-nav__menu-icon::before {
-  top: -6px;
+  top: -4px;
 }
 
 .site-nav__menu-icon::after {
-  top: 6px;
+  top: 4px;
 }
 
 .site-nav--open .site-nav__menu-icon {
@@ -89,7 +93,7 @@
 .site-nav__links {
   display: flex;
   align-items: center;
-  gap: clamp(1.5rem, 2.5vw, 2.5rem);
+  gap: var(--nav-link-gap);
 }
 
 .site-nav__links--desktop {
@@ -103,11 +107,12 @@
 .site-nav__link {
   font-family: var(--font-sans);
   font-size: var(--text-nav-size);
-  font-weight: 400;
+  font-weight: 300;
+  font-style: normal;
   line-height: var(--text-nav-leading);
   color: #ffffff;
   text-decoration: none;
-  letter-spacing: -0.01em;
+  white-space: nowrap;
   transition: opacity var(--transition-fast);
 }
 
@@ -120,16 +125,6 @@
 }
 
 @media (max-width: 768px) {
-  .site-nav__inner {
-    min-height: 60px;
-    padding-block: 0.875rem;
-  }
-
-  .site-nav__logo-img {
-    width: 140px;
-    height: auto;
-  }
-
   .site-nav__menu-btn {
     display: inline-flex;
     align-items: center;
@@ -147,7 +142,7 @@
     top: 0;
     left: 0;
     right: 0;
-    padding-top: 72px;
+    padding-top: calc(var(--nav-padding-top) + var(--nav-logo-height) + 1rem);
     padding-bottom: 1.5rem;
     background: linear-gradient(180deg, rgba(8, 11, 22, 0.97) 0%, rgba(8, 11, 22, 0.88) 100%);
     backdrop-filter: blur(8px);
@@ -175,11 +170,10 @@
 
   .site-nav__links--mobile .site-nav__link {
     width: 100%;
-    padding: 1rem 0;
-    font-family: var(--font-sans);
-    font-size: 1.125rem;
-    font-weight: 400;
-    line-height: 1.35;
+    padding: 0.875rem 0;
+    font-size: var(--text-nav-size);
+    font-weight: 300;
+    line-height: var(--text-nav-leading);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
