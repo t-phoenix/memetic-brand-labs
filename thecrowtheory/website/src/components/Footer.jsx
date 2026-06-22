@@ -53,7 +53,7 @@ export default function Footer() {
             Instagram
           </a>
           <a
-            href="https://linkedin.com/company/thecrowtheory"
+            href="https://www.linkedin.com/company/the-crow-theory/"
             target="_blank"
             rel="noopener noreferrer"
             className="footer__nav-link"
