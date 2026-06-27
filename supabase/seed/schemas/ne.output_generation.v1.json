@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["simple_explanation", "positioning", "messaging_hook", "memetic_narrative_angle"],
+  "properties": {
+    "simple_explanation": { "type": "string" },
+    "positioning": { "type": "string" },
+    "messaging_hook": { "type": "string" },
+    "memetic_narrative_angle": { "type": "string" }
+  }
+}

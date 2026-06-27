@@ -1,0 +1,27 @@
+name: Narrative Engine CI
+
+on:
+  push:
+    paths:
+      - 'narrative-engine-api/**'
+      - 'supabase/**'
+  pull_request:
+    paths:
+      - 'narrative-engine-api/**'
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: narrative-engine-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: narrative-engine-api/package-lock.json
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm test

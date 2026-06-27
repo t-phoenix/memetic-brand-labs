@@ -1,0 +1,636 @@
+[
+  {
+    "pattern_type": "failure",
+    "slug": "failure-too-technical",
+    "title": "Too technical",
+    "body": {
+      "problem": "Too technical",
+      "symptom": "Infra jargon in hero",
+      "result": "No adoption",
+      "fix": "Outcome-first messaging",
+      "before_example": "Infra jargon in hero",
+      "after_example": "Outcome-first messaging"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "too_technical"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-feature-first",
+    "title": "Feature-first messaging",
+    "body": {
+      "problem": "Feature-first messaging",
+      "symptom": "Lists features not benefits",
+      "result": "Low engagement",
+      "fix": "Lead with outcome",
+      "before_example": "Lists features not benefits",
+      "after_example": "Lead with outcome"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "feature_first"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-no-audience",
+    "title": "No audience clarity",
+    "body": {
+      "problem": "No audience clarity",
+      "symptom": "For everyone positioning",
+      "result": "Weak positioning",
+      "fix": "Name specific user",
+      "before_example": "For everyone positioning",
+      "after_example": "Name specific user"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "no_audience"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-category-confusion",
+    "title": "Category confusion",
+    "body": {
+      "problem": "Category confusion",
+      "symptom": "Unclear what bucket",
+      "result": "Investor confusion",
+      "fix": "State category plainly",
+      "before_example": "Unclear what bucket",
+      "after_example": "State category plainly"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "category_confusion"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-insider-language",
+    "title": "Insider language",
+    "body": {
+      "problem": "Insider language",
+      "symptom": "Crypto-native only",
+      "result": "No mainstream reach",
+      "fix": "Translate to mainstream",
+      "before_example": "Crypto-native only",
+      "after_example": "Translate to mainstream"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "insider_language"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-abstraction-overload",
+    "title": "Abstraction overload",
+    "body": {
+      "problem": "Abstraction overload",
+      "symptom": "Layers of abstraction",
+      "result": "Cognitive overload",
+      "fix": "One concrete outcome",
+      "before_example": "Layers of abstraction",
+      "after_example": "One concrete outcome"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "categories": [
+      "infrastructure",
+      "platform"
+    ],
+    "tags": [
+      "abstraction_overload"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-stripe",
+    "title": "Stripe",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Payments infrastructure simplified",
+      "after_example": "Stripe for payments",
+      "simplicity_move": "Payments infrastructure simplified"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "stripe"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-notion",
+    "title": "Notion",
+    "body": {
+      "problem": "Complex category",
+      "fix": "All-in-one workspace",
+      "after_example": "Notion for teams",
+      "simplicity_move": "All-in-one workspace"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "notion"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-figma",
+    "title": "Figma",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Design together",
+      "after_example": "Figma for product teams",
+      "simplicity_move": "Design together"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "figma"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-linear",
+    "title": "Linear",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Issue tracking reimagined",
+      "after_example": "Linear for eng teams",
+      "simplicity_move": "Issue tracking reimagined"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "linear"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-vercel",
+    "title": "Vercel",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Frontend cloud",
+      "after_example": "Vercel for web apps",
+      "simplicity_move": "Frontend cloud"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "vercel"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-phantom",
+    "title": "Phantom",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Simple Solana wallet",
+      "after_example": "Wallet for Solana",
+      "simplicity_move": "Simple Solana wallet"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "phantom"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-coinbase",
+    "title": "Coinbase",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Crypto made accessible",
+      "after_example": "Coinbase for crypto",
+      "simplicity_move": "Crypto made accessible"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "coinbase"
+    ]
+  },
+  {
+    "pattern_type": "success",
+    "slug": "success-aws",
+    "title": "AWS",
+    "body": {
+      "problem": "Complex category",
+      "fix": "Infra abstracted",
+      "after_example": "AWS for cloud",
+      "simplicity_move": "Infra abstracted"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "platform",
+      "tool"
+    ],
+    "tags": [
+      "success",
+      "aws"
+    ]
+  },
+  {
+    "pattern_type": "behaviour",
+    "slug": "behaviour-look-smart",
+    "title": "Look smart sharing",
+    "body": {
+      "mechanism": "People share to signal expertise"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "behaviour",
+      "look-smart"
+    ]
+  },
+  {
+    "pattern_type": "behaviour",
+    "slug": "behaviour-identity",
+    "title": "Identity signal",
+    "body": {
+      "mechanism": "Content reinforces who they are"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "behaviour",
+      "identity"
+    ]
+  },
+  {
+    "pattern_type": "behaviour",
+    "slug": "behaviour-simplify",
+    "title": "Simplify complexity",
+    "body": {
+      "mechanism": "Makes hard ideas feel easy"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "behaviour",
+      "simplify"
+    ]
+  },
+  {
+    "pattern_type": "behaviour",
+    "slug": "behaviour-beliefs",
+    "title": "Reinforce beliefs",
+    "body": {
+      "mechanism": "Aligns with what audience already believes"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "behaviour",
+      "beliefs"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-builder-culture",
+    "title": "Builder culture",
+    "body": {
+      "signal": "Builder culture"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "builder-culture"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-automation",
+    "title": "Automation",
+    "body": {
+      "signal": "Automation"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "automation"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-ownership",
+    "title": "Ownership",
+    "body": {
+      "signal": "Ownership"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "ownership"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-speed",
+    "title": "Speed",
+    "body": {
+      "signal": "Speed"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "speed"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-security",
+    "title": "Security",
+    "body": {
+      "signal": "Security"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "security"
+    ]
+  },
+  {
+    "pattern_type": "cultural_signal",
+    "slug": "signal-transparency",
+    "title": "Transparency",
+    "body": {
+      "signal": "Transparency"
+    },
+    "markets": [
+      "Web3",
+      "AI"
+    ],
+    "tags": [
+      "cultural",
+      "transparency"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-too-vague",
+    "title": "Too vague",
+    "body": {
+      "problem": "Too vague",
+      "symptom": "No concrete outcome",
+      "result": "Forgettable",
+      "fix": "One specific benefit"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "too_vague"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-no-differentiation",
+    "title": "No differentiation",
+    "body": {
+      "problem": "No differentiation",
+      "symptom": "Sounds like competitors",
+      "result": "Commodity",
+      "fix": "Name unique approach"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "no_differentiation"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-weak-hook",
+    "title": "Weak hook",
+    "body": {
+      "problem": "Weak hook",
+      "symptom": "No memorable line",
+      "result": "Low recall",
+      "fix": "One repeatable phrase"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "weak_hook"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-jargon-overload",
+    "title": "Jargon overload",
+    "body": {
+      "problem": "Jargon overload",
+      "symptom": "Acronyms everywhere",
+      "result": "Alienates buyers",
+      "fix": "Plain language"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "jargon_overload"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-no-outcome",
+    "title": "No outcome statement",
+    "body": {
+      "problem": "No outcome statement",
+      "symptom": "Features without change",
+      "result": "Why should I care?",
+      "fix": "What changes for user"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "no_outcome"
+    ]
+  },
+  {
+    "pattern_type": "failure",
+    "slug": "failure-broad-audience",
+    "title": "Audience too broad",
+    "body": {
+      "problem": "Audience too broad",
+      "symptom": "Everyone is target",
+      "result": "No one feels spoken to",
+      "fix": "Pick one user"
+    },
+    "markets": [
+      "Web3",
+      "AI",
+      "SaaS"
+    ],
+    "categories": [
+      "application",
+      "service"
+    ],
+    "tags": [
+      "broad_audience"
+    ]
+  }
+]

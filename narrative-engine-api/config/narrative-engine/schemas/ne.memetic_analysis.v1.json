@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["memetic_narrative_angle", "memetic_lite"],
+  "properties": {
+    "memetic_narrative_angle": { "type": "string" },
+    "memetic_lite": {
+      "type": "object",
+      "properties": {
+        "clarity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "relatability": { "type": "number", "minimum": 0, "maximum": 100 },
+        "identity_signal": { "type": "number", "minimum": 0, "maximum": 100 },
+        "analogy_potential": { "type": "number", "minimum": 0, "maximum": 100 },
+        "simplicity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "repeatability": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "qualitative": {
+      "type": "object",
+      "properties": {
+        "familiarity": { "type": "string" },
+        "contrast": { "type": "string" },
+        "shared_truth": { "type": "string" },
+        "participation_potential": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+**/node_modules/
+dist/
+*.log
+coverage/
+
+# Environment — commit .env.example only (placeholders, no secrets)
+.env*
+!.env.example
+!.env.*.example

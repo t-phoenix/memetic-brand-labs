@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["core_function", "target_user", "primary_outcome", "category", "complexity_level", "market", "messaging_problem"],
+  "properties": {
+    "core_function": { "type": "string" },
+    "target_user": { "type": "string" },
+    "primary_outcome": { "type": "string" },
+    "category": { "type": "string" },
+    "complexity_level": { "type": "string" },
+    "market": { "type": "string" },
+    "messaging_problem": { "type": "string" }
+  }
+}

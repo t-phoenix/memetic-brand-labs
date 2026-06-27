@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: Narrative Engine API
+  version: 1.0.0
+servers:
+  - url: https://api.memetic.adpr.work
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /v1/pricing-tiers:
+    get:
+      summary: List model tiers and USDC prices
+      responses:
+        '200':
+          description: Tier list
+  /v1/narrative-runs:
+    post:
+      summary: Create narrative run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [building, audience, challenge, differentiation]
+              properties:
+                building: { type: string }
+                audience: { type: string }
+                challenge: { type: string }
+                differentiation: { type: string }
+                website: { type: string }
+                model_tier: { type: string, enum: [fast, standard, quality] }
+      responses:
+        '201':
+          description: Run created
+  /v1/narrative-runs/{id}:
+    get:
+      summary: Run status (outputs if email verified)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Status
+  /v1/narrative-runs/{id}/outputs:
+    get:
+      summary: Get four cards
+      responses:
+        '200':
+          description: Cards + share URLs
+        '403':
+          description: Email required
+  /v1/narrative-runs/{id}/verify-email:
+    post:
+      summary: Trigger email verification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+  /v1/narrative-runs/rerun:
+    post:
+      summary: Paid rerun (x402)
+      responses:
+        '402':
+          description: Payment required
+        '201':
+          description: New run
+  /v1/results/{shareId}:
+    get:
+      summary: Public share payload
+  /v1/results/{shareId}/graphic.png:
+    get:
+      summary: Download share graphic
+  /v1/me/runs/{id}:
+    delete:
+      summary: GDPR delete run

@@ -7,12 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build
+dist/
+dist-ssr/
 *.local
 
-# Editor directories and files
+# Editor
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -23,6 +27,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Env
-.env
-.env.local
+# Environment — commit .env.example only (placeholders, no secrets)
+.env*
+!.env.example
+!.env.*.example
+
+# Vercel
+.vercel/

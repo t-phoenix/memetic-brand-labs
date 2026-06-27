@@ -1,0 +1,61 @@
+# OS & editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Dependencies — must never be committed (use package-lock.json instead)
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Environment files
+# Ignore all .env* then explicitly allow example templates for developers
+.env*
+!.env.example
+!.env.*.example
+
+# Extra explicit blocks (real secrets — never commit)
+.env
+.env.local
+.env.*.local
+
+# Keys & credentials
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Supabase CLI local state (project ref, pooler URLs)
+**/.temp/
+**/.branches/
+
+# Hosting local config
+.vercel/
+.render/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cursor / local agent state
+.cursor/
+
+# Optional: large internal design exports (uncomment to exclude)
+# ADPR-MBL Docs/*.docx
+# ADPR-MBL Docs/*.pdf

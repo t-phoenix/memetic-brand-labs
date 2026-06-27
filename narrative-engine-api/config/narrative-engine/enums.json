@@ -1,0 +1,27 @@
+{
+  "messaging_problem": [
+    { "key": "too_technical", "label": "Too technical" },
+    { "key": "too_vague", "label": "Too vague" },
+    { "key": "no_differentiation", "label": "No differentiation" },
+    { "key": "unclear_audience", "label": "Unclear audience" }
+  ],
+  "category": [
+    { "key": "infrastructure", "label": "Infrastructure" },
+    { "key": "platform", "label": "Platform" },
+    { "key": "tool", "label": "Tool" },
+    { "key": "application", "label": "Application" },
+    { "key": "service", "label": "Service" }
+  ],
+  "complexity_level": [
+    { "key": "high", "label": "High" },
+    { "key": "medium", "label": "Medium" },
+    { "key": "low", "label": "Low" }
+  ],
+  "market": [
+    { "key": "Web3", "label": "Web3" },
+    { "key": "AI", "label": "AI" },
+    { "key": "SaaS", "label": "SaaS" },
+    { "key": "Fintech", "label": "Fintech" },
+    { "key": "Other", "label": "Other" }
+  ]
+}

@@ -6,6 +6,8 @@ import TurnOrdinary from './TurnOrdinary';
 import WhatThisIsFor from './WhatThisIsFor';
 import WhoThisIsFor from './WhoThisIsFor';
 import WhatYouAchieve from './WhatYouAchieve';
+import NarrativeEngineCTA from './NarrativeEngineCTA';
+import { neDiscoveryEnabled } from '../lib/featureFlags';
 import HowItWorks from './HowItWorks';
 import FinalCTA from './FinalCTA';
 import adpr from '../assets/graphics/Adpr Memetic Brand Labs_adpr Logo.svg';
@@ -96,6 +98,7 @@ function LandingPage() {
             <WhatThisIsFor />
             <WhoThisIsFor />
             <WhatYouAchieve />
+            {/* {neDiscoveryEnabled && <NarrativeEngineCTA />} */}
             <HowItWorks />
             <FinalCTA />
             <div className="footer-logo" id="adpr">
