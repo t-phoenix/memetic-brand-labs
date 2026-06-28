@@ -1,3 +1,4 @@
+import './polyfills.js';
 import 'dotenv/config';
 import { loadEnv } from '../config/env.js';
 import { startWorker } from './queue.js';
