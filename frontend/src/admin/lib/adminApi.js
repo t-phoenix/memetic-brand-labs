@@ -1,4 +1,6 @@
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API =
+  import.meta.env.VITE_API_URL?.replace(/\/$/, '') ||
+  (import.meta.env.DEV ? 'http://localhost:3001' : '');
 const STORAGE_KEY = 'ne_admin_key';
 
 export function getAdminKey() {

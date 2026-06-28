@@ -1,4 +1,13 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+/** API base URL — must be set at build time on Vercel (VITE_API_URL). */
+export const API_URL =
+  import.meta.env.VITE_API_URL?.replace(/\/$/, '') ||
+  (import.meta.env.DEV ? 'http://localhost:3001' : '');
+
+if (import.meta.env.PROD && !API_URL) {
+  console.error(
+    'VITE_API_URL is not set. Add it in Vercel → Project Settings → Environment Variables, then redeploy.',
+  );
+}
 
 async function parseJsonResponse(res) {
   const text = await res.text();

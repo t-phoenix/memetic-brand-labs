@@ -27,6 +27,14 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 
+/** Comma-separated origins — strips whitespace and trailing slashes (CORS requires exact match). */
+export function parseCorsOrigins(corsOrigin: string): string[] {
+  return corsOrigin
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+}
+
 export function loadEnv(): Env {
   return envSchema.parse(process.env);
 }
