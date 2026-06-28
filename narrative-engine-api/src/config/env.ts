@@ -35,6 +35,20 @@ export function parseCorsOrigins(corsOrigin: string): string[] {
     .filter(Boolean);
 }
 
+/** Localhost Redis is never reachable on Render — treat as unset so the inline pipeline runs. */
+const LOCAL_REDIS_HOST =
+  /^(?:rediss?:\/\/)(?:localhost|127\.0\.0\.1|\[::1\]|::1)(?::\d+)?(?:\/\d+)?$/i;
+
+export function resolveRedisUrl(env: Env): string | undefined {
+  const url = env.REDIS_URL?.trim();
+  if (!url) return undefined;
+  if (env.NODE_ENV === 'production' && LOCAL_REDIS_HOST.test(url)) {
+    console.warn('[redis] Ignoring localhost REDIS_URL in production — using inline pipeline');
+    return undefined;
+  }
+  return url;
+}
+
 export function loadEnv(): Env {
   return envSchema.parse(process.env);
 }

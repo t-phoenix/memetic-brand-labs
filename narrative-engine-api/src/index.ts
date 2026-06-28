@@ -3,7 +3,7 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import { loadEnv, parseCorsOrigins } from './config/env.js';
+import { loadEnv, parseCorsOrigins, resolveRedisUrl } from './config/env.js';
 import { registerRoutes } from './routes/index.js';
 import { registerAdminRoutes } from './routes/admin.js';
 import { startWorker } from './jobs/queue.js';
@@ -29,7 +29,7 @@ async function main() {
   await registerRoutes(app, env);
   await registerAdminRoutes(app, env);
 
-  if (env.REDIS_URL && env.WORKER_MODE) {
+  if (resolveRedisUrl(env) && env.WORKER_MODE) {
     startWorker(env);
   }
 

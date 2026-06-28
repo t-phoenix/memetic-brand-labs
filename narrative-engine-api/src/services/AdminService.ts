@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Env } from '../config/env.js';
+import { resolveRedisUrl } from '../config/env.js';
 import { loadNarrativeConfig } from '../config/narrativeConfig.js';
 import { getQueue } from '../jobs/queue.js';
 
@@ -29,7 +30,8 @@ export class AdminService {
     }
 
     let redis: { status: string; mode: string; latency_ms?: number; error?: string };
-    if (!this.env.REDIS_URL) {
+    const redisUrl = resolveRedisUrl(this.env);
+    if (!redisUrl) {
       redis = { status: 'disabled', mode: 'inline' };
     } else {
       const redisStart = Date.now();
@@ -75,7 +77,7 @@ export class AdminService {
       .lt('created_at', tenMinAgo);
 
     let workerStatus: 'ok' | 'idle' | 'unknown' | 'inline';
-    if (!this.env.REDIS_URL) {
+    if (!redisUrl) {
       workerStatus = 'inline';
     } else if ((recentCompletions ?? 0) > 0) {
       workerStatus = 'ok';
@@ -87,7 +89,7 @@ export class AdminService {
 
     const worker = {
       status: workerStatus,
-      mode: this.env.REDIS_URL ? 'queue' : 'inline',
+      mode: redisUrl ? 'queue' : 'inline',
       recent_completions_10m: recentCompletions ?? 0,
       stuck_runs: stuckRuns ?? 0,
       worker_mode_env: this.env.WORKER_MODE,

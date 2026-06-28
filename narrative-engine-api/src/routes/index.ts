@@ -44,7 +44,7 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
       await db.from('user_sessions').update({ ip_hash: hashIp(ip, env.IP_HASH_SALT) }).eq('session_id', sid);
     }
 
-    await enqueueRun(env, runId);
+    enqueueRun(env, runId);
     return reply.code(201).send({ run_id: runId, status: 'pending', session_id: sid });
   });
 
@@ -138,7 +138,7 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
       });
     }
 
-    await enqueueRun(env, runId);
+    enqueueRun(env, runId);
     return reply.code(201).send({ run_id: runId, status: 'pending' });
   });
 
