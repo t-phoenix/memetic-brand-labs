@@ -1,7 +1,13 @@
 # Render Blueprint — Narrative Engine API + background worker
 # Apply: https://dashboard.render.com/blueprint/new?repo=<YOUR_GITHUB_REPO_URL>
 #
-# Redis: use Upstash free tier (cheapest) — paste REDIS_URL into both services.
+# If configuring manually in Dashboard (not Blueprint):
+#   Root Directory: narrative-engine-api
+#   Build Command:  npm ci && npm run build
+#   Start Command:  npm start
+#   Do NOT use yarn — this package uses package-lock.json (npm).
+#
+# Redis: Upstash free tier — same REDIS_URL on web + worker.
 # Docs: docs/narrative-engine/deployment.md
 
 services:
@@ -10,9 +16,10 @@ services:
     runtime: node
     plan: starter
     region: oregon
+    rootDir: narrative-engine-api
     healthCheckPath: /health
-    buildCommand: cd narrative-engine-api && npm ci && npm run build
-    startCommand: cd narrative-engine-api && npm start
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -50,8 +57,9 @@ services:
     runtime: node
     plan: starter
     region: oregon
-    buildCommand: cd narrative-engine-api && npm ci && npm run build
-    startCommand: cd narrative-engine-api && node dist/jobs/worker.js
+    rootDir: narrative-engine-api
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run worker
     envVars:
       - key: NODE_ENV
         value: production

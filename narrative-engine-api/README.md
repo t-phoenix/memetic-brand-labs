@@ -108,7 +108,7 @@ curl http://localhost:3001/v1/pricing-tiers
 | `npm run config:sync` | Push to Supabase (`prompt_templates`, `schema_registry`, `enum_definitions`) |
 | `npm run config:all` | Both — run after any prompt/schema change |
 
-`predev` and `prebuild` auto-run `config:generate`. Run `config:sync` when the remote DB should match.
+`predev` auto-runs `config:generate`. Run `config:sync` when the remote DB should match.
 
 ### 5. Run the frontend
 
@@ -155,11 +155,16 @@ Without Redis, the web service processes runs inline (works for low traffic, not
 
 ### 3. Render web service
 
-1. [Render Dashboard](https://dashboard.render.com) → **New → Blueprint** → connect this repo (or create Web Service manually).
-2. Set **Root directory** behaviour per `render.yaml`:
-   - Build: `cd narrative-engine-api && npm install && npm run build`
-   - Start: `cd narrative-engine-api && npm start`
-3. Add environment variables:
+| Setting | Value |
+|---------|-------|
+| Root Directory | `narrative-engine-api` |
+| Build Command | `npm ci --include=dev && npm run build` |
+| Start Command | `npm start` |
+
+Use **npm**, not yarn. Node **20** (see `.node-version`).
+
+1. [Render Dashboard](https://dashboard.render.com) → **New → Blueprint** → connect this repo (or create Web Service manually with settings above).
+2. Add environment variables:
 
 | Key | Value |
 |-----|-------|
@@ -182,7 +187,7 @@ Without Redis, the web service processes runs inline (works for low traffic, not
 
 Same env vars as web (at minimum `REDIS_URL`, `SUPABASE_*`, `OPENAI_API_KEY`).
 
-- Start command: `cd narrative-engine-api && node dist/jobs/worker.js`
+- Start command: `npm run worker`
 
 ### 5. Frontend (Vercel)
 

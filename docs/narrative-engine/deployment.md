@@ -109,6 +109,18 @@ https://dashboard.render.com/blueprint/new?repo=https://github.com/YOUR_ORG/meme
 
 Click **Apply**, then fill secrets marked `sync: false`.
 
+### Manual Dashboard settings (if not using Blueprint)
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `narrative-engine-api` |
+| Node version | **20** (`.node-version` in repo) |
+| Build Command | `npm ci --include=dev && npm run build` |
+| Start Command | `npm start` |
+| Package manager | **npm** — not yarn |
+
+`NODE_ENV=production` skips devDependencies on `npm ci`, so `--include=dev` is required for `tsc` during build. Runtime only needs `dist/` + production `node_modules`.
+
 ### Environment variables (web service)
 
 | Key | Value | Notes |
@@ -256,6 +268,8 @@ Redeploy Render only if **code** changed (orchestrator, routes). Config-only cha
 | 500 on create run | Missing `OPENAI_API_KEY`; check web service logs |
 | Duplicate job processing | Ensure only worker has `WORKER_MODE=true` |
 | Render cold start 30s+ | Free/starter spin-down; first request slow |
+| `Cannot find module dist/index.js` | Build did not run — set Root Dir `narrative-engine-api`, Build `npm ci && npm run build`, Start `npm start` |
+| Build fails `tsx: command not found` | Use current `package.json` (`build` is `tsc` only); redeploy |
 | Supabase RLS errors | API uses service role key — verify key is service_role not anon |
 
 ---
