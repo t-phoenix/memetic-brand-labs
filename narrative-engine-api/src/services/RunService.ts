@@ -25,7 +25,16 @@ export class RunService {
     });
   }
 
-  async createRun(input: NarrativeRunInput, opts: { userId?: string; isFirstRun?: boolean; paymentStatus?: string }) {
+  async createRun(
+    input: NarrativeRunInput,
+    opts: {
+      userId?: string;
+      isFirstRun?: boolean;
+      paymentStatus?: string;
+      runSource?: 'user' | 'admin_test' | 'admin_replay';
+      clientVersion?: string;
+    },
+  ) {
     const sessionId = input.session_id ?? randomUUID();
     await this.ensureSession(sessionId, {});
 
@@ -44,6 +53,8 @@ export class RunService {
         status: 'pending',
         current_stage: 'queued',
         progress_pct: 5,
+        run_source: opts.runSource ?? 'user',
+        client_version: opts.clientVersion ?? null,
       })
       .select('id')
       .single();

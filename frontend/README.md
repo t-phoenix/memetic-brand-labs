@@ -3,7 +3,8 @@
 React + Vite site for Memetic Brand Labs, including the **Narrative Engine (Beta)** UI.
 
 **Backend:** [narrative-engine-api/README.md](../narrative-engine-api/README.md)  
-**Database:** [supabase/README.md](../supabase/README.md)
+**Database:** [supabase/README.md](../supabase/README.md)  
+**Environments:** [docs/narrative-engine/environments.md](../docs/narrative-engine/environments.md)
 
 ---
 

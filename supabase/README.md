@@ -2,7 +2,20 @@
 
 Postgres schema, seeds, and storage for the Narrative Engine data platform.
 
-**Also read:** [narrative-engine-api/README.md](../narrative-engine-api/README.md) (API env + deploy)
+**Start here:** [DEV-PROD.md](./DEV-PROD.md) · [CLI-CHEATSHEET.md](./CLI-CHEATSHEET.md) (crash course + commands)  
+**Also:** [environments.md](../docs/narrative-engine/environments.md) · [narrative-engine-api/README.md](../narrative-engine-api/README.md)
+
+---
+
+## Dev vs production projects
+
+| | Development | Production |
+|---|-------------|------------|
+| **Supabase** | Dedicated dev project | Dedicated prod project |
+| **Keys in** | `narrative-engine-api/.env` | Render + Vercel only |
+| **Migrations** | `supabase db push` on dev first | `db push` after dev verified |
+
+Do **not** share one Supabase project between laptop and production. Use `run_source` on `engine_runs` to mark admin playground runs within an environment — not as a substitute for a separate database.
 
 ---
 
@@ -207,6 +220,7 @@ SELECT count(*) FROM pattern_entries WHERE is_active = true;
 | ---------------------------------------------- | ------------------------------ |
 | `migrations/20250620000001_initial_schema.sql` | All tables (Domains A–H)       |
 | `migrations/20250620000002_rls_views.sql`      | RLS policies + analytics views |
+| `migrations/20250628000001_run_source.sql`     | `run_source` on `engine_runs` (admin playground) |
 
 
 **Rule:** Never edit applied migrations. Add new timestamped files for changes.
@@ -238,6 +252,8 @@ SELECT count(*) FROM pattern_entries WHERE is_active = true;
 | Seed fails on duplicate rows | Re-running `seed.sql` may conflict — use a fresh DB or truncate seed tables first |
 | `Cannot find module .../narrative-engine-api/supabase/seed/load-patterns.ts` | Wrong path. From `narrative-engine-api/`, use `npm run seed:patterns` (not `npx tsx supabase/seed/...`) |
 | `Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY` | Create `narrative-engine-api/.env` with API URL + service role key, then `npm run seed:patterns` |
+| `Unrecognized flag: --sql` | SQL is positional: `supabase db query --linked "SELECT 1;"` — see [CLI-CHEATSHEET.md](./CLI-CHEATSHEET.md) |
+| `pgdelta-target-ca.crt ... ENOENT` after `db push` | CLI cache warning — migration often still succeeded; upgrade CLI with `brew upgrade supabase` |
 | `Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL` | `SUPABASE_URL` in `.env` is `postgresql://...` — change to `https://xxx.supabase.co` |
 
 

@@ -50,9 +50,13 @@ export class TelemetryService {
     latencyMs: number;
     promptTokens: number;
     completionTokens: number;
+    cachedPromptTokens?: number;
     inputCostUsd: number;
     outputCostUsd: number;
+    inputPricePerM: number;
+    outputPricePerM: number;
     pricingVersion: string;
+    costWarning?: string;
     requestIdProvider?: string;
     errorCode?: string;
   }) {
@@ -73,11 +77,13 @@ export class TelemetryService {
 
     if (error || !req) return;
 
+    const cached = params.cachedPromptTokens ?? 0;
     await this.db.from('llm_token_usage').insert({
       llm_request_id: req.id,
       prompt_tokens: params.promptTokens,
       completion_tokens: params.completionTokens,
       total_tokens: params.promptTokens + params.completionTokens,
+      cached_prompt_tokens: cached,
     });
 
     const totalCost = params.inputCostUsd + params.outputCostUsd;
@@ -86,8 +92,8 @@ export class TelemetryService {
       run_id: params.runId,
       provider: params.provider,
       model: params.model,
-      input_price_per_m: 0,
-      output_price_per_m: 0,
+      input_price_per_m: params.inputPricePerM,
+      output_price_per_m: params.outputPricePerM,
       input_cost_usd: params.inputCostUsd,
       output_cost_usd: params.outputCostUsd,
       total_cost_usd: totalCost,
@@ -100,6 +106,7 @@ export class TelemetryService {
       model: params.model,
       tokens: params.promptTokens + params.completionTokens,
       cost_usd: totalCost,
+      cost_warning: params.costWarning,
     });
   }
 
@@ -128,5 +135,17 @@ export class TelemetryService {
         total_cogs_usd: costUsd,
       });
     }
+  }
+}
+
+export async function syncRunRevenue(db: SupabaseClient, runId: string, amountUsdc: number) {
+  const { data: existing } = await db.from('run_cost_summaries').select('run_id').eq('run_id', runId).maybeSingle();
+  if (existing) {
+    await db
+      .from('run_cost_summaries')
+      .update({ revenue_usdc: amountUsdc, updated_at: new Date().toISOString() })
+      .eq('run_id', runId);
+  } else {
+    await db.from('run_cost_summaries').insert({ run_id: runId, revenue_usdc: amountUsdc });
   }
 }

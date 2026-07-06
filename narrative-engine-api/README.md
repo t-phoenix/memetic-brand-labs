@@ -2,7 +2,7 @@
 
 Node.js/TypeScript Fastify service for Memetic Brand Labs Narrative Engine.
 
-**Related docs:** [Supabase setup](../supabase/README.md) · [Frontend](../frontend/README.md) · [docs/narrative-engine/](../docs/narrative-engine/)
+**Related docs:** [Dev & prod guide](../supabase/DEV-PROD.md) · [Environments](../docs/narrative-engine/environments.md) · [Feature development](../docs/narrative-engine/feature-development.md) · [Supabase setup](../supabase/README.md) · [Frontend](../frontend/README.md)
 
 ---
 

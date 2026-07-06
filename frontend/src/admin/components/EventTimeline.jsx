@@ -1,22 +1,22 @@
-import { formatDate } from '../lib/formatters';
+import { formatDate, formatRelative } from '../lib/formatters';
+import { humanizeEventType } from '../lib/humanize';
+import JsonToggle from './JsonToggle.jsx';
 
 export default function EventTimeline({ events }) {
   if (!events?.length) {
-    return <p className="admin-card__meta">No events recorded.</p>;
+    return <p className="admin-card__meta">No events recorded for this run yet.</p>;
   }
 
   return (
     <ul className="admin-timeline">
       {events.map((ev) => (
         <li key={ev.id ?? `${ev.created_at}-${ev.event_type}`} className="admin-timeline__item">
-          <span className="admin-timeline__time">{formatDate(ev.created_at)}</span>
+          <span className="admin-timeline__time" title={formatDate(ev.created_at)}>
+            {formatRelative(ev.created_at)}
+          </span>
           <div>
-            <span className="admin-timeline__type">{ev.event_type}</span>
-            {ev.payload && Object.keys(ev.payload).length > 0 && (
-              <pre className="admin-json" style={{ marginTop: '0.5rem', maxHeight: '120px' }}>
-                {JSON.stringify(ev.payload, null, 2)}
-              </pre>
-            )}
+            <span className="admin-timeline__type">{humanizeEventType(ev.event_type, ev.payload)}</span>
+            <JsonToggle data={ev.payload} label="Show event details" />
           </div>
         </li>
       ))}

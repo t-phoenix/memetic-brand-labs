@@ -8,6 +8,16 @@ export interface ModelPricing {
   version: string;
 }
 
+export interface CostResult {
+  inputCostUsd: number;
+  outputCostUsd: number;
+  totalCostUsd: number;
+  version: string;
+  inputPricePerM: number;
+  outputPricePerM: number;
+  costWarning?: 'no_pricing_row';
+}
+
 export class CostCalculator {
   private cache: ModelPricing[] | null = null;
 
@@ -26,19 +36,43 @@ export class CostCalculator {
     return this.cache;
   }
 
-  async calculate(provider: string, model: string, promptTokens: number, completionTokens: number) {
+  async calculate(
+    provider: string,
+    model: string,
+    promptTokens: number,
+    completionTokens: number,
+    cachedPromptTokens = 0,
+  ): Promise<CostResult> {
     const pricing = await this.loadPricing();
     const rate = pricing.find((p) => p.provider === provider && p.model === model);
     if (!rate) {
-      return { inputCostUsd: 0, outputCostUsd: 0, totalCostUsd: 0, version: 'unknown' };
+      return {
+        inputCostUsd: 0,
+        outputCostUsd: 0,
+        totalCostUsd: 0,
+        version: 'unknown',
+        inputPricePerM: 0,
+        outputPricePerM: 0,
+        costWarning: 'no_pricing_row',
+      };
     }
-    const inputCostUsd = (promptTokens / 1_000_000) * rate.input_price_per_m;
+    const uncachedPrompt = Math.max(0, promptTokens - cachedPromptTokens);
+    const cachedRate = rate.input_price_per_m * 0.5;
+    const inputCostUsd =
+      (uncachedPrompt / 1_000_000) * rate.input_price_per_m +
+      (cachedPromptTokens / 1_000_000) * cachedRate;
     const outputCostUsd = (completionTokens / 1_000_000) * rate.output_price_per_m;
     return {
       inputCostUsd,
       outputCostUsd,
       totalCostUsd: inputCostUsd + outputCostUsd,
       version: rate.version,
+      inputPricePerM: rate.input_price_per_m,
+      outputPricePerM: rate.output_price_per_m,
     };
+  }
+
+  estimateFromTokenCount(provider: string, model: string, promptTokens: number, completionTokens: number) {
+    return this.calculate(provider, model, promptTokens, completionTokens, 0);
   }
 }

@@ -1,7 +1,7 @@
 # Narrative Engine — Architecture
 
 **Status:** Implemented (V1 Beta)  
-**Related:** [PRD](./PRD.md) · [TDD](./TDD.md) · [database-spec](./database-spec.md) · [deployment](./deployment.md) · [Vision doc](../../ADPR-MBL%20Docs/Narrative_Engine_Architecture_and_Vision.md)
+**Related:** [PRD](./PRD.md) · [TDD](./TDD.md) · [database-spec](./database-spec.md) · [supabase/DEV-PROD.md](../../supabase/DEV-PROD.md) · [environments](./environments.md) · [feature-development](./feature-development.md) · [deployment](./deployment.md) · [Vision doc](../../ADPR-MBL%20Docs/Narrative_Engine_Architecture_and_Vision.md)
 
 ---
 
@@ -319,12 +319,26 @@ erDiagram
 |--------|------|---------|
 | GET | `/health` | Service status + recent events |
 | GET | `/stats` | COGS, runs, tiers, daily rollups |
-| GET | `/runs` | Paginated run list |
+| GET | `/runs` | Paginated run list (`run_source`, status filters) |
 | GET | `/runs/:id` | Run detail |
-| GET | `/runs/:id/layers` | Full layer audit |
-| GET | `/llm-requests` | Per-run LLM log |
+| GET | `/runs/:id/layers` | Full pipeline DTO (layers, costs, events) |
+| GET | `/llm-requests` | Per-run LLM log (token + rate breakdown) |
+| GET | `/analytics/messaging-problems` | Aggregated problem tags |
+| GET | `/analytics/model-performance` | Model/tier performance |
+| GET | `/analytics/cogs-revenue` | Daily COGS vs revenue |
+| GET | `/analytics/failures` | Failed runs summary |
+| GET | `/reports/runs.csv` | Runs export |
+| GET | `/reports/costs.csv` | Cost export |
+| POST | `/playground/runs` | Create sandbox test run |
+| POST | `/playground/runs/:id/run` | Run full pipeline (test) |
+| POST | `/playground/runs/:id/layers/:layerKey/run` | Execute one layer |
+| POST | `/playground/runs/:id/layers/:layerKey/preview` | Dry-run layer (no persist) |
+| POST | `/playground/runs/:id/layers/:layerKey/retry` | Retry failed layer |
+| POST | `/playground/runs/:id/finalize` | Finalize test run |
 | GET | `/config` | Prompts, schemas, tiers |
 | GET | `/patterns` | Pattern library |
+
+Playground runs use `run_source = admin_test` and are excluded from revenue KPIs. See [admin-dashboard.md](./admin-dashboard.md).
 
 OpenAPI: [openapi.yaml](./openapi.yaml)
 
@@ -366,7 +380,7 @@ See [deployment.md](./deployment.md) for step-by-step setup.
 | Run progress | `engine_runs.progress_pct`, `current_stage` |
 | Pipeline trace | `run_events` (stage.entered, llm.completed, run.completed) |
 | Cost per run | `run_cost_summaries`, `llm_cost_events` |
-| Admin UI | `/admin` — status, runs, costs, config |
+| Admin UI | `/admin` — overview, runs, costs, insights, playground, config |
 | Smoke test | `narrative-engine-api/scripts/smoke-test.sh` |
 
 ---

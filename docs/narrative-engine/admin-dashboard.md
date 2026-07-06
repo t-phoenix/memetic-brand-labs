@@ -3,6 +3,37 @@
 **Status:** Implemented at `/admin` in `frontend/src/admin/`  
 **Audience:** Operators and engineers monitoring the Narrative Engine
 
+### Routes (implemented)
+
+| Path | Page |
+|------|------|
+| `/admin` | Status |
+| `/admin/overview` | KPIs, cost trend, messaging problems |
+| `/admin/runs` | Searchable run list with pipeline progress |
+| `/admin/runs/:id` | Pipeline, scores, results, timeline, costs, advanced |
+| `/admin/playground` | Create test runs, step-by-step layer control |
+| `/admin/playground/:id` | Run control for a test run |
+| `/admin/costs` | COGS vs revenue charts |
+| `/admin/insights` | Messaging, model performance, failures, CSV export |
+| `/admin/config` | Prompts, tiers, schemas |
+
+### New API endpoints (implemented)
+
+- `GET /v1/admin/analytics/messaging-problems`
+- `GET /v1/admin/analytics/model-performance`
+- `GET /v1/admin/analytics/cogs-revenue?days=30`
+- `GET /v1/admin/analytics/failures?days=30`
+- `GET /v1/admin/reports/runs.csv` / `costs.csv`
+- `POST /v1/admin/playground/runs` and layer/run/finalize routes
+
+### Database migration required
+
+Apply `supabase/migrations/20250628000001_run_source.sql` for `engine_runs.run_source` (`user` | `admin_test` | `admin_replay`).
+
+### Cost display
+
+LLM costs are **calculated from API token usage × `llm_model_pricing`**, labeled in UI as token-derived (not invoice amounts). Per-request rate snapshots are stored on `llm_cost_events`.
+
 ---
 
 ## Goals

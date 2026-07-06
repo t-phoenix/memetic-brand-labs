@@ -6,6 +6,7 @@ import { ShareService } from '../share/ShareService.js';
 import { enqueueRun } from '../jobs/queue.js';
 import { authOptional, requireAuth } from './auth.js';
 import { hashIp } from '../utils/hash.js';
+import { syncRunRevenue } from '../telemetry/TelemetryService.js';
 
 export async function registerRoutes(app: FastifyInstance, env: Env) {
   const db = getSupabase(env);
@@ -136,6 +137,7 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
         facilitator: env.X402_FACILITATOR_URL,
         status: 'confirmed',
       });
+      await syncRunRevenue(db, runId, env.RERUN_PRICE_USDC);
     }
 
     enqueueRun(env, runId);

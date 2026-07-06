@@ -75,5 +75,3 @@ export async function getPublicShare(shareId) {
   const res = await fetch(`${API_URL}/v1/results/${shareId}`);
   return parseJsonResponse(res);
 }
-
-export { API_URL };

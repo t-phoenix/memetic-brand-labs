@@ -2,6 +2,9 @@
 
 End-to-end guide: **Supabase** (database) · **Render** (API + worker) · **Upstash Redis** (queue) · **Vercel** (frontend).
 
+> **Canonical guide:** [supabase/DEV-PROD.md](../../supabase/DEV-PROD.md) — project ref, safe backend/DB workflow.  
+> **Local dev & staging:** [environments.md](./environments.md) · **Shipping features:** [feature-development.md](./feature-development.md)
+
 ---
 
 ## Architecture
@@ -321,6 +324,10 @@ cp frontend/.env.example frontend/.env
 
 ## Related docs
 
+- [Dev & prod guide](../../supabase/DEV-PROD.md)
+- [Environments (dev / staging / prod)](./environments.md)
+- [Feature development workflow](./feature-development.md)
+- [Root README](../../README.md)
 - [API README](../../narrative-engine-api/README.md)
 - [Frontend README](../../frontend/README.md)
 - [Supabase README](../../supabase/README.md)

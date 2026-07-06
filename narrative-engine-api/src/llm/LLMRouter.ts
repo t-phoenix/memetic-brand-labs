@@ -8,6 +8,7 @@ export interface LLMCompletionResult {
   content: string;
   promptTokens: number;
   completionTokens: number;
+  cachedPromptTokens: number;
   latencyMs: number;
   requestId?: string;
 }
@@ -43,6 +44,7 @@ export class LLMRouter {
         content: extractJson(content),
         promptTokens: res.usage.input_tokens,
         completionTokens: res.usage.output_tokens,
+        cachedPromptTokens: 0,
         latencyMs: Date.now() - start,
       };
     }
@@ -58,12 +60,18 @@ export class LLMRouter {
       temperature: 0.4,
     });
     const content = res.choices[0]?.message?.content ?? '{}';
+    const usage = res.usage;
+    const cached =
+      usage && 'prompt_tokens_details' in usage && usage.prompt_tokens_details
+        ? (usage.prompt_tokens_details as { cached_tokens?: number }).cached_tokens ?? 0
+        : 0;
     return {
       provider: 'openai',
       model,
       content: extractJson(content),
-      promptTokens: res.usage?.prompt_tokens ?? 0,
-      completionTokens: res.usage?.completion_tokens ?? 0,
+      promptTokens: usage?.prompt_tokens ?? 0,
+      completionTokens: usage?.completion_tokens ?? 0,
+      cachedPromptTokens: cached,
       latencyMs: Date.now() - start,
       requestId: res.id,
     };

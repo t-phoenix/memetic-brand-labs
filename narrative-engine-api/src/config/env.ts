@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  /** Logical deploy target — does not switch databases; use SUPABASE_URL per environment */
+  APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   PORT: z.coerce.number().default(3001),
   DATABASE_URL: z.string().optional(),
   SUPABASE_URL: z.string(),
@@ -23,6 +25,7 @@ const envSchema = z.object({
     .transform((v) => v === 'true'),
   SENTRY_DSN: z.string().optional(),
   STORAGE_BUCKET: z.string().default('share-graphics'),
+  ADMIN_PLAYGROUND_DAILY_LIMIT: z.coerce.number().default(50),
 });
 
 export type Env = z.infer<typeof envSchema>;

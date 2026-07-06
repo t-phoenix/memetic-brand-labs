@@ -19,6 +19,29 @@ import {
 } from '../types/index.js';
 import { sha256 } from '../utils/hash.js';
 import { getPromptForLayer, getSchema, getSchemaForLayer, formatSchemaInstruction } from '../config/narrativeConfig.js';
+import { layerIndex } from '../admin/layerSummary.js';
+
+export interface LayerExecuteOpts {
+  modelOverride?: string;
+  attemptReason?: 'initial' | 'admin_retry' | 'config_change';
+  skipShare?: boolean;
+}
+
+export interface RunContext {
+  runId: string;
+  run: { id: string; model_tier: string; run_source?: string; status: string };
+  input: {
+    building: string;
+    audience: string;
+    challenge: string;
+    differentiation: string;
+    website_url?: string | null;
+  };
+  routing: Record<string, string>;
+  inputVars: Record<string, string>;
+  layerOutputs: Record<string, Record<string, unknown>>;
+  tier: string;
+}
 
 export class PipelineOrchestrator {
   private readonly llm: LLMRouter;
@@ -42,12 +65,15 @@ export class PipelineOrchestrator {
   }
 
   async execute(runId: string): Promise<void> {
-    const started = Date.now();
-    await this.db
-      .from('engine_runs')
-      .update({ status: 'running', started_at: new Date().toISOString() })
-      .eq('id', runId);
+    await this.executeFull(runId);
+  }
 
+  async executeFull(runId: string, opts: LayerExecuteOpts = {}): Promise<void> {
+    await this.executeFromLayer(runId, 'interpretation', opts);
+    await this.finalizeRun(runId, opts);
+  }
+
+  async loadRunContext(runId: string): Promise<RunContext> {
     const { data: run } = await this.db.from('engine_runs').select('*').eq('id', runId).single();
     const { data: input } = await this.db.from('run_inputs').select('*').eq('run_id', runId).single();
     if (!run || !input) throw new Error('Run or input not found');
@@ -59,41 +85,76 @@ export class PipelineOrchestrator {
       .maybeSingle();
     const routing = (tier?.model_routing ?? { default: 'gpt-4o-mini' }) as Record<string, string>;
 
-    let websiteContext = '';
-    if (input.website_url) {
-      const extract = await extractHomepage(input.website_url, input.audience);
-      await this.db.from('website_extractions').insert({
-        run_id: runId,
-        url: input.website_url,
-        fetch_status: extract.fetch_status,
-        http_status: extract.http_status,
-        duration_ms: extract.duration_ms,
-        extracted: extract.extracted,
-        mismatch_flags: extract.mismatch_flags,
-      });
-      websiteContext = JSON.stringify(extract.extracted);
-      await this.telemetry.emit(runId, 'website.extracted', { status: extract.fetch_status });
-    }
+    const { data: website } = await this.db.from('website_extractions').select('extracted').eq('run_id', runId).maybeSingle();
+    const websiteContext = website?.extracted ? JSON.stringify(website.extracted) : '';
 
-    const layerOutputs: Record<string, Record<string, unknown>> = {};
+    const layerOutputs = await this.loadLayerOutputs(runId);
     const inputVars = {
       ...this.resolver.buildInputVars(input),
       website_context: websiteContext,
     };
 
-    for (const layerKey of LAYER_KEYS) {
-      const stage = STAGE_PROGRESS[layerKey];
-      await this.telemetry.enterStage(runId, layerKey, stage?.pct ?? 50);
-      const stageStart = Date.now();
+    return {
+      runId,
+      run: run as RunContext['run'],
+      input,
+      routing,
+      inputVars,
+      layerOutputs,
+      tier: run.model_tier,
+    };
+  }
 
-      const output = await this.runLayer(runId, layerKey, routing, inputVars, layerOutputs, run.model_tier);
-      layerOutputs[layerKey] = output;
+  async previewLayer(runId: string, layerKey: LayerKey) {
+    const ctx = await this.loadRunContext(runId);
+    const resolved = await this.resolvePrompts(runId, layerKey, ctx, { dryRun: true });
+    const model = this.llm.resolveModel(ctx.tier, layerKey, ctx.routing);
+    const estTokens = Math.ceil((resolved.system.length + resolved.user.length) / 4);
+    const estCost = await this.costs.estimateFromTokenCount('openai', model, estTokens, 512);
+    return {
+      layer_key: layerKey,
+      model,
+      system_prompt: resolved.system,
+      user_prompt: resolved.user,
+      estimated_input_tokens: estTokens,
+      estimated_cost_usd: estCost.totalCostUsd,
+    };
+  }
 
+  async executeLayer(runId: string, layerKey: LayerKey, opts: LayerExecuteOpts = {}): Promise<Record<string, unknown>> {
+    const ctx = await this.loadRunContext(runId);
+    const stage = STAGE_PROGRESS[layerKey];
+    await this.telemetry.enterStage(runId, layerKey, stage?.pct ?? 50);
+    const stageStart = Date.now();
+    try {
+      const output = await this.runLayer(runId, layerKey, ctx, opts);
       await this.telemetry.completeStage(runId, layerKey, Date.now() - stageStart);
+      await this.db
+        .from('engine_runs')
+        .update({ status: 'processing', current_stage: layerKey, progress_pct: stage?.pct ?? 50 })
+        .eq('id', runId);
+      return output;
+    } catch (err) {
+      await this.markFailed(runId, err);
+      throw err;
     }
+  }
 
-    const cards = this.buildCards(layerOutputs);
-    const showAnalogy = Boolean(layerOutputs.positioning?.analogy);
+  async executeFromLayer(runId: string, fromLayerKey: LayerKey, opts: LayerExecuteOpts = {}): Promise<void> {
+    await this.markRunning(runId);
+    await this.ensureWebsiteContext(runId);
+    const startIdx = layerIndex(fromLayerKey);
+    if (startIdx < 0) throw new Error(`Invalid layer: ${fromLayerKey}`);
+
+    for (let i = startIdx; i < LAYER_KEYS.length; i++) {
+      await this.executeLayer(runId, LAYER_KEYS[i], opts);
+    }
+  }
+
+  async finalizeRun(runId: string, opts: LayerExecuteOpts = {}): Promise<void> {
+    const ctx = await this.loadRunContext(runId);
+    const cards = this.buildCards(ctx.layerOutputs);
+    const showAnalogy = Boolean(ctx.layerOutputs.positioning?.analogy);
     const guard = this.guardrails.check(
       {
         clear_explanation: String(cards.clear_explanation),
@@ -103,6 +164,9 @@ export class PipelineOrchestrator {
       },
       showAnalogy,
     );
+
+    await this.db.from('run_outputs').delete().eq('run_id', runId);
+    await this.db.from('output_guardrail_events').delete().eq('run_id', runId);
 
     for (const ev of guard.events) {
       await this.db.from('output_guardrail_events').insert({
@@ -128,9 +192,14 @@ export class PipelineOrchestrator {
       });
     }
 
-    await this.share.createForRun(runId, String(cards.clear_explanation), String(cards.positioning));
+    const skipShare = opts.skipShare ?? ctx.run.run_source === 'admin_test';
+    if (!skipShare) {
+      await this.share.createForRun(runId, String(cards.clear_explanation), String(cards.positioning));
+    }
 
-    const duration = Date.now() - started;
+    const { data: runRow } = await this.db.from('engine_runs').select('started_at').eq('id', runId).single();
+    const startedMs = runRow?.started_at ? new Date(runRow.started_at).getTime() : Date.now();
+    const duration = Date.now() - startedMs;
     await this.db
       .from('engine_runs')
       .update({
@@ -142,19 +211,70 @@ export class PipelineOrchestrator {
       })
       .eq('id', runId);
 
-    await this.telemetry.emit(runId, 'run.completed', { duration_ms: duration });
+    await this.telemetry.emit(runId, 'run.completed', { finalized: true });
   }
 
-  private async runLayer(
+  private async markRunning(runId: string) {
+    await this.db
+      .from('engine_runs')
+      .update({ status: 'running', started_at: new Date().toISOString() })
+      .eq('id', runId);
+  }
+
+  private async markFailed(runId: string, err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    await this.db
+      .from('engine_runs')
+      .update({
+        status: 'failed',
+        failure_code: 'pipeline_error',
+        failure_detail: { message },
+      })
+      .eq('id', runId);
+    await this.telemetry.emit(runId, 'run.failed', { message }, 'system');
+  }
+
+  private async ensureWebsiteContext(runId: string) {
+    const { data: existing } = await this.db.from('website_extractions').select('id').eq('run_id', runId).maybeSingle();
+    if (existing) return;
+
+    const { data: input } = await this.db.from('run_inputs').select('website_url, audience').eq('run_id', runId).single();
+    if (!input?.website_url) return;
+
+    const extract = await extractHomepage(input.website_url, input.audience);
+    await this.db.from('website_extractions').insert({
+      run_id: runId,
+      url: input.website_url,
+      fetch_status: extract.fetch_status,
+      http_status: extract.http_status,
+      duration_ms: extract.duration_ms,
+      extracted: extract.extracted,
+      mismatch_flags: extract.mismatch_flags,
+    });
+    await this.telemetry.emit(runId, 'website.extracted', { status: extract.fetch_status });
+  }
+
+  private async loadLayerOutputs(runId: string): Promise<Record<string, Record<string, unknown>>> {
+    const { data: rows } = await this.db
+      .from('layer_outputs')
+      .select('layer_key, output, created_at')
+      .eq('run_id', runId)
+      .order('created_at', { ascending: true });
+
+    const out: Record<string, Record<string, unknown>> = {};
+    for (const row of rows ?? []) {
+      out[row.layer_key] = row.output as Record<string, unknown>;
+    }
+    return out;
+  }
+
+  private async resolvePrompts(
     runId: string,
     layerKey: LayerKey,
-    routing: Record<string, string>,
-    inputVars: Record<string, string>,
-    prior: Record<string, Record<string, unknown>>,
-    tier: string,
-  ): Promise<Record<string, unknown>> {
-    const attempt = await this.createLayerExecution(runId, layerKey);
-
+    ctx: RunContext,
+    _opts: { dryRun?: boolean; attemptId?: string } = {},
+  ) {
+    const prior = ctx.layerOutputs;
     const { data: dbPrompt } = await this.db
       .from('prompt_templates')
       .select('*')
@@ -182,6 +302,36 @@ export class PipelineOrchestrator {
         messaging_problem: String(interp.messaging_problem ?? ''),
       });
       patternsText = this.patterns.formatForPrompt(matched);
+    }
+
+    const vars = {
+      ...ctx.inputVars,
+      structured_output: JSON.stringify(prior.interpretation ?? prior.diagnostics ?? {}, null, 2),
+      patterns: patternsText,
+      prior_layers: JSON.stringify(prior, null, 2),
+    };
+
+    const system = `${this.resolver.resolve(prompt.system_prompt, vars)}\n\n${formatSchemaInstruction(schema)}`;
+    const user = this.resolver.resolve(prompt.user_prompt_template, vars);
+    return { system, user, schemaKey, schema, vars, patternsText };
+  }
+
+  private async runLayer(
+    runId: string,
+    layerKey: LayerKey,
+    ctx: RunContext,
+    opts: LayerExecuteOpts,
+  ): Promise<Record<string, unknown>> {
+    const attempt = await this.createLayerExecution(runId, layerKey, opts.attemptReason ?? 'initial');
+    const resolved = await this.resolvePrompts(runId, layerKey, ctx, { attemptId: attempt.id });
+
+    if (resolved.patternsText && (layerKey === 'diagnostics' || layerKey === 'memetic_analysis')) {
+      const interp = ctx.layerOutputs.interpretation ?? {};
+      const matched = await this.patterns.retrieve({
+        market: String(interp.market ?? ''),
+        category: String(interp.category ?? ''),
+        messaging_problem: String(interp.messaging_problem ?? ''),
+      });
       for (let i = 0; i < matched.length; i++) {
         await this.db.from('pattern_matches').insert({
           run_id: runId,
@@ -193,34 +343,24 @@ export class PipelineOrchestrator {
       }
     }
 
-    const vars = {
-      ...inputVars,
-      structured_output: JSON.stringify(prior.interpretation ?? prior.diagnostics ?? {}, null, 2),
-      patterns: patternsText,
-      prior_layers: JSON.stringify(prior, null, 2),
-    };
-
-    const system = `${this.resolver.resolve(prompt.system_prompt, vars)}\n\n${formatSchemaInstruction(schema)}`;
-    const user = this.resolver.resolve(prompt.user_prompt_template, vars);
-
     await this.db.from('layer_prompt_snapshots').insert({
       layer_execution_id: attempt.id,
-      system_prompt: system,
-      user_prompt: user,
-      variables_resolved: vars,
+      system_prompt: resolved.system,
+      user_prompt: resolved.user,
+      variables_resolved: resolved.vars,
     });
 
-    const model = this.llm.resolveModel(tier, layerKey, routing);
-    const result = await this.llm.complete(model, system, user);
+    const model = opts.modelOverride ?? this.llm.resolveModel(ctx.tier, layerKey, ctx.routing);
+    const result = await this.llm.complete(model, resolved.system, resolved.user);
     const parsed = JSON.parse(result.content) as Record<string, unknown>;
-
-    const validation = this.validator.validate(schemaKey, schema as object, parsed);
+    const validation = this.validator.validate(resolved.schemaKey, resolved.schema as object, parsed);
 
     const cost = await this.costs.calculate(
       result.provider,
       result.model,
       result.promptTokens,
       result.completionTokens,
+      result.cachedPromptTokens,
     );
 
     await this.telemetry.recordLlmRequest({
@@ -232,16 +372,19 @@ export class PipelineOrchestrator {
       latencyMs: result.latencyMs,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
+      cachedPromptTokens: result.cachedPromptTokens,
       inputCostUsd: cost.inputCostUsd,
       outputCostUsd: cost.outputCostUsd,
+      inputPricePerM: cost.inputPricePerM,
+      outputPricePerM: cost.outputPricePerM,
       pricingVersion: cost.version,
+      costWarning: cost.costWarning,
       requestIdProvider: result.requestId,
       errorCode: validation.valid ? undefined : 'schema_invalid',
     });
 
     if (!validation.valid) {
-      const detail = JSON.stringify(validation.errors);
-      throw new Error(`Schema validation failed for ${layerKey}: ${detail}`);
+      throw new Error(`Schema validation failed for ${layerKey}: ${JSON.stringify(validation.errors)}`);
     }
 
     await this.db
@@ -258,7 +401,7 @@ export class PipelineOrchestrator {
       layer_execution_id: attempt.id,
       run_id: runId,
       layer_key: layerKey,
-      output_schema_version: schemaKey,
+      output_schema_version: resolved.schemaKey,
       output: parsed,
       output_hash: sha256(JSON.stringify(parsed)),
       validation_passed: true,
@@ -271,10 +414,11 @@ export class PipelineOrchestrator {
       await this.persistMemeticScores(runId, attempt.id, parsed);
     }
 
+    ctx.layerOutputs[layerKey] = parsed;
     return parsed;
   }
 
-  private async createLayerExecution(runId: string, layerKey: string) {
+  private async createLayerExecution(runId: string, layerKey: string, attemptReason: string) {
     const { data: existing } = await this.db
       .from('layer_executions')
       .select('attempt_number')
@@ -290,6 +434,7 @@ export class PipelineOrchestrator {
         run_id: runId,
         layer_key: layerKey,
         attempt_number: attemptNumber,
+        attempt_reason: attemptReason,
         status: 'running',
         output_schema_key: `ne.${layerKey}.v1`,
       })
@@ -306,6 +451,7 @@ export class PipelineOrchestrator {
     scores: Record<string, number>,
     output: Record<string, unknown>,
   ) {
+    await this.db.from('diagnostic_scores').delete().eq('run_id', runId);
     for (const dim of DIAGNOSTIC_DIMENSIONS) {
       if (scores[dim] == null) continue;
       await this.db.from('diagnostic_scores').insert({
@@ -319,6 +465,7 @@ export class PipelineOrchestrator {
   }
 
   private async persistMemeticScores(runId: string, layerExecutionId: string, output: Record<string, unknown>) {
+    await this.db.from('memetic_lite_scores').delete().eq('run_id', runId);
     const lite = (output.memetic_lite ?? output.scores ?? {}) as Record<string, number>;
     let composite = 0;
     for (const [dim, weight] of Object.entries(MM_LITE_WEIGHTS)) {
