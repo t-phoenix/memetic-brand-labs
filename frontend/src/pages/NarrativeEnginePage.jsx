@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NeLayout from '../components/NeLayout';
-import { createNarrativeRun, getPricingTiers } from '../lib/narrativeApi';
+import { analyzeWebsiteForForm, createNarrativeRun, getPricingTiers } from '../lib/narrativeApi';
 import './NarrativeEngine.css';
 
 const TIER_LABELS = {
@@ -21,7 +21,9 @@ export default function NarrativeEnginePage() {
     model_tier: 'fast',
   });
   const [loading, setLoading] = useState(false);
+  const [processingWebsite, setProcessingWebsite] = useState(false);
   const [error, setError] = useState('');
+  const [prefillMessage, setPrefillMessage] = useState('');
   const [tiers, setTiers] = useState([]);
 
   useEffect(() => {
@@ -31,6 +33,32 @@ export default function NarrativeEnginePage() {
   }, []);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const onProcessWebsite = async () => {
+    if (!form.website.trim()) {
+      setError('Please enter your website URL first.');
+      return;
+    }
+
+    setProcessingWebsite(true);
+    setError('');
+    setPrefillMessage('');
+    try {
+      const data = await analyzeWebsiteForForm(form.website.trim());
+      setForm((prev) => ({
+        ...prev,
+        building: data.answers?.building || prev.building,
+        audience: data.answers?.audience || prev.audience,
+        challenge: data.answers?.challenge || prev.challenge,
+        differentiation: data.answers?.differentiation || prev.differentiation,
+      }));
+      setPrefillMessage('AI drafted answers from your website. You can edit anything before analysis.');
+    } catch (err) {
+      setError(err.message || 'Failed to process website');
+    } finally {
+      setProcessingWebsite(false);
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +82,21 @@ export default function NarrativeEnginePage() {
         <p className="ne-sub">We diagnose your communication first — then generate four narrative directions.</p>
 
         <form className="ne-form" onSubmit={onSubmit}>
+          <label htmlFor="website">Your website</label>
+          <input id="website" name="website" type="url" value={form.website} onChange={onChange} placeholder="https://" required />
+
+          <button
+            type="button"
+            className="ne-btn-secondary ne-btn-secondary--process"
+            onClick={onProcessWebsite}
+            disabled={processingWebsite || loading}
+          >
+            {processingWebsite ? 'Processing website…' : 'Process website'}
+          </button>
+          <p className="ne-footnote">We analyze your homepage and draft the form answers below.</p>
+
+          {prefillMessage && <p className="ne-success">{prefillMessage}</p>}
+
           <label htmlFor="building">What are you building?</label>
           <textarea id="building" name="building" value={form.building} onChange={onChange} required rows={3} placeholder="e.g. API testing tool for backend teams" />
 
@@ -65,9 +108,6 @@ export default function NarrativeEnginePage() {
 
           <label htmlFor="differentiation">Why is your approach different?</label>
           <textarea id="differentiation" name="differentiation" value={form.differentiation} onChange={onChange} required rows={2} placeholder="e.g. One-click mocks from OpenAPI specs" />
-
-          <label htmlFor="website">Your website <span className="ne-optional">(optional)</span></label>
-          <input id="website" name="website" type="url" value={form.website} onChange={onChange} placeholder="https://" />
 
           <label htmlFor="model_tier">Analysis depth</label>
           <select id="model_tier" name="model_tier" value={form.model_tier} onChange={onChange}>

@@ -7,17 +7,57 @@ import { enqueueRun } from '../jobs/queue.js';
 import { authOptional, requireAuth } from './auth.js';
 import { hashIp } from '../utils/hash.js';
 import { syncRunRevenue } from '../telemetry/TelemetryService.js';
+import { extractHomepage } from '../website/HomepageExtractor.js';
+import { LLMRouter } from '../llm/LLMRouter.js';
+import { formatDbError, pingDatabase } from '../db/health.js';
 
 export async function registerRoutes(app: FastifyInstance, env: Env) {
   const db = getSupabase(env);
   const runs = new RunService(db);
   const share = new ShareService(db, env);
+  const llm = new LLMRouter(env);
 
-  app.get('/health', async () => ({ status: 'ok', version: 'ne-v1.0.0' }));
+  app.get('/health', async () => {
+    const dbHealth = await pingDatabase(db);
+    return {
+      status: dbHealth.ok ? 'ok' : 'degraded',
+      version: 'ne-v1.0.0',
+      database: dbHealth.ok ? 'connected' : dbHealth.message,
+    };
+  });
 
-  app.get('/v1/pricing-tiers', async () => {
-    const { data } = await db.from('pricing_tiers').select('tier_key, label, price_usdc, model_routing').eq('is_active', true);
+  app.get('/v1/pricing-tiers', async (_request, reply) => {
+    const { data, error } = await db
+      .from('pricing_tiers')
+      .select('tier_key, label, price_usdc, model_routing')
+      .eq('is_active', true);
+    if (error) {
+      return reply.code(503).send({ error: { code: 'database_unavailable', message: formatDbError(error) } });
+    }
     return { tiers: data ?? [] };
+  });
+
+  app.post('/v1/website-intake/analyze', async (request, reply) => {
+    const body = request.body as { website?: string; website_url?: string };
+    const website = String(body.website ?? body.website_url ?? '').trim();
+    if (!website) {
+      return reply.code(400).send({ error: { code: 'bad_request', message: 'website is required' } });
+    }
+
+    const extraction = await extractHomepage(website);
+    if (extraction.fetch_status !== 'success') {
+      return reply.code(422).send({
+        error: { code: 'website_unavailable', message: `Website could not be processed (${extraction.fetch_status}).` },
+      });
+    }
+
+    const answers = await generateFounderAnswersFromWebsite(llm, extraction.extracted);
+    return {
+      website,
+      fetch_status: extraction.fetch_status,
+      extracted: extraction.extracted,
+      answers,
+    };
   });
 
   app.post('/v1/narrative-runs', async (request, reply) => {
@@ -28,18 +68,26 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
 
     const isFirst = !request.user || !(await db.from('users').select('first_free_run_used_at').eq('id', request.user.id).maybeSingle()).data?.first_free_run_used_at;
 
-    const { runId, sessionId: sid } = await runs.createRun(
-      {
-        building: body.building,
-        audience: body.audience,
-        challenge: body.challenge,
-        differentiation: body.differentiation,
-        website: body.website,
-        model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'fast',
-        session_id: sessionId,
-      },
-      { userId: request.user?.id, isFirstRun: isFirst, paymentStatus: isFirst ? 'free' : 'pending' },
-    );
+    let runId: string;
+    let sid: string;
+    try {
+      ({ runId, sessionId: sid } = await runs.createRun(
+        {
+          building: body.building,
+          audience: body.audience,
+          challenge: body.challenge,
+          differentiation: body.differentiation,
+          website: body.website,
+          model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'fast',
+          session_id: sessionId,
+        },
+        { userId: request.user?.id, isFirstRun: isFirst, paymentStatus: isFirst ? 'free' : 'pending' },
+      ));
+    } catch (err) {
+      return reply.code(503).send({
+        error: { code: 'database_unavailable', message: formatDbError(err), retryable: true },
+      });
+    }
 
     if (ip) {
       await db.from('user_sessions').update({ ip_hash: hashIp(ip, env.IP_HASH_SALT) }).eq('session_id', sid);
@@ -170,4 +218,88 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
     await runs.deleteRun(id, request.user!.id);
     return reply.code(204).send();
   });
+}
+
+async function generateFounderAnswersFromWebsite(llm: LLMRouter, extracted: Record<string, unknown>) {
+  const fallback = buildHeuristicAnswers(extracted);
+  const model = 'gpt-4o-mini';
+
+  try {
+    const system = `You help founders prefill a startup intake form using homepage evidence.
+
+Return only JSON with keys:
+- building
+- audience
+- challenge
+- differentiation
+
+Rules:
+- building: what the company/product does in plain language.
+- audience: who specifically this serves (people/team type, not "everyone").
+- challenge: what pain/problem the audience faces today.
+- differentiation: what is distinct in approach or value.
+- Every field must be exactly 1 sentence, 8-24 words.
+- Use concrete language from title/meta/H1/H2/CTA if available.
+- Avoid hype, vague adjectives, and unverifiable claims.
+- Do not mention "website", "homepage", "AI", or "this company".
+- If evidence is thin, make the safest useful inference and stay specific.
+- Never return empty strings.`;
+
+    const user = `Website signals (JSON):\n${JSON.stringify(extracted, null, 2)}`;
+    const res = await llm.complete(model, system, user);
+    const parsed = JSON.parse(res.content) as Partial<Record<'building' | 'audience' | 'challenge' | 'differentiation', string>>;
+    return {
+      building: finalizePrefill(parsed.building, fallback.building),
+      audience: finalizePrefill(parsed.audience, fallback.audience),
+      challenge: finalizePrefill(parsed.challenge, fallback.challenge),
+      differentiation: finalizePrefill(parsed.differentiation, fallback.differentiation),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function finalizePrefill(value: unknown, fallback: string): string {
+  const cleaned = sanitizeSentence(typeof value === 'string' ? value : '');
+  if (!cleaned) return fallback;
+  const words = cleaned.split(/\s+/).filter(Boolean).length;
+  if (words < 5 || words > 30) return fallback;
+  return cleaned;
+}
+
+function sanitizeSentence(value: string): string {
+  let out = value.replace(/\s+/g, ' ').trim();
+  out = out.replace(/^[-*•]\s*/, '');
+  out = out.replace(/^"(.*)"$/, '$1').trim();
+  if (!out) return '';
+  if (!/[.!?]$/.test(out)) out += '.';
+  return out;
+}
+
+function buildHeuristicAnswers(extracted: Record<string, unknown>) {
+  const title = asString(extracted.title);
+  const description = asString(extracted.meta_description);
+  const h1 = asString(extracted.h1);
+  const h2 = Array.isArray(extracted.h2) ? extracted.h2.map((v) => asString(v)).filter(Boolean) : [];
+  const primaryMessage = [h1, title, description].find(Boolean) ?? 'A technology product with a clear customer promise.';
+  const secondary = h2[0] || description || 'Improving outcomes with a focused solution.';
+
+  return {
+    building: primaryMessage,
+    audience: inferAudience(primaryMessage, description),
+    challenge: secondary,
+    differentiation: h2[1] || 'A simpler and more focused approach than common alternatives.',
+  };
+}
+
+function inferAudience(...parts: string[]) {
+  const combined = parts.join(' ').toLowerCase();
+  if (combined.includes('developer') || combined.includes('engineer')) return 'Developers and engineering teams.';
+  if (combined.includes('founder') || combined.includes('startup')) return 'Founders and startup teams.';
+  if (combined.includes('enterprise') || combined.includes('business')) return 'Business teams and enterprise customers.';
+  return 'Teams that need this outcome.';
+}
+
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }

@@ -123,8 +123,19 @@
   padding: 0.75rem 1.25rem;
   border: 2px solid var(--color-purple);
   color: var(--color-purple);
+  background: transparent;
   border-radius: 999px;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.ne-btn-secondary--process {
+  margin-top: 0.75rem;
+}
+
+.ne-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .ne-footnote {
@@ -204,6 +215,12 @@
 
 .ne-error {
   color: var(--color-red);
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.ne-success {
+  color: #1b7f3b;
   font-weight: 600;
   margin-top: 0.75rem;
 }

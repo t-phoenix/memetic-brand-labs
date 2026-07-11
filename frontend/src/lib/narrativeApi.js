@@ -45,6 +45,15 @@ export async function createNarrativeRun(payload) {
   return parseJsonResponse(res);
 }
 
+export async function analyzeWebsiteForForm(website) {
+  const res = await fetch(`${API_URL}/v1/website-intake/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ website }),
+  });
+  return parseJsonResponse(res);
+}
+
 export async function getRunStatus(runId) {
   const res = await fetch(`${API_URL}/v1/narrative-runs/${runId}`);
   return parseJsonResponse(res);
