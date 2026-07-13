@@ -3,6 +3,7 @@ import type { Env } from '../config/env.js';
 import { resolveRedisUrl } from '../config/env.js';
 import { getSupabase } from '../db/client.js';
 import { PipelineOrchestrator } from '../orchestrator/PipelineOrchestrator.js';
+import { healStuckFinalize } from '../orchestrator/runCompletion.js';
 
 const QUEUE_NAME = 'narrative-pipeline';
 const REDIS_ENQUEUE_TIMEOUT_MS = 5_000;
@@ -76,6 +77,12 @@ export async function processRunInline(env: Env, runId: string) {
     await orchestrator.execute(runId);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
+    // Cards may already exist if share/finalize failed after writing outputs.
+    const healed = await healStuckFinalize(db, runId, { message });
+    if (healed) {
+      console.warn(`[pipeline] run ${runId} healed to completed after error:`, message);
+      return;
+    }
     await db
       .from('engine_runs')
       .update({

@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NarrativeRunInput } from '../types/index.js';
 import { normalizeText, sha256 } from '../utils/hash.js';
 import { TelemetryService } from '../telemetry/TelemetryService.js';
+import { healStuckFinalize } from '../orchestrator/runCompletion.js';
 
 export class RunService {
   private readonly telemetry: TelemetryService;
@@ -123,7 +124,18 @@ export class RunService {
   }
 
   async getRunStatus(runId: string) {
-    const { data: run } = await this.db.from('engine_runs').select('*').eq('id', runId).single();
+    let { data: run } = await this.db.from('engine_runs').select('*').eq('id', runId).single();
+    if (!run) return run;
+
+    // Self-heal stuck "finalizing" runs that already have public cards.
+    if (run.status !== 'completed') {
+      const healed = await healStuckFinalize(this.db, runId);
+      if (healed) {
+        const refreshed = await this.db.from('engine_runs').select('*').eq('id', runId).single();
+        run = refreshed.data ?? run;
+      }
+    }
+
     return run;
   }
 

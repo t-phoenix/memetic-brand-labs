@@ -16,6 +16,12 @@ describe('narrativeConfig', () => {
     expect(prompt.system_prompt).toContain('infrastructure');
   });
 
+  it('includes messaging_problem enum constraints for L2', () => {
+    const prompt = getPromptForLayer('diagnostics');
+    expect(prompt.system_prompt).toContain('Allowed enum keys');
+    expect(prompt.system_prompt).toContain('too_technical');
+  });
+
   it('includes MM Lite dimensions for L5', () => {
     const prompt = getPromptForLayer('memetic_analysis');
     expect(prompt.system_prompt).toContain('clarity (20%)');

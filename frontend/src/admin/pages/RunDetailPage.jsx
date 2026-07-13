@@ -6,6 +6,7 @@ import {
   getLlmRequests,
   createPlaygroundRun,
   runPlaygroundPipeline,
+  finalizePlaygroundRun,
 } from '../lib/adminApi';
 import AdminPageHeader from '../components/AdminPageHeader.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
@@ -104,6 +105,10 @@ export default function RunDetailPage() {
   const er = run.run;
   const costs = run.cost_summary ?? pipeline?.cost_summary;
   const isTest = er.run_source === 'admin_test' || er.run_source === 'admin_replay';
+  const resultCards = pipeline?.outputs ?? [];
+  const hasResultCards = resultCards.length >= 4;
+  const needsFinalize =
+    hasResultCards && er.status !== 'completed' && er.status !== 'running';
 
   return (
     <>
@@ -145,6 +150,16 @@ export default function RunDetailPage() {
               }
             >
               Retry from failed step
+            </button>
+          )}
+          {needsFinalize && (
+            <button
+              type="button"
+              className="admin-btn admin-btn--primary"
+              disabled={!!actionLoading}
+              onClick={() => doAction('finalize', () => finalizePlaygroundRun(id))}
+            >
+              Complete finalize
             </button>
           )}
         </div>

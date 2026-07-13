@@ -5,6 +5,7 @@ import { loadNarrativeConfig } from '../config/narrativeConfig.js';
 import { getQueue } from '../jobs/queue.js';
 import { buildPipelineLayers, buildStages } from '../admin/pipelineDto.js';
 import { LAYER_KEYS } from '../types/index.js';
+import { healStuckFinalize } from '../orchestrator/runCompletion.js';
 
 export class AdminService {
   constructor(
@@ -319,13 +320,21 @@ export class AdminService {
   }
 
   async getRun(id: string) {
-    const { data: run, error } = await this.db
+    let { data: run, error } = await this.db
       .from('engine_runs')
       .select('*')
       .eq('id', id)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!run) return null;
+
+    if (run.status !== 'completed') {
+      const healed = await healStuckFinalize(this.db, id);
+      if (healed) {
+        const refreshed = await this.db.from('engine_runs').select('*').eq('id', id).maybeSingle();
+        run = refreshed.data ?? run;
+      }
+    }
 
     const [{ data: inputs }, { data: config }, { data: costs }, { data: share }, { data: payments }] =
       await Promise.all([

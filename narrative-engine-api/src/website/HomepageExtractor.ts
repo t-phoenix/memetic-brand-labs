@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { isIP } from 'net';
+import { computeMismatchFlags } from './mismatchFlags.js';
 
 const BLOCKED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0'];
 
@@ -11,7 +12,13 @@ export interface WebsiteExtractResult {
   mismatch_flags: Record<string, unknown>;
 }
 
-export async function extractHomepage(url: string, formAudience?: string): Promise<WebsiteExtractResult> {
+export { computeMismatchFlags } from './mismatchFlags.js';
+
+export async function extractHomepage(
+  url: string,
+  formAudience?: string,
+  formBuilding?: string,
+): Promise<WebsiteExtractResult> {
   const start = Date.now();
   try {
     const parsed = new URL(url);
@@ -46,10 +53,10 @@ export async function extractHomepage(url: string, formAudience?: string): Promi
       },
     };
 
-    const mismatch_flags: Record<string, unknown> = {};
-    if (formAudience && extracted.meta_description.toLowerCase().includes('everyone')) {
-      mismatch_flags.audience_mismatch = { form: formAudience, site: 'everyone' };
-    }
+    const mismatch_flags = computeMismatchFlags(extracted, {
+      audience: formAudience,
+      building: formBuilding,
+    });
 
     return {
       fetch_status: 'success',

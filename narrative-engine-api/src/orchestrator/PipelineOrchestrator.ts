@@ -20,6 +20,7 @@ import {
 import { sha256 } from '../utils/hash.js';
 import { getPromptForLayer, getSchema, getSchemaForLayer, formatSchemaInstruction } from '../config/narrativeConfig.js';
 import { layerIndex } from '../admin/layerSummary.js';
+import { PATTERN_INJECTION_LAYERS, buildDiagnosticSummary } from './diagnosticSummary.js';
 
 export interface LayerExecuteOpts {
   modelOverride?: string;
@@ -85,13 +86,22 @@ export class PipelineOrchestrator {
       .maybeSingle();
     const routing = (tier?.model_routing ?? { default: 'gpt-4o-mini' }) as Record<string, string>;
 
-    const { data: website } = await this.db.from('website_extractions').select('extracted').eq('run_id', runId).maybeSingle();
+    const { data: website } = await this.db
+      .from('website_extractions')
+      .select('extracted, mismatch_flags')
+      .eq('run_id', runId)
+      .maybeSingle();
     const websiteContext = website?.extracted ? JSON.stringify(website.extracted) : '';
+    const mismatchFlags =
+      website?.mismatch_flags && Object.keys(website.mismatch_flags as object).length
+        ? JSON.stringify(website.mismatch_flags, null, 2)
+        : '';
 
     const layerOutputs = await this.loadLayerOutputs(runId);
     const inputVars = {
       ...this.resolver.buildInputVars(input),
       website_context: websiteContext,
+      mismatch_flags: mismatchFlags,
     };
 
     return {
@@ -165,6 +175,16 @@ export class PipelineOrchestrator {
       showAnalogy,
     );
 
+    // Mark finalizing so UI/admin reflect progress before share work.
+    await this.db
+      .from('engine_runs')
+      .update({
+        status: 'processing',
+        current_stage: 'output_generation',
+        progress_pct: 97,
+      })
+      .eq('id', runId);
+
     await this.db.from('run_outputs').delete().eq('run_id', runId);
     await this.db.from('output_guardrail_events').delete().eq('run_id', runId);
 
@@ -192,26 +212,51 @@ export class PipelineOrchestrator {
       });
     }
 
+    // Share graphics are best-effort. Cards are the product deliverable —
+    // never leave the run stuck in "finalizing" because storage/sharp failed.
+    let shareError: string | undefined;
     const skipShare = opts.skipShare ?? ctx.run.run_source === 'admin_test';
     if (!skipShare) {
-      await this.share.createForRun(runId, String(cards.clear_explanation), String(cards.positioning));
+      try {
+        await this.share.createForRun(runId, String(cards.clear_explanation), String(cards.positioning));
+      } catch (err) {
+        shareError = err instanceof Error ? err.message : 'Share generation failed';
+        console.error(`[finalize] share failed for run ${runId}:`, err);
+        await this.telemetry.emit(
+          runId,
+          'run.share_failed',
+          { message: shareError },
+          'system',
+        );
+      }
     }
 
+    await this.markCompleted(runId, shareError ? { share_error: shareError } : undefined);
+    await this.telemetry.emit(runId, 'run.completed', {
+      finalized: true,
+      share_ok: !shareError,
+      ...(shareError ? { share_error: shareError } : {}),
+    });
+  }
+
+  private async markCompleted(runId: string, warn?: { share_error?: string }) {
     const { data: runRow } = await this.db.from('engine_runs').select('started_at').eq('id', runId).single();
     const startedMs = runRow?.started_at ? new Date(runRow.started_at).getTime() : Date.now();
-    const duration = Date.now() - startedMs;
-    await this.db
-      .from('engine_runs')
-      .update({
-        status: 'completed',
-        current_stage: 'completed',
-        progress_pct: 100,
-        completed_at: new Date().toISOString(),
-        total_duration_ms: duration,
-      })
-      .eq('id', runId);
-
-    await this.telemetry.emit(runId, 'run.completed', { finalized: true });
+    const patch: Record<string, unknown> = {
+      status: 'completed',
+      current_stage: 'completed',
+      progress_pct: 100,
+      completed_at: new Date().toISOString(),
+      total_duration_ms: Date.now() - startedMs,
+      failure_code: null,
+    };
+    if (warn?.share_error) {
+      patch.failure_detail = {
+        share_error: warn.share_error,
+        note: 'Run completed; share graphic generation failed (non-fatal).',
+      };
+    }
+    await this.db.from('engine_runs').update(patch).eq('id', runId);
   }
 
   private async markRunning(runId: string) {
@@ -238,10 +283,14 @@ export class PipelineOrchestrator {
     const { data: existing } = await this.db.from('website_extractions').select('id').eq('run_id', runId).maybeSingle();
     if (existing) return;
 
-    const { data: input } = await this.db.from('run_inputs').select('website_url, audience').eq('run_id', runId).single();
+    const { data: input } = await this.db
+      .from('run_inputs')
+      .select('website_url, audience, building')
+      .eq('run_id', runId)
+      .single();
     if (!input?.website_url) return;
 
-    const extract = await extractHomepage(input.website_url, input.audience);
+    const extract = await extractHomepage(input.website_url, input.audience, input.building);
     await this.db.from('website_extractions').insert({
       run_id: runId,
       url: input.website_url,
@@ -275,9 +324,11 @@ export class PipelineOrchestrator {
     _opts: { dryRun?: boolean; attemptId?: string } = {},
   ) {
     const prior = ctx.layerOutputs;
+    // Prompt *text* is always from filesystem config (getPromptForLayer).
+    // DB prompt_templates is consulted only for the active version label (admin/sync mirror).
     const { data: dbPrompt } = await this.db
       .from('prompt_templates')
-      .select('*')
+      .select('version')
       .eq('engine_type', 'narrative')
       .eq('layer_key', layerKey)
       .eq('is_active', true)
@@ -294,7 +345,7 @@ export class PipelineOrchestrator {
     const schema = getSchema(schemaKey) ?? getSchemaForLayer(layerKey);
 
     let patternsText = '';
-    if (layerKey === 'diagnostics' || layerKey === 'memetic_analysis') {
+    if (PATTERN_INJECTION_LAYERS.has(layerKey)) {
       const interp = prior.interpretation ?? {};
       const matched = await this.patterns.retrieve({
         market: String(interp.market ?? ''),
@@ -309,6 +360,7 @@ export class PipelineOrchestrator {
       structured_output: JSON.stringify(prior.interpretation ?? prior.diagnostics ?? {}, null, 2),
       patterns: patternsText,
       prior_layers: JSON.stringify(prior, null, 2),
+      diagnostic_summary: buildDiagnosticSummary(prior.diagnostics),
     };
 
     const system = `${this.resolver.resolve(prompt.system_prompt, vars)}\n\n${formatSchemaInstruction(schema)}`;
@@ -325,7 +377,7 @@ export class PipelineOrchestrator {
     const attempt = await this.createLayerExecution(runId, layerKey, opts.attemptReason ?? 'initial');
     const resolved = await this.resolvePrompts(runId, layerKey, ctx, { attemptId: attempt.id });
 
-    if (resolved.patternsText && (layerKey === 'diagnostics' || layerKey === 'memetic_analysis')) {
+    if (resolved.patternsText && PATTERN_INJECTION_LAYERS.has(layerKey)) {
       const interp = ctx.layerOutputs.interpretation ?? {};
       const matched = await this.patterns.retrieve({
         market: String(interp.market ?? ''),

@@ -113,6 +113,8 @@ export class AdminPlaygroundService {
           await this.orchestrator.executeFull(runId, { skipShare: true });
         } else if (kind === 'from_layer' && layerKey) {
           await this.orchestrator.executeFromLayer(runId, layerKey, { skipShare: true });
+          // executeFromLayer stops after the last layer — still need cards + completed status.
+          await this.orchestrator.finalizeRun(runId, { skipShare: true });
         } else if (kind === 'layer' && layerKey) {
           await this.orchestrator.executeLayer(runId, layerKey, {
             attemptReason: (attemptReason as 'admin_retry') ?? 'initial',

@@ -1,7 +1,7 @@
 # Narrative Engine — Architecture
 
 **Status:** Implemented (V1 Beta)  
-**Related:** [PRD](./PRD.md) · [TDD](./TDD.md) · [database-spec](./database-spec.md) · [supabase/DEV-PROD.md](../../supabase/DEV-PROD.md) · [environments](./environments.md) · [feature-development](./feature-development.md) · [deployment](./deployment.md) · [Vision doc](../../ADPR-MBL%20Docs/Narrative_Engine_Architecture_and_Vision.md)
+**Related:** [PRD](./PRD.md) · [TDD](./TDD.md) · [database-spec](./database-spec.md) · [supabase/DEV-PROD.md](../../supabase/DEV-PROD.md) · [environments](./environments.md) · [feature-development](./feature-development.md) · [deployment](./deployment.md) · [prompt-optimisation](../prompt-optimisation.md) · [Vision doc](../../ADPR-MBL%20Docs/Narrative_Engine_Architecture_and_Vision.md)
 
 ---
 

@@ -8,14 +8,18 @@ export class VariableResolver {
     audience: string;
     challenge: string;
     differentiation: string;
-    website?: string;
+    /** Preferred DB field from run_inputs */
+    website_url?: string | null;
+    /** Legacy alias used by some callers */
+    website?: string | null;
   }): Record<string, string> {
+    const websiteUrl = input.website_url ?? input.website ?? '';
     return {
       product_description: input.building,
       target_user: input.audience,
       problem: input.challenge,
       differentiation: input.differentiation,
-      website_url: input.website ?? '',
+      website_url: websiteUrl,
       building: input.building,
       audience: input.audience,
       challenge: input.challenge,
