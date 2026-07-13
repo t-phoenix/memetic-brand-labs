@@ -1,17 +1,28 @@
-import './polyfills.js';
+import '../polyfills.js';
 import 'dotenv/config';
 import { loadEnv } from '../config/env.js';
-import { startWorker } from './queue.js';
+import { startWorker, isRedisQuotaError, disableRedis } from './queue.js';
 
 const env = loadEnv();
 if (!env.REDIS_URL) {
   console.error('REDIS_URL required for worker');
   process.exit(1);
 }
+
 const worker = startWorker(env);
 if (!worker) {
-  console.error('Failed to start worker');
+  console.error('Failed to start worker (check REDIS_URL / resolveRedisUrl)');
   process.exit(1);
 }
+
+worker.on('error', (err) => {
+  console.error('[worker] error:', err);
+  if (isRedisQuotaError(err)) {
+    console.error('[worker] Redis quota exhausted — exiting so Render does not burn retries');
+    disableRedis('quota exhausted');
+    process.exit(1);
+  }
+});
+
 console.log('Narrative Engine worker listening for jobs');
 console.log('Narrative Engine worker started');
