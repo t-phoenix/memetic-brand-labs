@@ -1,0 +1,217 @@
+.clarity-section {
+  position: relative;
+  background: #d9595e;
+  color: #f2ddb6;
+  height: min(1232px, 99.444vw);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.clarity-section__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1440px;
+  margin: 0;
+}
+
+.clarity-section__left h2 {
+  position: absolute;
+  z-index: 2;
+  top: 12.011%;
+  left: 3.958%;
+  width: 57.292%;
+  color: #f2ddb6;
+  font: 400 clamp(50px, 5.556vw, 80px) / clamp(56px, 6.25vw, 90px) var(--font-heading);
+  margin: 0;
+}
+
+.clarity-section__left {
+  display: contents;
+}
+
+.clarity-section__hero-arrow {
+  position: absolute;
+  z-index: 1;
+  top: 37.346%;
+  left: 12.083%;
+  width: 29.722%;
+  height: 29.679%;
+  object-fit: contain;
+}
+
+.clarity-section__right {
+  position: absolute;
+  top: 29.26%;
+  left: 53.583%;
+  width: 44.514%;
+  height: 45%;
+  padding: 0;
+}
+
+.clarity-section__lead {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font: 400 clamp(16px, 1.667vw, 24px) / clamp(23px, 2.361vw, 34px) var(--font-body);
+  letter-spacing: 0.24px;
+  margin: 0;
+}
+
+.clarity-section__sub {
+  position: absolute;
+  top: 14.844%;
+  left: 0;
+  width: 100%;
+  font: 600 clamp(16px, 1.667vw, 24px) / clamp(23px, 2.361vw, 34px) var(--font-body);
+  letter-spacing: 0.24px;
+  margin: 0;
+}
+
+.clarity-section__sub--mt {
+  top: 54.531%;
+}
+
+.clarity-section__grid {
+  position: absolute;
+  top: 26.25%;
+  left: 0;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 33% 51.3%;
+  column-gap: 15.7%;
+  row-gap: clamp(24px, 2.431vw, 35px);
+}
+
+.clarity-section__support {
+  position: absolute;
+  top: 65.938%;
+  left: 0;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 2.431vw, 35px);
+}
+
+.clarity-section__grid li,
+.clarity-section__support li {
+  display: flex;
+  align-items: center;
+  gap: clamp(11px, 1.111vw, 16px);
+  font: 600 clamp(16px, 1.667vw, 24px) / clamp(23px, 2.361vw, 34px) var(--font-body);
+  letter-spacing: 0.24px;
+  white-space: nowrap;
+}
+
+.clarity-section__bullet {
+  width: clamp(23px, 2.292vw, 33px);
+  height: clamp(23px, 2.292vw, 33px);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.clarity-section__footnote {
+  position: absolute;
+  top: 79.33%;
+  left: 18.75%;
+  width: 64.236%;
+  font: 600 clamp(16px, 1.667vw, 24px) / clamp(23px, 2.361vw, 34px) var(--font-body);
+  letter-spacing: 0.24px;
+  text-align: center;
+  margin: 0;
+  color: #f2ddb6;
+}
+
+@media (max-width: 900px) {
+  .clarity-section {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .clarity-section__inner {
+    height: auto;
+    padding: 70px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .clarity-section__left h2 {
+    position: static;
+    font-size: 40px;
+    line-height: 48px;
+    width: auto;
+  }
+
+  .clarity-section__left {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .clarity-section__hero-arrow {
+    position: static;
+    width: 191px;
+    height: 189px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .clarity-section__right {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .clarity-section__lead,
+  .clarity-section__sub,
+  .clarity-section__grid li,
+  .clarity-section__support li,
+  .clarity-section__footnote {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .clarity-section__lead,
+  .clarity-section__sub,
+  .clarity-section__sub--mt,
+  .clarity-section__grid,
+  .clarity-section__support {
+    position: static;
+    width: 100%;
+    margin: 0;
+  }
+
+  .clarity-section__grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .clarity-section__support {
+    gap: 22px;
+  }
+
+  .clarity-section__grid li,
+  .clarity-section__support li {
+    white-space: normal;
+  }
+
+  .clarity-section__footnote {
+    position: static;
+    width: auto;
+    margin: 36px 20px 0;
+    padding: 0 0 48px;
+  }
+}

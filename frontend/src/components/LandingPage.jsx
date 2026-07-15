@@ -1,113 +1,77 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import Navbar from './Navbar';
 import Hero from './Hero';
+import SiteNav from './SiteNav';
+import CommunicationSection from './CommunicationSection';
 import TurnOrdinary from './TurnOrdinary';
 import WhatThisIsFor from './WhatThisIsFor';
 import WhoThisIsFor from './WhoThisIsFor';
 import WhatYouAchieve from './WhatYouAchieve';
-import NarrativeEngineCTA from './NarrativeEngineCTA';
-import { neDiscoveryEnabled } from '../lib/featureFlags';
 import HowItWorks from './HowItWorks';
+import NarrativeEngineSection from './NarrativeEngineSection';
+import ClaritySection from './ClaritySection';
 import FinalCTA from './FinalCTA';
 import adpr from '../assets/graphics/Adpr Memetic Brand Labs_adpr Logo.svg';
+import './LandingFooter.css';
 
 function LandingPage() {
-    const location = useLocation();
+  const location = useLocation();
+  const [navTone, setNavTone] = useState('cream');
+  const [navBackground, setNavBackground] = useState('#7979e3');
 
-    useEffect(() => {
-        if (location.state?.scrollTo) {
-            const element = document.getElementById(location.state.scrollTo);
-            if (element) {
-                setTimeout(() => {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            }
-        }
-    }, [location]);
+  useEffect(() => {
+    const target = location.state?.scrollTo || (location.hash || '').replace(/^#/, '');
+    if (!target) return;
+    const element = document.getElementById(target);
+    if (element) {
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }, 120);
+    }
+  }, [location]);
 
-    useEffect(() => {
-        const navbar = document.querySelector('.navbar');
-        if (!navbar) return;
+  useEffect(() => {
+    const updateTone = () => {
+      const sections = document.querySelectorAll('[data-nav-tone]');
+      const active = [...sections].find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= 62 && rect.bottom > 62;
+      });
+      setNavTone(active?.dataset.navTone || 'cream');
+      setNavBackground(active?.dataset.navBg || '#7979e3');
+    };
 
-        const handleScroll = () => {
-            const turnOrdinarySection = document.getElementById('about');
-            const whoThisIsForSection = document.getElementById('who-this-is-for');
+    updateTone();
+    window.addEventListener('scroll', updateTone, { passive: true });
+    return () => window.removeEventListener('scroll', updateTone);
+  }, []);
 
-            if (turnOrdinarySection) {
-                const rect = turnOrdinarySection.getBoundingClientRect();
-                // Show navbar when TurnOrdinary section is in view or has been scrolled past
-                if (rect.top <= 0) {
-                    navbar.classList.add('visible');
-                } else {
-                    navbar.classList.remove('visible');
-                }
-            }
-
-            const whatYouAchieveSection = document.getElementById('what-you-achieve');
-            const howItWorksSection = document.getElementById('works');
-
-            let isLightSection = false;
-            let isHowItWorksSection = false;
-
-            if (whoThisIsForSection) {
-                const rect = whoThisIsForSection.getBoundingClientRect();
-                if (rect.top <= 50 && rect.bottom >= 50) {
-                    isLightSection = true;
-                }
-            }
-
-            if (whatYouAchieveSection) {
-                const rect = whatYouAchieveSection.getBoundingClientRect();
-                if (rect.top <= 50 && rect.bottom >= 50) {
-                    isLightSection = true;
-                }
-            }
-
-            if (howItWorksSection) {
-                const rect = howItWorksSection.getBoundingClientRect();
-                if (rect.top <= 50 && rect.bottom >= 50) {
-                    isHowItWorksSection = true;
-                }
-            }
-
-            if (isLightSection) {
-                navbar.classList.add('who-section-active');
-            } else {
-                navbar.classList.remove('who-section-active');
-            }
-
-            if (isHowItWorksSection) {
-                navbar.classList.add('how-it-works-active');
-            } else {
-                navbar.classList.remove('how-it-works-active');
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Check initial state
-
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    return (
-        <>
-            <Navbar />
-            <Hero />
-            <TurnOrdinary />
-            <WhatThisIsFor />
-            <WhoThisIsFor />
-            <WhatYouAchieve />
-            {/* {neDiscoveryEnabled && <NarrativeEngineCTA />} */}
-            <HowItWorks />
-            <FinalCTA />
-            <div className="footer-logo" id="adpr">
-                <a href="https://adpr.work" target="_blank" rel="noopener noreferrer">
-                    <img src={adpr} alt="adpr" />
-                </a>
-            </div>
-        </>
-    );
+  return (
+    <div className="landing">
+      <Hero />
+      <SiteNav tone={navTone} background={navBackground} className="landing-nav" />
+      <CommunicationSection />
+      <TurnOrdinary />
+      <WhatThisIsFor />
+      <WhoThisIsFor />
+      <WhatYouAchieve />
+      <HowItWorks />
+      {/* Form only on landing — loading + results are separate routes */}
+      <NarrativeEngineSection />
+      <ClaritySection />
+      <FinalCTA />
+      <footer className="landing-footer" id="adpr">
+        <p>
+          Creative Intelligence OS (CI OS) is currently in development.
+          <br />
+          The Narrative Engine (Beta) provides an early preview of selected capabilities.
+        </p>
+        <a href="https://adpr.work" target="_blank" rel="noopener noreferrer" className="landing-footer__logo">
+          <img src={adpr} alt="adpr" />
+        </a>
+      </footer>
+    </div>
+  );
 }
 
 export default LandingPage;

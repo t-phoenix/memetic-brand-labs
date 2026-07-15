@@ -12,6 +12,14 @@
 @font-face {
   font-family: 'Urbanist';
   src: url('./assets/fonts/Urbanist-Medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Urbanist';
+  src: url('./assets/fonts/Urbanist-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -74,6 +82,7 @@
   --color-dull-peach: #f8dcb1; */
 
   --color-purple: #8e4ed5;
+  --color-purple-hero: #7979e3;
   --color-red: #d8474d;
   --color-yellow: #efc960;
   --color-pink: #ff80d2;
@@ -85,6 +94,9 @@
   --color-black: #211d16;
   --color-white: #FFFFFF;
   --color-dull-peach: #f8dcb1;
+  --site-max: 1440px;
+  --site-gutter: 60px;
+  --site-gutter-mobile: 20px;
 
   /* Typography */
   --font-heading: 'Anton', sans-serif;
@@ -145,7 +157,7 @@ h5,
 h6 {
   font-family: var(--font-heading);
   font-weight: 400;
-  text-transform: uppercase;
+  text-transform: none;
   line-height: 1.1;
 }
 

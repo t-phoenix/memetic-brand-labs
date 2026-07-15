@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import NeLayout from '../components/NeLayout';
+import SiteNav from '../components/SiteNav';
 import { getPublicShare, API_URL } from '../lib/narrativeApi';
-import './NarrativeEngine.css';
+import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
+import shareX from '../assets/graphics/figma-v2/share-x.svg';
+import shareLinkedin from '../assets/graphics/figma-v2/share-linkedin.svg';
+import './NarrativeFlow.css';
 
 export default function SharedResultPage() {
   const { shareId } = useParams();
@@ -17,47 +20,91 @@ export default function SharedResultPage() {
 
   if (error) {
     return (
-      <NeLayout>
-        <div className="ne-page">
-          <p className="ne-error">{error}</p>
-          <Link to="/narrative-engine" className="ne-cta">Try the Narrative Engine</Link>
-        </div>
-      </NeLayout>
+      <div className="ne-flow ne-flow--results">
+        <SiteNav tone="magenta" />
+        <main className="ne-flow__main">
+          <p className="ne-flow__error">{error}</p>
+          <Link to="/#narrative-engine" className="ne-flow__pill">
+            Try the Narrative Engine
+          </Link>
+        </main>
+      </div>
     );
   }
 
   if (!data) {
     return (
-      <NeLayout>
-        <div className="ne-page ne-page--centered">
-          <p>Loading results…</p>
-        </div>
-      </NeLayout>
+      <div className="ne-flow ne-flow--results">
+        <SiteNav tone="magenta" />
+        <main className="ne-flow__main">
+          <p className="ne-flow__muted">Loading results…</p>
+        </main>
+      </div>
     );
   }
 
   const cards = data.cards || [];
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/results/${shareId}` : '';
+  const shareLinks = [
+    {
+      key: 'telegram',
+      href: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}`,
+      icon: shareTelegram,
+      label: 'Share on Telegram',
+    },
+    {
+      key: 'x',
+      href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`,
+      icon: shareX,
+      label: 'Share on X',
+    },
+    {
+      key: 'linkedin',
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      icon: shareLinkedin,
+      label: 'Share on LinkedIn',
+    },
+  ];
 
   return (
-    <NeLayout>
-      <div className="ne-page">
-        <p className="ne-eyebrow">Shared results</p>
-        <h1>{data.og_title || 'Narrative Engine Results'}</h1>
-        <div className="ne-cards">
+    <div className="ne-flow ne-flow--results">
+      <SiteNav tone="magenta" />
+      <main className="ne-flow__main ne-flow__main--results">
+        <div className="ne-results__grid">
           {cards.map((card) => (
-            <div key={card.key} className={`ne-card ne-card--${card.meta?.color || 'default'}`}>
-              <h3>{card.label}</h3>
+            <article key={card.key} className="ne-results__card">
+              <h2>{card.label}</h2>
               <p>{card.content}</p>
-            </div>
+            </article>
           ))}
         </div>
-        <a href={`${API_URL}/v1/results/${shareId}/graphic.png`} className="ne-btn-secondary" download>
-          Download share graphic
-        </a>
-        <p className="ne-footnote">
-          <Link to="/narrative-engine">Run your own analysis →</Link>
-        </p>
-      </div>
-    </NeLayout>
+
+        <div className="ne-results__footer">
+          <div className="ne-results__col">
+            <h3>Not perfect.</h3>
+            <p>
+              But a useful start. (<em>If you like it, share it with your community.</em>)
+            </p>
+            <div className="ne-results__share">
+              {shareLinks.map((s) => (
+                <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+                  <img src={s.icon} alt="" width={80} height={80} />
+                </a>
+              ))}
+            </div>
+            <a className="ne-results__download" href={`${API_URL}/v1/results/${shareId}/graphic.png`} download>
+              Download share graphic
+            </a>
+          </div>
+          <div className="ne-results__col">
+            <h3>Perfect?</h3>
+            <p>You can still apply, because the workshop goes deeper.</p>
+            <Link to="/application-form" className="ne-flow__pill">
+              Memetic Brand Workshop
+            </Link>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

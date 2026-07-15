@@ -1,0 +1,142 @@
+.communication-section {
+  min-height: 810px;
+  background: #7979e3;
+  color: #f2ddb6;
+  position: relative;
+  overflow: hidden;
+}
+
+.communication-section__inner {
+  width: min(100%, 1440px);
+  min-height: 810px;
+  margin: 0 auto;
+  padding: 50px 59px 28px;
+  position: relative;
+}
+
+.communication-section h1 {
+  width: 1093px;
+  max-width: 100%;
+  margin: 0;
+  color: #f2ddb6;
+  font: 400 80px/90px var(--font-heading);
+}
+
+.communication-section__illustration {
+  position: absolute;
+  left: 105px;
+  bottom: -5px;
+  width: 570px;
+  height: 495px;
+}
+
+.communication-section__illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.communication-section__illustration picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.communication-section__copy {
+  position: absolute;
+  left: 733px;
+  top: 432px;
+  width: 646px;
+  color: #f2ddb6;
+  font: 400 24px/34px var(--font-body);
+  letter-spacing: 0.24px;
+}
+
+.communication-section__copy p + p {
+  margin-top: 24px;
+}
+
+.communication-section__copy strong {
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .communication-section,
+  .communication-section__inner {
+    min-height: 765px;
+  }
+
+  .communication-section__inner {
+    padding: 48px 20px 40px;
+  }
+
+  .communication-section h1 {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .communication-section__copy {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 410px;
+    width: auto;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .communication-section__illustration {
+    left: auto;
+    right: -72px;
+    bottom: auto;
+    top: 170px;
+    width: 256px;
+    height: 222px;
+    transform: scale(0.72);
+    transform-origin: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .communication-section {
+    min-height: 846px;
+  }
+
+  .communication-section__inner {
+    min-height: 846px;
+    padding: 0 20px;
+  }
+
+  .communication-section h1 {
+    position: absolute;
+    top: 254px;
+    left: 20px;
+    width: calc(100% - 40px);
+    font-size: 38px;
+    line-height: 48px;
+  }
+
+  .communication-section__illustration {
+    top: 62px;
+    left: 20.48%;
+    right: auto;
+    width: 63.6%;
+    height: 222px;
+    transform: scaleX(-1);
+    transform-origin: center;
+  }
+
+  .communication-section__copy {
+    top: 493px;
+    left: 20px;
+    right: 20px;
+    font-size: 22px;
+    line-height: 30px;
+    letter-spacing: 0.22px;
+  }
+
+  .communication-section__copy p + p {
+    margin-top: 24px;
+    line-height: 32px;
+  }
+}

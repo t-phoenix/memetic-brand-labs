@@ -1,32 +1,27 @@
+import heroLogoSun from '../assets/graphics/figma-v2/hero-logo-sun.png';
+import mobileSun from '../assets/graphics/figma-v2/mobile-hero-sun.svg';
+import mobileHand from '../assets/graphics/figma-v2/mobile-hero-hand.svg';
+import mobileThumb from '../assets/graphics/figma-v2/mobile-hero-thumb.svg';
+import mobileLogo from '../assets/graphics/figma-v2/mobile-hero-logo.svg';
 import './Hero.css';
-import sunGlasses from '../assets/graphics/Adpr Memetic Brand Labs_Sun 1.svg';
-import thumbsUp from '../assets/graphics/Adpr Memetic Brand Labs_Thums Up-.svg';
-import hand from '../assets/graphics/Adpr Memetic Brand Labs_Hand 1.svg';
-import text from '../assets/graphics/Adpr Memetic Brand Labs_Logo 1.png';
 
 function Hero() {
-    return (
-        <section className="hero" id="home">
-            <div className="hero-container">
-                <div className="hero-content">
-                    {/* Left side - Text */}
-                    <div className='hero-left'>
-                        <img src={text} alt="adpr Memetics Brand Labs" className="hero-text" />
-                        <p className="hero-tagline">A new initiative from <a href="https://www.adpr.work" target="_blank" rel="noopener noreferrer">adpr.work</a></p>
-                    </div>
-
-                    {/* Right side - Graphics */}
-                    <div className="hero-right">
-                        <div className="character-container">
-                            <img src={sunGlasses} alt="Cool sun character" className="sun-character" />
-                            <img src={thumbsUp} alt="" className="thumbs-up" />
-                            <img src={hand} alt="" className="hand-pointer" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+  return (
+    <section className="hero" id="home">
+      <div className="hero__splash">
+        <img className="hero__brand-art" src={heroLogoSun} alt="adpr Memetic Brand Labs" />
+      </div>
+      <div className="hero__mobile-art" aria-label="adpr Memetic Brand Labs">
+        <img className="hero__mobile-sun" src={mobileSun} alt="" />
+        <img className="hero__mobile-hand" src={mobileHand} alt="" />
+        <img className="hero__mobile-thumb" src={mobileThumb} alt="" />
+        <img className="hero__mobile-logo" src={mobileLogo} alt="" />
+        <p>
+          A new initiative from <strong>adpr</strong>
+        </p>
+      </div>
+    </section>
+  );
 }
 
 export default Hero;

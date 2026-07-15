@@ -1,49 +1,52 @@
+import speechIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 1.svg';
+import clapIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 2.svg';
+import thumbIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 3.svg';
 import './WhoThisIsFor.css';
-import finger1 from '../assets/graphics/Adpr Memetic Brand Labs_Pointing finger 1.svg';
-import finger2 from '../assets/graphics/Adpr Memetic Brand Labs_Pointing finger 2.svg';
-import bulletIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 4.svg';
 
+/** Figma: Group 44 — From technical depth to shared language + 3 cards */
 function WhoThisIsFor() {
-    const listItems = [
-        "Web3, DeFi, AI & on-chain startups",
-        "Protocols, infra, privacy, security, payments",
-        "Founders preparing for launch, growth, or repositioning"
-    ];
+  const cards = [
+    {
+      title: 'Shared Language',
+      copy: "A simpler way to explain what you're building.",
+      icon: speechIcon,
+    },
+    {
+      title: 'Recognisable Narratives',
+      copy: 'Stories people immediately recognise.',
+      icon: clapIcon,
+    },
+    {
+      title: 'Memetic Potential',
+      copy: 'Ideas people recognise, relate to, repeat and share.',
+      icon: thumbIcon,
+    },
+  ];
 
-    return (
-        <section className="who-this-is-for" id="who-this-is-for">
-            <div className="container">
-                <div className="who-content-wrapper">
-                    <div className="who-left">
-                        <div className="who-title-container">
-                            <img src={finger1} alt="" className="finger finger-top" />
-                            <h2 className="who-title">
-                                <span className="who-text">Who</span>
-                                <span className="this-is-for-text">This Is For</span>
-                            </h2>
-                            <img src={finger2} alt="" className="finger finger-bottom" />
-                        </div>
-                    </div>
-
-                    <div className="who-right">
-                        <h3 className="who-subtitle">Built for teams who are serious about adoption.</h3>
-                        <ul className="who-list">
-                            {listItems.map((item, index) => (
-                                <li key={index} className="who-list-item">
-                                    <img src={bulletIcon} alt="" className="who-bullet" />
-                                    <span>{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="who-footer-text">
-                            This is for builders who want their ideas to <br />
-                            <span className="highlight-text">become culture, not just content.</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+  return (
+    <section className="cards-section" id="who-this-is-for" data-nav-tone="cream" data-nav-bg="#7979e3">
+      <div className="cards-section__inner">
+        <h2>
+          From technical depth
+          <br />
+          to shared language.
+        </h2>
+        <p className="cards-section__intro">We help founders transform complex ideas into:</p>
+        <div className="cards-section__cards">
+          {cards.map((card) => (
+            <article className="cards-section__card" key={card.title}>
+              <img src={card.icon} alt="" />
+              <h3>{card.title}</h3>
+              <p>{card.copy}</p>
+            </article>
+          ))}
+        </div>
+        <p className="cards-section__footer">
+          Helping products become easier to understand and harder to forget.
+        </p>
+      </div>
+    </section>
+  );
 }
 
 export default WhoThisIsFor;

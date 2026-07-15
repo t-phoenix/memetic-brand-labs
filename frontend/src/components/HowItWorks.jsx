@@ -1,77 +1,75 @@
+import { Link } from 'react-router-dom';
+import workshopWordmark from '../assets/graphics/figma-v2/workshop-art-top.svg';
+import workshopBottom from '../assets/graphics/figma-v2/workshop-art-bottom.svg';
+import workshopHand from '../assets/graphics/figma-v2/workshop-hand.svg';
+import workshopSun from '../assets/graphics/figma-v2/workshop-sun.svg';
+import workshopThumb from '../assets/graphics/figma-v2/workshop-thumb.svg';
+import bag from '../assets/graphics/figma-v2/bag-bullet.svg';
+import mobileWorkshopWordmark from '../assets/graphics/figma-v2/mobile-workshop-wordmark.svg';
+import mobileWorkshopBottom from '../assets/graphics/figma-v2/mobile-workshop-bottom.svg';
+import mobileWorkshopHand from '../assets/graphics/figma-v2/mobile-workshop-hand.svg';
+import mobileWorkshopSun from '../assets/graphics/figma-v2/mobile-workshop-sun.svg';
+import mobileWorkshopThumb from '../assets/graphics/figma-v2/mobile-workshop-thumb.svg';
 import './HowItWorks.css';
-import gears from '../assets/graphics/Adpr Memetic Brand Labs_Gears.svg';
-import icon1 from '../assets/graphics/Adpr Memetic Brand Labs_1.svg';
-import icon2 from '../assets/graphics/Adpr Memetic Brand Labs_2.svg';
-import icon3 from '../assets/graphics/Adpr Memetic Brand Labs_3.svg';
-import arrow from '../assets/graphics/Adpr Memetic Brand Labs_Arrow.svg';
 
+const OUTCOMES = [
+  'A Memetic Brand Direction',
+  'A Memetic Brand Voice',
+  'A Narrative & Content Playbook',
+  'Creative Directions with Memetic Potential',
+];
+
+/** Figma: Group 162 — Walk in with a product / Workshop CTA */
 function HowItWorks() {
-    const steps = [
-        {
-            icon: icon1,
-            title: "Apply for the",
-            subtitle: "Memetic Brand Workshop"
-        },
-        {
-            icon: icon2,
-            title: "Attend 2 hrs",
-            subtitle: "Memetic Brand Workshop"
-        },
-        {
-            icon: icon3,
-            title: "Get your Brand",
-            subtitle: "MemePlaybook + Meme System"
-        }
-    ];
-
-    return (
-        <section id="works" className="how-it-works">
-            <div className="container">
-                <div className="how-it-works-grid">
-                    {/* Left Section: How It Works Heading and Gears */}
-                    <div className="how-it-works-left">
-                        <div className="gears-wrapper">
-                            <img src={gears} alt="Gears" className="gears-img" />
-                            <h2 className="how-it-works-title">
-                                <span>How it</span>
-                                <span>works</span>
-                            </h2>
-                        </div>
-                    </div>
-
-                    {/* Right Section: Steps */}
-                    <div className="how-it-works-right">
-                        <h3 className="follow-steps-title">Follow the Steps</h3>
-                        <div className="steps-list">
-                            {steps.map((step, index) => (
-                                <div
-                                    key={index}
-                                    className="how-step-item"
-                                    onClick={() => {
-                                        if (index === 0) {
-                                            document.getElementById('final-cta')?.scrollIntoView({ behavior: 'smooth' });
-                                        }
-                                    }}
-                                    style={{ cursor: index === 0 ? 'pointer' : 'default' }}
-                                >
-                                    <div className="step-icon-wrapper">
-                                        <img src={step.icon} alt={`Step ${index + 1}`} className="step-number-icon" />
-                                    </div>
-                                    <div className="step-content">
-                                        <p className="step-text-main">{step.title}</p>
-                                        <p className="step-text-sub">{step.subtitle}</p>
-                                    </div>
-                                    <div className="step-arrow-wrapper">
-                                        <img src={arrow} alt="Arrow" className="step-arrow-img" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+  return (
+    <section className="workshop-section" id="works" data-nav-tone="purple" data-nav-bg="#f2ddb6">
+      <div className="workshop-section__inner">
+        <h2 className="workshop-section__title">
+          Walk in with a product.
+          <br />
+          Walk out with a story.
+        </h2>
+        <div className="workshop-section__left">
+          <div className="workshop-art" aria-hidden>
+            <img className="workshop-art__sun" src={workshopSun} alt="" />
+            <img className="workshop-art__thumb" src={workshopThumb} alt="" />
+            <img className="workshop-art__wordmark" src={workshopWordmark} alt="" />
+            <img className="workshop-art__bottom" src={workshopBottom} alt="" />
+            <img className="workshop-art__hand" src={workshopHand} alt="" />
+          </div>
+          <div className="workshop-art-mobile" aria-hidden>
+            <img className="workshop-art-mobile__sun" src={mobileWorkshopSun} alt="" />
+            <img className="workshop-art-mobile__thumb" src={mobileWorkshopThumb} alt="" />
+            <img className="workshop-art-mobile__wordmark" src={mobileWorkshopWordmark} alt="" />
+            <img className="workshop-art-mobile__bottom" src={mobileWorkshopBottom} alt="" />
+            <img className="workshop-art-mobile__hand" src={mobileWorkshopHand} alt="" />
+          </div>
+        </div>
+        <div className="workshop-section__right">
+          <p className="workshop-section__intro">
+            A focused working session designed to improve clarity, positioning, engagement and
+            adoption readiness.
+            <br />
+            <br />
+            Together we uncover the language, narratives and cultural cues that already exist around
+            your category.
+          </p>
+          <p className="workshop-section__leave">You leave with:</p>
+          <ul className="workshop-section__list">
+            {OUTCOMES.map((item) => (
+              <li key={item}>
+                <img src={bag} alt="" aria-hidden />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <Link to="/application-form" className="workshop-section__cta">
+            Memetic Brand Workshop
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default HowItWorks;
