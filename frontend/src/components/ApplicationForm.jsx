@@ -10,49 +10,29 @@ import sun from '../assets/graphics/Adpr Memetic Brand Labs_Sun 1.png';
 import thumbsUp from '../assets/graphics/Adpr Memetic Brand Labs_Thums Up-.png'; // Using the exact filename found
 import adprFooterLogo from '../assets/graphics/Adpr Memetic Brand Labs_adpr Logo.svg';
 
+const EMPTY_FORM = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    project: '',
+    description: '',
+    challenge: ''
+};
+
 const ApplicationForm = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const step = parseInt(searchParams.get('step') || '1', 10);
 
-    const [formData, setFormData] = useState(() => {
-        const saved = localStorage.getItem('applicationFormData');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                return {
-                    firstName: parsed.firstName || '',
-                    lastName: parsed.lastName || '',
-                    email: parsed.email || '',
-                    project: parsed.project || '',
-                    description: parsed.description || '',
-                    challenge: parsed.challenge || ''
-                };
-            } catch (e) {
-                console.error("Error parsing saved form data", e);
-            }
-        }
-        return {
-            firstName: '',
-            lastName: '',
-            email: '',
-            project: '',
-            description: '',
-            challenge: ''
-        };
-    });
+    const [formData, setFormData] = useState(EMPTY_FORM);
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
         document.body.style.overflow = 'auto';
+        localStorage.removeItem('applicationFormData');
     }, []);
-
-    // Persist form data
-    useEffect(() => {
-        localStorage.setItem('applicationFormData', JSON.stringify(formData));
-    }, [formData]);
 
     // Handle Step 3 Timeout
     useEffect(() => {
@@ -162,21 +142,21 @@ const ApplicationForm = () => {
                                 <div>
                                     <label className="step-one-label" htmlFor="application-first-name">First Name</label>
                                     <label className={`input-wrapper ${errors.firstName ? 'error' : ''}`}>
-                                        <input id="application-first-name" type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-content" />
+                                        <input id="application-first-name" type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-content" autoComplete="off" />
                                     </label>
                                     {errors.firstName && <span className="error-text">{errors.firstName}</span>}
                                 </div>
                                 <div>
                                     <label className="step-one-label" htmlFor="application-last-name">Second Name</label>
                                     <label className={`input-wrapper ${errors.lastName ? 'error' : ''}`}>
-                                        <input id="application-last-name" type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-content" />
+                                        <input id="application-last-name" type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-content" autoComplete="off" />
                                     </label>
                                     {errors.lastName && <span className="error-text">{errors.lastName}</span>}
                                 </div>
                                 <div>
                                     <label className="step-one-label" htmlFor="application-email">Mail Id</label>
                                     <label className={`input-wrapper ${errors.email ? 'error' : ''}`}>
-                                        <input id="application-email" type="email" name="email" value={formData.email} onChange={handleChange} className="input-content" />
+                                        <input id="application-email" type="email" name="email" value={formData.email} onChange={handleChange} className="input-content" autoComplete="off" />
                                     </label>
                                     {errors.email && <span className="error-text">{errors.email}</span>}
                                 </div>
@@ -201,17 +181,17 @@ const ApplicationForm = () => {
                             <div className="input-group">
                                 <div className="input-block">
                                     <label className="input-label">Brand name + link</label>
-                                    <input type="text" name="project" placeholder="(website / repo / deck link)" value={formData.project} onChange={handleChange} className={`input-field ${errors.project ? 'error' : ''}`} />
+                                    <input type="text" name="project" placeholder="(website / repo / deck link)" value={formData.project} onChange={handleChange} className={`input-field ${errors.project ? 'error' : ''}`} autoComplete="off" />
                                     {errors.project && <span className="error-text">{errors.project}</span>}
                                 </div>
                                 <div className="input-block">
                                     <label className="input-label">What are you building?</label>
-                                    <input type="text" name="description" placeholder="(Explain your product in simple terms.)" value={formData.description} onChange={handleChange} className={`input-field ${errors.description ? 'error' : ''}`} />
+                                    <input type="text" name="description" placeholder="(Explain your product in simple terms.)" value={formData.description} onChange={handleChange} className={`input-field ${errors.description ? 'error' : ''}`} autoComplete="off" />
                                     {errors.description && <span className="error-text">{errors.description}</span>}
                                 </div>
                                 <div className="input-block">
                                     <label className="input-label">Your current brand challenge</label>
-                                    <input type="text" name="challenge" placeholder="Adoption, Narrative clarity, Community traction, Differentiation, Positioning" value={formData.challenge} onChange={handleChange} className={`input-field ${errors.challenge ? 'error' : ''}`} />
+                                    <input type="text" name="challenge" placeholder="Adoption, Narrative clarity, Community traction, Differentiation, Positioning" value={formData.challenge} onChange={handleChange} className={`input-field ${errors.challenge ? 'error' : ''}`} autoComplete="off" />
                                     {errors.challenge && <span className="error-text">{errors.challenge}</span>}
                                 </div>
                             </div>

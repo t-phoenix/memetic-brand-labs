@@ -194,7 +194,7 @@
     background: transparent;
     border: 2px solid;
     min-height: 64px;
-    border-radius: 50px;
+    border-radius: 12px;
     padding: 0 36px;
     width: 100%;
     transition: all 0.3s ease;
