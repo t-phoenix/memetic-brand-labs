@@ -1,8 +1,8 @@
 .memetic-section {
   position: relative;
   background: #d9595e;
-  color: #f2ddb6;
-  min-height: 1054px;
+  color: var(--color-peach);
+  min-height: max(1054px, 100svh);
   overflow: hidden;
 }
 
@@ -22,6 +22,16 @@
   width: 402px;
   height: 182px;
   margin-bottom: 38px;
+  opacity: 0;
+  pointer-events: none;
+  translate: 0 12px;
+  transition: opacity 180ms ease, translate 180ms ease;
+}
+
+.memetic-section__bubble.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  translate: 0 0;
 }
 
 .memetic-section__bubble img {
@@ -41,17 +51,44 @@
 }
 
 .memetic-section__left h2 {
+  position: relative;
+  width: 369px;
   color: #f2ddb6;
-  font: 400 80px/64px var(--font-heading);
-  margin: 0;
+  font: 400 80px/90px var(--font-heading);
+  margin: 0 0 0 16px;
 }
 
-.memetic-section__left h2 span {
-  display: inline-block;
-  font-size: 44px;
-  line-height: 1;
-  vertical-align: top;
-  margin: -4px 8px 0;
+.memetic-section__quotes {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  width: 369px;
+  height: 22px;
+}
+
+.memetic-section__title-copy {
+  display: block;
+  width: 289px;
+  margin-left: 45px;
+}
+
+.memetic-section__trigger {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.memetic-section__trigger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+
+.memetic-section__potential {
+  display: block;
 }
 
 .memetic-section__lead {
@@ -69,8 +106,8 @@
 .memetic-carousel {
   position: relative;
   display: grid;
-  grid-template-columns: 42px 294px 42px;
-  gap: 35px;
+  grid-template-columns: 42px 293.739px 42px;
+  gap: 33.0625px;
   align-items: center;
 }
 
@@ -88,30 +125,71 @@
   z-index: 1;
   left: 0;
   top: 168px;
-  width: 448px;
-  height: 40px;
+  width: 443.864px;
+  height: 39.217px;
   object-fit: fill;
   pointer-events: none;
 }
 
 .memetic-carousel__card {
-  width: 294px;
-  height: 376px;
+  position: relative;
+  width: 293.739px;
+  height: auto;
+  aspect-ratio: 293.739 / 375.781;
   border-radius: 20px;
   background: #f2ddb6;
   color: #d9595e;
-  padding: 62px 24px 28px;
+  padding: 0;
   text-align: center;
+  overflow: hidden;
+}
+
+.memetic-carousel__card--next {
+  animation: memetic-card-next 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.memetic-carousel__card--previous {
+  animation: memetic-card-previous 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes memetic-card-next {
+  from {
+    opacity: 0;
+    translate: 38px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes memetic-card-previous {
+  from {
+    opacity: 0;
+    translate: -38px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 .memetic-carousel__image {
-  width: 247px;
-  height: 190px;
+  position: absolute;
+  top: 16.5%;
+  left: 7.83%;
+  width: 84.09%;
+  height: 50.56%;
   object-fit: contain;
-  margin: 0 auto 50px;
+  margin: 0;
 }
 
 .memetic-carousel__card h3 {
+  position: absolute;
+  top: 81.98%;
+  left: 50%;
+  width: 98px;
+  translate: -50% 0;
   color: #d9595e;
   font: 400 28px/32px var(--font-heading);
   margin: 0;
@@ -119,10 +197,10 @@
 
 .memetic-carousel__social {
   display: block;
-  width: 294px;
-  height: 24px;
+  width: 293.593px;
+  height: 23.441px;
   object-fit: contain;
-  margin: 18px 0 36px 77px;
+  margin: 19.778px 0 36px 75.0625px;
 }
 
 .memetic-section__def {
@@ -138,6 +216,13 @@
   color: #f2ddb6;
   margin: 42px auto 60px;
   max-width: 724px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memetic-carousel__card--next,
+  .memetic-carousel__card--previous {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -163,8 +248,21 @@
   }
 
   .memetic-section__left h2 {
+    width: min(369px, calc(100vw - 40px));
+    margin-left: 0;
     font-size: 54px;
-    line-height: 52px;
+    line-height: 62px;
+  }
+
+  .memetic-section__quotes {
+    top: 8px;
+    width: 100%;
+    height: auto;
+  }
+
+  .memetic-section__title-copy {
+    width: calc(100% - 76px);
+    margin-left: 38px;
   }
 
   .memetic-section__lead,
@@ -174,7 +272,7 @@
   }
 
   .memetic-carousel {
-    grid-template-columns: 30px minmax(0, 294px) 30px;
+    grid-template-columns: 30px minmax(0, 293.739px) 30px;
     gap: 4px;
     justify-content: center;
   }
@@ -185,7 +283,7 @@
   }
 
   .memetic-carousel__card {
-    width: min(100%, 294px);
+    width: min(100%, 293.739px);
   }
 
   .memetic-carousel__social {

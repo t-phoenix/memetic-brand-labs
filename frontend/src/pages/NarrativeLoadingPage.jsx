@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
 import { getRunStatus } from '../lib/narrativeApi';
-import sun from '../assets/graphics/figma-v2/sun-loading.png';
+import sun from '../assets/graphics/figma-v2/mobile-hero-sun.svg';
 import './NarrativeFlow.css';
 
 const STEPS = [
@@ -109,7 +109,10 @@ export default function NarrativeLoadingPage() {
         ) : (
           <div className="ne-loading">
             <div className="ne-loading__track-wrap">
-              <div className="ne-loading__sun" style={{ left: `calc(${pct}% - 82px)` }}>
+              <div
+                className="ne-loading__sun"
+                style={{ left: `calc((100% - 163px) * ${pct / 100})` }}
+              >
                 <img src={sun} alt="" width={163} height={160} />
               </div>
               <div className="ne-loading__track" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>

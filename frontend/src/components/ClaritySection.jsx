@@ -8,7 +8,7 @@ const SUPPORT = ['Creator activation', 'Community engagement', 'Communication re
 /** Figma: Group 168 / Clarity is where it starts */
 export default function ClaritySection() {
   return (
-    <section className="clarity-section" id="clarity" data-nav-tone="cream" data-nav-bg="#d9595e">
+    <section className="clarity-section" id="clarity" data-nav-tone="cream" data-nav-bg="#de5f64">
       <div className="clarity-section__inner">
         <div className="clarity-section__left">
           <h2>

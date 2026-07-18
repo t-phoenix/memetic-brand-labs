@@ -1,7 +1,7 @@
 .communication-section {
-  min-height: 810px;
-  background: #7979e3;
-  color: #f2ddb6;
+  min-height: max(810px, 100svh);
+  background: var(--color-purple-hero);
+  color: var(--color-peach);
   position: relative;
   overflow: hidden;
 }
@@ -10,7 +10,7 @@
   width: min(100%, 1440px);
   min-height: 810px;
   margin: 0 auto;
-  padding: 50px 59px 28px;
+  padding: 172px 59px 28px;
   position: relative;
 }
 

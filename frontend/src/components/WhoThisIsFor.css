@@ -42,20 +42,42 @@
 }
 
 .cards-section__card {
+  position: relative;
   height: 402px;
   border-radius: 20px;
   background: #efc960;
   color: #7979e3;
-  padding: 48px 32px 30px;
+  padding: 266px 32px 30px;
   display: flex;
   flex-direction: column;
 }
 
 .cards-section__card img {
-  width: 170px;
-  height: 158px;
+  position: absolute;
   object-fit: contain;
-  margin: 0 auto 42px;
+  margin: 0;
+}
+
+.cards-section__card:nth-child(1) img {
+  top: 67.46px;
+  left: 84.54px;
+  width: 170.46px;
+  height: 152.46px;
+}
+
+.cards-section__card:nth-child(2) img {
+  top: 60.61px;
+  left: 90.81px;
+  width: 159.61px;
+  height: 157.83px;
+}
+
+.cards-section__card:nth-child(3) img {
+  top: 70.57px;
+  left: 105.75px;
+  width: 128.09px;
+  height: 155.43px;
+  object-fit: contain;
 }
 
 .cards-section__card h3 {
@@ -117,6 +139,28 @@
 
   .cards-section__card {
     height: 377.5px;
+    padding-top: 256px;
+  }
+
+  .cards-section__card:nth-child(1) img {
+    top: 63.35px;
+    left: 79.39px;
+    width: 160.07px;
+    height: 143.17px;
+  }
+
+  .cards-section__card:nth-child(2) img {
+    top: 56.91px;
+    left: 85.27px;
+    width: 149.88px;
+    height: 148.21px;
+  }
+
+  .cards-section__card:nth-child(3) img {
+    top: 66.27px;
+    left: 99.31px;
+    width: 120.28px;
+    height: 145.96px;
   }
 
   .cards-section__card h3 {

@@ -9,7 +9,7 @@
 }
 
 .application-form-page.step-1 {
-    background-color: var(--color-blue);
+    background-color: var(--color-purple-hero);
 }
 
 .application-form-page.step-2 {
@@ -97,7 +97,7 @@
 /* Titles */
 .title-yellow {
     font-family: var(--font-heading);
-    color: var(--color-yellow);
+    color: var(--color-peach);
     font-size: clamp(40px, 6vw, 100px);
     line-height: 0.9;
     margin-bottom: -22%;
@@ -193,15 +193,25 @@
     align-items: center;
     background: transparent;
     border: 2px solid;
-    border-radius: 12px;
-    padding: 20px 24px;
+    min-height: 64px;
+    border-radius: 50px;
+    padding: 0 36px;
     width: 100%;
     transition: all 0.3s ease;
     cursor: text;
 }
 
 .step-1 .input-wrapper {
-    color: var(--color-white);
+    border-color: var(--color-peach);
+    color: var(--color-peach);
+}
+
+.step-one-label {
+    display: block;
+    margin: 0 0 12px;
+    color: var(--color-peach);
+    font: 500 20px/26px var(--font-body);
+    letter-spacing: 0.2px;
 }
 
 .input-prefix {
@@ -232,7 +242,7 @@
 .input-content:-webkit-autofill:hover,
 .input-content:-webkit-autofill:focus,
 .input-content:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px var(--color-blue) inset !important;
+    -webkit-box-shadow: 0 0 0 30px var(--color-purple-hero) inset !important;
     -webkit-text-fill-color: var(--color-white) !important;
     transition: background-color 5000s ease-in-out 0s;
 }
@@ -244,26 +254,30 @@
 }
 
 .next-action {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: var(--spacing-md);
+    justify-content: center;
+    width: 311px;
+    max-width: 100%;
+    height: 62px;
+    padding: 0 32px;
+    border-radius: 50px;
+    background: var(--color-peach);
     cursor: pointer;
     margin-top: var(--spacing-lg);
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, transform 0.2s;
 }
 
 .next-action:hover {
-    opacity: 0.8;
+    opacity: 0.92;
+    transform: translateY(-1px);
 }
 
 .secure-text {
-    font-family: var(--font-body);
-    font-weight: 700;
-    color: var(--color-yellow);
-    /* Yellow/Orange */
-    font-style: italic;
-    font-size: 24px;
-    letter-spacing: 0.5px;
+    color: var(--color-purple-hero);
+    font: 400 30px/1 var(--font-heading);
+    font-style: normal;
+    letter-spacing: 0.3px;
 }
 
 .arrow-btn-img img {

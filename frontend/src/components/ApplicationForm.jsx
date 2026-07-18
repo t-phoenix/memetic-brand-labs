@@ -8,7 +8,6 @@ import handshakePink from '../assets/graphics/Adpr Memetic Brand Labs_Shake hand
 import handshakeYellow from '../assets/graphics/Adpr Memetic Brand Labs_Shake hand 2.png';
 import sun from '../assets/graphics/Adpr Memetic Brand Labs_Sun 1.png';
 import thumbsUp from '../assets/graphics/Adpr Memetic Brand Labs_Thums Up-.png'; // Using the exact filename found
-import yellowArrow from '../assets/graphics/Adpr Memetic Brand Labs_Yellow_Arrow.png';
 import adprFooterLogo from '../assets/graphics/Adpr Memetic Brand Labs_adpr Logo.svg';
 
 const ApplicationForm = () => {
@@ -123,7 +122,7 @@ const ApplicationForm = () => {
         try {
             // We use 'no-cors' mode or text/plain content type to play nice with Google Apps Script CORS
             // 'text/plain' prevents the browser from sending an OPTIONS preflight request which GAS doesn't handle
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
+            await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
@@ -161,33 +160,30 @@ const ApplicationForm = () => {
                         <div className="right-panel">
                             <div className="input-group">
                                 <div>
+                                    <label className="step-one-label" htmlFor="application-first-name">First Name</label>
                                     <label className={`input-wrapper ${errors.firstName ? 'error' : ''}`}>
-                                        <span className="input-prefix">First Name |</span>
-                                        <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-content" />
+                                        <input id="application-first-name" type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-content" />
                                     </label>
                                     {errors.firstName && <span className="error-text">{errors.firstName}</span>}
                                 </div>
                                 <div>
+                                    <label className="step-one-label" htmlFor="application-last-name">Second Name</label>
                                     <label className={`input-wrapper ${errors.lastName ? 'error' : ''}`}>
-                                        <span className="input-prefix">Second Name |</span>
-                                        <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-content" />
+                                        <input id="application-last-name" type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-content" />
                                     </label>
                                     {errors.lastName && <span className="error-text">{errors.lastName}</span>}
                                 </div>
                                 <div>
+                                    <label className="step-one-label" htmlFor="application-email">Mail Id</label>
                                     <label className={`input-wrapper ${errors.email ? 'error' : ''}`}>
-                                        <span className="input-prefix">Mail Id |</span>
-                                        <input type="email" name="email" value={formData.email} onChange={handleChange} className="input-content" />
+                                        <input id="application-email" type="email" name="email" value={formData.email} onChange={handleChange} className="input-content" />
                                     </label>
                                     {errors.email && <span className="error-text">{errors.email}</span>}
                                 </div>
                             </div>
-                            <div className="next-action" onClick={handleNext}>
+                            <button type="button" className="next-action" onClick={handleNext}>
                                 <span className="secure-text">Secure your spot</span>
-                                <div className="arrow-btn-img">
-                                    <img src={yellowArrow} alt="Next" />
-                                </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
                 )}

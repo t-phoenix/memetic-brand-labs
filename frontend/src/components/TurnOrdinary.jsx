@@ -1,4 +1,4 @@
-import scrollQuill from '../assets/graphics/figma-v2/story-scroll.svg';
+import scrollQuill from '../assets/graphics/figma-v2/story-scroll-full.svg';
 import './TurnOrdinary.css';
 
 /** Figma: Group 169 — magenta story section */

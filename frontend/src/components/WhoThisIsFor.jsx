@@ -1,6 +1,6 @@
-import speechIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 1.svg';
-import clapIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 2.svg';
-import thumbIcon from '../assets/graphics/Adpr Memetic Brand Labs_Icon 3.svg';
+import speechIcon from '../assets/graphics/figma-v2/card-speech.svg';
+import clapIcon from '../assets/graphics/figma-v2/card-clap.svg';
+import thumbIcon from '../assets/graphics/figma-v2/card-thumb.svg';
 import './WhoThisIsFor.css';
 
 /** Figma: Group 44 — From technical depth to shared language + 3 cards */

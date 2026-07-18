@@ -1,4 +1,4 @@
-import illustration from '../assets/graphics/figma-v2/sun-pink.png';
+import illustration from '../assets/graphics/figma-v2/communication-art.svg';
 import mobileIllustration from '../assets/graphics/figma-v2/mobile-communication-art.svg';
 import './CommunicationSection.css';
 

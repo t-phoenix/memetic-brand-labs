@@ -46,6 +46,59 @@ function LandingPage() {
     return () => window.removeEventListener('scroll', updateTone);
   }, []);
 
+  useEffect(() => {
+    const sections = [...document.querySelectorAll('.landing > section')];
+    const revealTargets = [
+      'h1',
+      'h2',
+      '.communication-section__illustration',
+      '.communication-section__copy',
+      '.story-section__art',
+      '.strong-section__row',
+      '.cards-section__intro',
+      '.cards-section__card',
+      '.cards-section__footer',
+      '.memetic-section__left',
+      '.memetic-section__lead',
+      '.memetic-carousel',
+      '.memetic-carousel__social',
+      '.memetic-section__def',
+      '.memetic-section__footnote',
+      '.workshop-section__left',
+      '.workshop-section__right',
+      '.ne-section__left',
+      '.ne-section__intro',
+      '.ne-section__tell',
+      '.ne-section__form',
+      '.clarity-section__left',
+      '.clarity-section__right',
+      '.clarity-section__footnote',
+      '.final-cta__left',
+      '.final-cta__right',
+    ].join(',');
+
+    sections.forEach((section) => {
+      section.querySelectorAll(revealTargets).forEach((element, index) => {
+        element.classList.add('landing-reveal');
+        element.style.setProperty('--reveal-order', index);
+      });
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.14 },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="landing">
       <Hero />
