@@ -9,30 +9,21 @@
 }
 
 .hero__splash {
-  width: min(62.53vw, 900px);
-  max-height: calc(100svh - 80px);
+  width: min(62.5vw, 900px);
+  height: min(46.6667vw, 672px, calc(100svh - 80px));
   display: grid;
   place-items: center;
 }
 
 .hero__brand-art {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: contain;
 }
 
 .hero__mobile-art {
   display: none;
-}
-
-@media (max-width: 1100px) {
-  .hero {
-    min-height: 100svh;
-  }
-
-  .hero__splash {
-    width: min(70vw, 320px);
-  }
 }
 
 @media (max-width: 600px) {
