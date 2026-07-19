@@ -1,36 +1,36 @@
 .workshop-section {
   position: relative;
-  min-height: 1207.5px;
+  min-height: calc(1207.5 * var(--u));
   overflow: hidden;
   background: #f2ddb6;
   color: #8e4ed5;
 }
 
 .workshop-section__inner {
-  max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
-  padding: 172px 63px 80px;
+  padding: calc(172 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u));
   display: grid;
-  grid-template-columns: 590px 1fr;
+  grid-template-columns: calc(590 * var(--u)) 1fr;
   grid-template-rows: auto 1fr;
-  gap: 22px 78px;
+  gap: calc(22 * var(--u)) calc(78 * var(--u));
   align-items: start;
 }
 
 .workshop-section__title {
   grid-column: 1 / -1;
-  width: 784px;
+  width: calc(784 * var(--u));
   max-width: 100%;
   margin: 0;
   color: #8e4ed5;
-  font: 400 80px/90px var(--font-heading);
+  font: 400 calc(80 * var(--u)) / calc(90 * var(--u)) var(--font-heading);
 }
 
 .workshop-art {
   position: relative;
-  width: 385px;
-  height: 780px;
-  margin: -24px 0 0 148px;
+  width: calc(385 * var(--u));
+  height: calc(780 * var(--u));
+  margin: calc(-24 * var(--u)) 0 0 calc(148 * var(--u));
 }
 
 .workshop-art-mobile {
@@ -43,76 +43,76 @@
 }
 
 .workshop-art__sun {
-  left: 22px;
+  left: calc(22 * var(--u));
   top: 0;
-  width: 209px;
-  height: 205px;
+  width: calc(209 * var(--u));
+  height: calc(205 * var(--u));
 }
 
 .workshop-art__thumb {
   right: 0;
-  top: -44px;
-  width: 144px;
-  height: 161px;
+  top: calc(-44 * var(--u));
+  width: calc(144 * var(--u));
+  height: calc(161 * var(--u));
 }
 
 .workshop-art__wordmark {
   left: 0;
-  top: 214px;
-  width: 359px;
-  height: 338px;
+  top: calc(214 * var(--u));
+  width: calc(359 * var(--u));
+  height: calc(338 * var(--u));
 }
 
 .workshop-art__bottom {
-  left: 34px;
+  left: calc(34 * var(--u));
   bottom: 0;
-  width: 291px;
-  height: 213px;
+  width: calc(291 * var(--u));
+  height: calc(213 * var(--u));
 }
 
 .workshop-art__hand {
   left: 0;
-  bottom: 46px;
-  width: 133px;
-  height: 158px;
+  bottom: calc(46 * var(--u));
+  width: calc(133 * var(--u));
+  height: calc(158 * var(--u));
 }
 
 .workshop-section__right {
-  padding-top: 55px;
+  padding-top: calc(55 * var(--u));
 }
 
 .workshop-section__intro {
-  max-width: 625px;
-  margin: 0 0 40px;
-  font: 400 24px/34px var(--font-body);
-  letter-spacing: 0.24px;
+  max-width: calc(625 * var(--u));
+  margin: 0 0 calc(40 * var(--u));
+  font: 400 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
+  letter-spacing: calc(0.24 * var(--u));
 }
 
 .workshop-section__leave {
-  margin: 0 0 28px;
-  font: 600 24px/34px var(--font-body);
+  margin: 0 0 calc(28 * var(--u));
+  font: 600 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
 }
 
 .workshop-section__list {
   list-style: none;
-  margin: 0 0 48px;
+  margin: 0 0 calc(48 * var(--u));
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: calc(30 * var(--u));
 }
 
 .workshop-section__list li {
   display: flex;
   align-items: center;
-  gap: 24px;
-  font: 600 24px/34px var(--font-body);
-  letter-spacing: 0.24px;
+  gap: calc(24 * var(--u));
+  font: 600 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
+  letter-spacing: calc(0.24 * var(--u));
 }
 
 .workshop-section__list img {
-  width: 23px;
-  height: 33.48px;
+  width: calc(23 * var(--u));
+  height: calc(33.48 * var(--u));
   flex-shrink: 0;
   object-fit: contain;
 }
@@ -121,14 +121,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 424px;
+  width: calc(424 * var(--u));
   max-width: 100%;
-  height: 80px;
-  border-radius: 50px;
+  height: calc(80 * var(--u));
+  border-radius: calc(50 * var(--u));
   background: #8e4ed5;
   color: #f2ddb6;
-  font: 400 30px/1 var(--font-heading);
-  letter-spacing: 0.3px;
+  font: 400 calc(30 * var(--u)) / 1 var(--font-heading);
+  letter-spacing: calc(0.3 * var(--u));
   text-align: center;
   transition: transform 0.15s ease;
 }
@@ -151,6 +151,7 @@
 
   .workshop-section__title {
     grid-column: auto;
+    width: auto;
     font-size: 40px;
     line-height: 48px;
   }
@@ -163,6 +164,7 @@
   .workshop-section__leave {
     font-size: 18px;
     line-height: 28px;
+    max-width: none;
   }
 
   .workshop-section__list li {
@@ -170,10 +172,16 @@
     line-height: 24px;
   }
 
+  .workshop-section__list img {
+    width: 23px;
+    height: 33.48px;
+  }
+
   .workshop-section__cta {
     width: 100%;
     height: 67px;
     font-size: 22px;
+    border-radius: 50px;
   }
 
   .workshop-section__left {
@@ -187,6 +195,41 @@
     margin: 0 auto;
     transform: scale(0.75);
     transform-origin: top center;
+  }
+
+  .workshop-art__sun {
+    left: 22px;
+    top: 0;
+    width: 209px;
+    height: 205px;
+  }
+
+  .workshop-art__thumb {
+    right: 0;
+    top: -44px;
+    width: 144px;
+    height: 161px;
+  }
+
+  .workshop-art__wordmark {
+    left: 0;
+    top: 214px;
+    width: 359px;
+    height: 338px;
+  }
+
+  .workshop-art__bottom {
+    left: 34px;
+    bottom: 0;
+    width: 291px;
+    height: 213px;
+  }
+
+  .workshop-art__hand {
+    left: 0;
+    bottom: 46px;
+    width: 133px;
+    height: 158px;
   }
 }
 

@@ -94,8 +94,14 @@
   --color-black: #211d16;
   --color-white: #FFFFFF;
   --color-dull-peach: #f8dcb1;
-  --site-max: 1440px;
-  --site-gutter: 60px;
+
+  /* Figma artboard (MBL_Web Landing page = 1440 wide).
+     --u scales every desktop length so 1440px looks identical,
+     laptops shrink, and wide screens grow — no fixed max width. */
+  --artboard: 1440;
+  --u: 1px;
+  --site-max: 100%;
+  --site-gutter: calc(60 * var(--u));
   --site-gutter-mobile: 20px;
 
   /* Typography */
@@ -103,26 +109,18 @@
   --font-body: 'Urbanist', sans-serif;
   --font-decorative: 'Reyhans', cursive;
 
-  /* Spacing */
-  --spacing-xs: 8px;
-  --spacing-sm: 16px;
-  --spacing-md: 24px;
-  --spacing-lg: 48px;
-  --spacing-xl: 64px;
-  --spacing-2xl: 96px;
-  --spacing-3xl: 128px;
+  /* Spacing (scale with artboard on desktop) */
+  --spacing-xs: calc(8 * var(--u));
+  --spacing-sm: calc(16 * var(--u));
+  --spacing-md: calc(24 * var(--u));
+  --spacing-lg: calc(48 * var(--u));
+  --spacing-xl: calc(64 * var(--u));
+  --spacing-2xl: calc(96 * var(--u));
+  --spacing-3xl: calc(128 * var(--u));
 
   /* Responsive Breakpoints */
-  --breakpoint-mobile: 767px;
-  --breakpoint-tablet: 768px;
-  --breakpoint-laptop: 1025px;
-  --breakpoint-monitor: 1441px;
-
-  /* Container Widths */
-  --container-mobile: 100%;
-  --container-tablet: 100%;
-  --container-laptop: 1400px;
-  --container-monitor: 1800px;
+  --breakpoint-mobile: 900px;
+  --breakpoint-tablet: 901px;
 }
 
 /* CSS Reset & Base Styles */

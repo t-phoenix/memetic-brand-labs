@@ -2,52 +2,53 @@
   position: relative;
   background: #7979e3;
   color: #f2ddb6;
-  min-height: 1069px;
+  min-height: calc(1069 * var(--u));
   overflow: hidden;
 }
 
 .cards-section__inner {
-  max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
-  padding: 172px 59px 60px;
+  padding: calc(172 * var(--u)) calc(59 * var(--u)) calc(60 * var(--u));
 }
 
 .cards-section__inner h2 {
   font-family: var(--font-heading);
   font-weight: 400;
-  font-size: 80px;
-  line-height: 90px;
+  font-size: calc(80 * var(--u));
+  line-height: calc(90 * var(--u));
   text-transform: none;
   color: #f2ddb6;
-  max-width: 803px;
-  margin: 0 0 40px;
+  max-width: calc(803 * var(--u));
+  margin: 0 0 calc(40 * var(--u));
 }
 
 .cards-section__intro {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 24px;
-  line-height: 34px;
-  letter-spacing: 0.24px;
-  margin: 0 0 48px;
+  font-size: calc(24 * var(--u));
+  line-height: calc(34 * var(--u));
+  letter-spacing: calc(0.24 * var(--u));
+  margin: 0 0 calc(48 * var(--u));
 }
 
 .cards-section__cards {
-  width: 1094px;
+  width: calc(1094 * var(--u));
   max-width: 100%;
-  margin: 0 auto 54px;
+  margin: 0 auto calc(54 * var(--u));
   display: grid;
-  grid-template-columns: repeat(3, 340.44px);
-  gap: 36.14px;
+  grid-template-columns: repeat(3, calc(340.44 * var(--u)));
+  gap: calc(36.14 * var(--u));
+  justify-content: center;
 }
 
 .cards-section__card {
   position: relative;
-  height: 402px;
-  border-radius: 20px;
+  height: calc(402 * var(--u));
+  border-radius: calc(20 * var(--u));
   background: #efc960;
   color: #7979e3;
-  padding: 266px 32px 30px;
+  padding: calc(266 * var(--u)) calc(32 * var(--u)) calc(30 * var(--u));
   display: flex;
   flex-direction: column;
 }
@@ -59,52 +60,52 @@
 }
 
 .cards-section__card:nth-child(1) img {
-  top: 67.46px;
-  left: 84.54px;
-  width: 170.46px;
-  height: 152.46px;
+  top: calc(67.46 * var(--u));
+  left: calc(84.54 * var(--u));
+  width: calc(170.46 * var(--u));
+  height: calc(152.46 * var(--u));
 }
 
 .cards-section__card:nth-child(2) img {
-  top: 60.61px;
-  left: 90.81px;
-  width: 159.61px;
-  height: 157.83px;
+  top: calc(60.61 * var(--u));
+  left: calc(90.81 * var(--u));
+  width: calc(159.61 * var(--u));
+  height: calc(157.83 * var(--u));
 }
 
 .cards-section__card:nth-child(3) img {
-  top: 70.57px;
-  left: 105.75px;
-  width: 128.09px;
-  height: 155.43px;
+  top: calc(70.57 * var(--u));
+  left: calc(105.75 * var(--u));
+  width: calc(128.09 * var(--u));
+  height: calc(155.43 * var(--u));
   object-fit: contain;
 }
 
 .cards-section__card h3 {
   color: #7979e3;
-  font: 400 28px/32px var(--font-heading);
-  margin: 0 0 14px;
+  font: 400 calc(28 * var(--u)) / calc(32 * var(--u)) var(--font-heading);
+  margin: 0 0 calc(14 * var(--u));
 }
 
 .cards-section__card p {
   color: #7979e3;
-  font: 500 20px/26px var(--font-body);
-  letter-spacing: 0.2px;
+  font: 500 calc(20 * var(--u)) / calc(26 * var(--u)) var(--font-body);
+  letter-spacing: calc(0.2 * var(--u));
   margin: 0;
 }
 
 .cards-section__footer {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 24px;
-  line-height: 34px;
-  letter-spacing: 0.24px;
+  font-size: calc(24 * var(--u));
+  line-height: calc(34 * var(--u));
+  letter-spacing: calc(0.24 * var(--u));
   text-align: center;
-  max-width: 870px;
+  max-width: calc(870 * var(--u));
   margin: 0 auto;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .cards-section {
     min-height: 0;
   }
@@ -116,15 +117,18 @@
   .cards-section__inner h2 {
     font-size: 40px;
     line-height: 48px;
+    max-width: none;
   }
 
   .cards-section__intro,
   .cards-section__footer {
     font-size: 18px;
     line-height: 28px;
+    max-width: none;
   }
 
   .cards-section__cards {
+    width: 100%;
     grid-template-columns: repeat(3, 319.7px);
     overflow-x: auto;
     justify-content: start;
@@ -139,7 +143,8 @@
 
   .cards-section__card {
     height: 377.5px;
-    padding-top: 256px;
+    padding: 256px 32px 30px;
+    border-radius: 20px;
   }
 
   .cards-section__card:nth-child(1) img {
@@ -165,6 +170,7 @@
 
   .cards-section__card h3 {
     font-size: 26px;
+    line-height: 32px;
   }
 
   .cards-section__card p {

@@ -9,8 +9,9 @@
 }
 
 .hero__splash {
-  width: min(62.5vw, 900px);
-  height: min(46.6667vw, 672px, calc(100svh - 80px));
+  /* Figma Group 93: 900.4 × 672 on 1440 artboard */
+  width: calc(900 * var(--u));
+  height: min(calc(672 * var(--u)), calc(100svh - calc(80 * var(--u))));
   display: grid;
   place-items: center;
 }
@@ -26,7 +27,7 @@
   display: none;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .hero {
     display: block;
     min-height: 0;

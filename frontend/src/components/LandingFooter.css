@@ -1,6 +1,14 @@
 .landing {
   width: 100%;
   overflow-x: clip;
+  --u: 1px;
+}
+
+/* Desktop / laptop / wide: fluid scale from 1440 Figma artboard */
+@media (min-width: 901px) {
+  .landing {
+    --u: calc(100vw / var(--artboard));
+  }
 }
 
 .landing > section {
@@ -27,29 +35,29 @@
 .landing-footer {
   background: #061c84;
   color: #f2ddb6;
-  height: 151px;
+  height: calc(151 * var(--u));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 44px 60px;
+  gap: calc(24 * var(--u));
+  padding: calc(44 * var(--u)) calc(60 * var(--u));
   max-width: 100%;
 }
 
 .landing-footer p {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 14px;
-  line-height: 25px;
-  letter-spacing: 0.14px;
-  max-width: 925px;
+  font-size: calc(14 * var(--u));
+  line-height: calc(25 * var(--u));
+  letter-spacing: calc(0.14 * var(--u));
+  max-width: calc(925 * var(--u));
   margin: 0;
 }
 
 .landing-footer__logo {
   flex-shrink: 0;
-  width: 150px;
-  height: 63px;
+  width: calc(150 * var(--u));
+  height: calc(63 * var(--u));
 }
 
 .landing-footer__logo img {
@@ -69,16 +77,24 @@
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .landing-footer {
     flex-direction: column;
     align-items: flex-start;
+    height: auto;
     padding: 40px 20px;
     gap: 32px;
   }
 
+  .landing-footer p {
+    font-size: 14px;
+    line-height: 25px;
+    max-width: none;
+  }
+
   .landing-footer__logo {
     width: 126px;
+    height: 53px;
   }
 }
 

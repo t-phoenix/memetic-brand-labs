@@ -1,5 +1,5 @@
 .communication-section {
-  min-height: max(810px, 100svh);
+  min-height: max(calc(810 * var(--u)), 100svh);
   background: var(--color-purple-hero);
   color: var(--color-peach);
   position: relative;
@@ -7,27 +7,27 @@
 }
 
 .communication-section__inner {
-  width: min(100%, 1440px);
-  min-height: 810px;
+  width: 100%;
+  min-height: calc(810 * var(--u));
   margin: 0 auto;
-  padding: 172px 59px 28px;
+  padding: calc(172 * var(--u)) calc(59 * var(--u)) calc(28 * var(--u));
   position: relative;
 }
 
 .communication-section h1 {
-  width: 1093px;
+  width: calc(1093 * var(--u));
   max-width: 100%;
   margin: 0;
   color: #f2ddb6;
-  font: 400 80px/90px var(--font-heading);
+  font: 400 calc(80 * var(--u)) / calc(90 * var(--u)) var(--font-heading);
 }
 
 .communication-section__illustration {
   position: absolute;
-  left: 105px;
-  bottom: -5px;
-  width: 570px;
-  height: 495px;
+  left: calc(105 * var(--u));
+  bottom: calc(-5 * var(--u));
+  width: calc(570 * var(--u));
+  height: calc(495 * var(--u));
 }
 
 .communication-section__illustration img {
@@ -44,16 +44,16 @@
 
 .communication-section__copy {
   position: absolute;
-  left: 733px;
-  top: 432px;
-  width: 646px;
+  left: calc(733 * var(--u));
+  top: calc(432 * var(--u));
+  width: calc(646 * var(--u));
   color: #f2ddb6;
-  font: 400 24px/34px var(--font-body);
-  letter-spacing: 0.24px;
+  font: 400 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
+  letter-spacing: calc(0.24 * var(--u));
 }
 
 .communication-section__copy p + p {
-  margin-top: 24px;
+  margin-top: calc(24 * var(--u));
 }
 
 .communication-section__copy strong {
@@ -71,6 +71,7 @@
   }
 
   .communication-section h1 {
+    width: auto;
     font-size: 40px;
     line-height: 48px;
   }
@@ -83,6 +84,7 @@
     width: auto;
     font-size: 18px;
     line-height: 28px;
+    letter-spacing: 0.18px;
   }
 
   .communication-section__illustration {

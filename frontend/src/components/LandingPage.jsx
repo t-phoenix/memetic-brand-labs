@@ -32,10 +32,11 @@ function LandingPage() {
 
   useEffect(() => {
     const updateTone = () => {
+      const navProbe = Math.max(48, Math.round(window.innerWidth * (62 / 1440)));
       const sections = document.querySelectorAll('[data-nav-tone]');
       const active = [...sections].find((section) => {
         const rect = section.getBoundingClientRect();
-        return rect.top <= 62 && rect.bottom > 62;
+        return rect.top <= navProbe && rect.bottom > navProbe;
       });
       setNavTone(active?.dataset.navTone || 'cream');
       setNavBackground(active?.dataset.navBg || '#7979e3');
@@ -43,7 +44,11 @@ function LandingPage() {
 
     updateTone();
     window.addEventListener('scroll', updateTone, { passive: true });
-    return () => window.removeEventListener('scroll', updateTone);
+    window.addEventListener('resize', updateTone, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateTone);
+      window.removeEventListener('resize', updateTone);
+    };
   }, []);
 
   useEffect(() => {

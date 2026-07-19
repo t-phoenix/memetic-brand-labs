@@ -2,7 +2,7 @@
   position: relative;
   background: var(--color-purple-hero);
   color: var(--color-peach);
-  height: max(100svh, min(810px, 56.25vw));
+  height: max(100svh, calc(810 * var(--u)));
   min-height: 0;
   overflow: hidden;
 }
@@ -11,7 +11,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: 1440px;
   margin: 0 auto;
 }
 
@@ -66,10 +65,10 @@
   margin: 0;
   padding: 7.8% 6% 5%;
   font-family: var(--font-body);
-  font-size: clamp(16px, 1.667vw, 24px);
+  font-size: calc(24 * var(--u));
   font-weight: 600;
   line-height: 1.42;
-  letter-spacing: 0.24px;
+  letter-spacing: calc(0.24 * var(--u));
   text-align: center;
 }
 
@@ -104,11 +103,11 @@
 .meme-story__scroll p {
   margin: 0 0 1.45em;
   font-family: var(--font-body);
-  font-size: clamp(13px, 1.389vw, 20px);
+  font-size: calc(20 * var(--u));
   font-style: italic;
   font-weight: 400;
   line-height: 1.5;
-  letter-spacing: 0.2px;
+  letter-spacing: calc(0.2 * var(--u));
 }
 
 .meme-story__scroll p:last-child {
@@ -120,8 +119,8 @@
   z-index: 2;
   bottom: 2%;
   left: 50%;
-  width: 44px;
-  height: 44px;
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -135,10 +134,10 @@
 
 .meme-story__scroll-cue span {
   position: absolute;
-  top: 10px;
+  top: calc(10 * var(--u));
   left: 50%;
-  width: 12px;
-  height: 12px;
+  width: calc(12 * var(--u));
+  height: calc(12 * var(--u));
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: translateX(-50%) rotate(45deg);
@@ -175,24 +174,24 @@
 .final-cta__resonate {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: clamp(15px, 1.667vw, 24px);
-  line-height: clamp(21px, 2.361vw, 34px);
-  margin: 0 0 min(60px, 4.167vw);
+  font-size: calc(24 * var(--u));
+  line-height: calc(34 * var(--u));
+  margin: 0 0 calc(60 * var(--u));
   color: #f2ddb6;
 }
 
 .final-cta__block {
-  width: min(424px, 29.444vw);
-  margin-bottom: min(30px, 2.083vw);
+  width: calc(424 * var(--u));
+  margin-bottom: calc(30 * var(--u));
 }
 
 .final-cta__block p {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: clamp(15px, 1.667vw, 24px);
-  line-height: clamp(21px, 2.361vw, 34px);
+  font-size: calc(24 * var(--u));
+  line-height: calc(34 * var(--u));
   text-align: center;
-  margin: 0 0 min(15px, 1.042vw);
+  margin: 0 0 calc(15 * var(--u));
   color: #f2ddb6;
 }
 
@@ -200,13 +199,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: min(424px, 29.444vw);
+  width: calc(424 * var(--u));
   max-width: 100%;
-  height: min(80px, 5.556vw);
-  border-radius: 50px;
+  height: calc(80 * var(--u));
+  border-radius: calc(50 * var(--u));
   font-family: var(--font-heading);
-  font-size: clamp(19px, 2.083vw, 30px);
-  letter-spacing: 0.3px;
+  font-size: calc(30 * var(--u));
+  letter-spacing: calc(0.3 * var(--u));
   text-transform: none;
   text-align: center;
 }
@@ -224,14 +223,14 @@
 
 .final-cta__tagline {
   position: absolute;
-  top: min(463px, 32.153vw);
-  left: max(-476px, -33.056vw);
-  width: min(925px, 64.236vw);
+  top: calc(463 * var(--u));
+  left: calc(-476 * var(--u));
+  width: calc(925 * var(--u));
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: clamp(12px, 1.181vw, 17px);
-  line-height: clamp(20px, 1.944vw, 28px);
-  letter-spacing: 0.18px;
+  font-size: calc(17 * var(--u));
+  line-height: calc(28 * var(--u));
+  letter-spacing: calc(0.18 * var(--u));
   color: #f2ddb6;
   max-width: none;
   margin: 0;
@@ -282,16 +281,32 @@
     font-size: clamp(12px, 4.2vw, 16px);
   }
 
+  .meme-story__scroll-cue {
+    width: 44px;
+    height: 44px;
+  }
+
+  .meme-story__scroll-cue span {
+    top: 10px;
+    width: 12px;
+    height: 12px;
+  }
+
   .final-cta__resonate,
   .final-cta__block p {
     font-size: 18px;
     line-height: 28px;
   }
 
+  .final-cta__resonate {
+    margin-bottom: 24px;
+  }
+
   .final-cta__btn {
     width: 100%;
     height: 67px;
     font-size: 22px;
+    border-radius: 50px;
   }
 
   .final-cta__tagline {
@@ -299,10 +314,12 @@
     width: 100%;
     margin-top: 36px;
     font-size: 16px;
+    line-height: 24px;
   }
 
   .final-cta__block {
     width: 100%;
+    margin-bottom: 24px;
   }
 }
 
