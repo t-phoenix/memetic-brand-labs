@@ -2,8 +2,8 @@
   position: relative;
   min-height: calc(1207.5 * var(--u));
   overflow: hidden;
-  background: #f2ddb6;
-  color: #8e4ed5;
+  background: var(--color-peach);
+  color: var(--color-purple);
 }
 
 .workshop-section__inner {
@@ -22,7 +22,7 @@
   width: calc(784 * var(--u));
   max-width: 100%;
   margin: 0;
-  color: #8e4ed5;
+  color: var(--color-purple);
   font: 400 calc(80 * var(--u)) / calc(90 * var(--u)) var(--font-heading);
 }
 
@@ -125,8 +125,8 @@
   max-width: 100%;
   height: calc(80 * var(--u));
   border-radius: calc(50 * var(--u));
-  background: #8e4ed5;
-  color: #f2ddb6;
+  background: var(--color-purple);
+  color: var(--color-peach);
   font: 400 calc(30 * var(--u)) / 1 var(--font-heading);
   letter-spacing: calc(0.3 * var(--u));
   text-align: center;

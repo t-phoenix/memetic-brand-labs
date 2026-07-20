@@ -87,7 +87,7 @@
     left: 16.92%;
     width: 66.92%;
     margin: 0;
-    color: #f2ddb6;
+    color: var(--color-peach);
     font: 400 clamp(17px, 5.47vw, 22px) / 34px var(--font-body);
     letter-spacing: 0.22px;
     white-space: nowrap;

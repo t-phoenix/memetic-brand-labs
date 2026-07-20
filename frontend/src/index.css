@@ -65,32 +65,18 @@
   font-display: swap;
 }
 
-/* CSS Variables - Color Palette */
+/* CSS Variables - Color Palette (source of truth: Figma MBL_Web) */
 :root {
-  /* Brand Colors */
-  /* --color-purple: #9a44de;
-  --color-red: #e83648;
-  --color-yellow: #f5c948;
-  --color-pink: #ff74d6;
-  --color-blue: #818ae7;
-  --color-coral: #ef5560;
-  --color-peach: #f7ddb1;
-  --color-magenta: #d33c8f;
-  --color-dark-blue: #006eb3;
-  --color-black: #231d16;
-  --color-white: #FFFFFF;
-  --color-dull-peach: #f8dcb1; */
-
   --color-purple: #8e4ed5;
   --color-purple-hero: #7979e3;
   --color-red: #d8474d;
   --color-yellow: #efc960;
   --color-pink: #ff80d2;
   --color-blue: #828de0;
-  --color-coral: #de5f64;
+  --color-coral: #d9595e;
   --color-peach: #f2ddb6;
   --color-magenta: #c24a8c;
-  --color-dark-blue: #246eaf;
+  --color-dark-blue: #061c84;
   --color-black: #211d16;
   --color-white: #FFFFFF;
   --color-dull-peach: #f8dcb1;

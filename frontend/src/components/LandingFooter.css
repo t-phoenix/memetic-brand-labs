@@ -33,8 +33,8 @@
 }
 
 .landing-footer {
-  background: #061c84;
-  color: #f2ddb6;
+  background: var(--color-dark-blue);
+  color: var(--color-peach);
   height: calc(151 * var(--u));
   display: flex;
   align-items: center;

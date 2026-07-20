@@ -288,7 +288,7 @@
 
 /* Step 2 Styles */
 .step-2 .input-field {
-    border-color: #828DE0;
+    border-color: var(--color-blue);
     /* Specific blue border */
     color: var(--color-blue);
     border-width: 2px;
@@ -387,7 +387,7 @@
 
 .thank-you-text h1 {
     font-family: var(--font-heading);
-    color: #FF80D2;
+    color: var(--color-pink);
     /* Pink color from design */
     font-size: clamp(90px, 8vw, 160px);
     margin-top: -50px;
@@ -415,7 +415,7 @@
     /* Hidden by default */
     align-items: center;
     justify-content: flex-end;
-    background-color: #08148a;
+    background-color: var(--color-dark-blue);
     /* Dark Blue */
     padding: 0 var(--spacing-xl);
 }

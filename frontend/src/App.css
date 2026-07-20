@@ -75,7 +75,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  background-color: #08148a;
+  background-color: var(--color-dark-blue);
 }
 
 .footer-logo img {

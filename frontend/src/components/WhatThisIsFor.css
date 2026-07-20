@@ -1,7 +1,7 @@
 .strong-section {
   position: relative;
-  background: #8e4ed5;
-  color: #f2ddb6;
+  background: var(--color-purple);
+  color: var(--color-peach);
   min-height: calc(810 * var(--u));
   overflow: hidden;
 }
@@ -18,7 +18,7 @@
   font-size: calc(80 * var(--u));
   line-height: calc(90 * var(--u));
   text-transform: none;
-  color: #f2ddb6;
+  color: var(--color-peach);
   max-width: calc(805 * var(--u));
   margin: 0 0 calc(48 * var(--u));
 }

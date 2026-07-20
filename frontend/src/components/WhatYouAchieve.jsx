@@ -10,22 +10,44 @@ import jokes from '../assets/graphics/figma-v2/carousel-jokes.svg';
 import truths from '../assets/graphics/figma-v2/carousel-truths.svg';
 import './WhatYouAchieve.css';
 
+/** Figma card frames 111:587 / 596 / 605 / 614 / 636 — shared title band, per-art insets */
+const SLIDES = [
+  {
+    title: 'Stories',
+    image: stories,
+    art: { left: '7.83%', right: '8.08%', top: '16.5%', bottom: '32.94%' },
+  },
+  {
+    title: 'Beliefs',
+    image: beliefs,
+    art: { left: '23.15%', right: '23.4%', top: '16.5%', bottom: '32.94%' },
+  },
+  {
+    title: 'Identities',
+    image: identities,
+    art: { left: '16.34%', right: '16.25%', top: '16.5%', bottom: '32.94%' },
+  },
+  {
+    title: 'Jokes',
+    image: jokes,
+    art: { left: '17.79%', right: '17.31%', top: '16.5%', bottom: '32.94%' },
+  },
+  {
+    title: 'Shared Truths',
+    image: truths,
+    art: { left: '17.7%', right: '17.62%', top: '17.56%', bottom: '31.88%' },
+  },
+];
+
 function WhatYouAchieve() {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [carouselPaused, setCarouselPaused] = useState(false);
-  const slides = [
-    { title: 'Stories', image: stories },
-    { title: 'Beliefs', image: beliefs },
-    { title: 'Identities', image: identities },
-    { title: 'Jokes', image: jokes },
-    { title: 'Shared Truths', image: truths },
-  ];
-  const slide = slides[active];
+  const slide = SLIDES[active];
   const move = (delta) => {
     setDirection(delta);
-    setActive((value) => (value + delta + slides.length) % slides.length);
+    setActive((value) => (value + delta + SLIDES.length) % SLIDES.length);
   };
 
   useEffect(() => {
@@ -33,12 +55,12 @@ function WhatYouAchieve() {
     const timer = window.setInterval(
       () => {
         setDirection(1);
-        setActive((value) => (value + 1) % slides.length);
+        setActive((value) => (value + 1) % SLIDES.length);
       },
       2000,
     );
     return () => window.clearInterval(timer);
-  }, [carouselPaused, slides.length]);
+  }, [carouselPaused]);
 
   return (
     <section className="memetic-section" id="what-you-achieve" data-nav-tone="cream" data-nav-bg="#d9595e">
@@ -93,7 +115,17 @@ function WhatYouAchieve() {
               key={slide.title}
               className={`memetic-carousel__card memetic-carousel__card--${direction > 0 ? 'next' : 'previous'}`}
             >
-              <img className="memetic-carousel__image" src={slide.image} alt="" />
+              <img
+                className="memetic-carousel__image"
+                src={slide.image}
+                alt=""
+                style={{
+                  top: slide.art.top,
+                  right: slide.art.right,
+                  bottom: slide.art.bottom,
+                  left: slide.art.left,
+                }}
+              />
               <h3>{slide.title}</h3>
             </article>
             <button type="button" onClick={() => move(1)} aria-label="Next card" />

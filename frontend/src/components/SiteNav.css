@@ -98,15 +98,15 @@
 }
 
 .site-nav--cream .site-nav__links a {
-  color: #f2ddb6;
+  color: var(--color-peach);
 }
 
 .site-nav--magenta .site-nav__links a {
-  color: #c24a8c;
+  color: var(--color-magenta);
 }
 
 .site-nav--purple .site-nav__links a {
-  color: #8e4ed5;
+  color: var(--color-purple);
 }
 
 @media (max-width: 900px) {
@@ -161,17 +161,17 @@
 
   .site-nav--cream .site-nav__menu,
   .site-nav--cream .site-nav__mobile-links {
-    color: #f2ddb6;
+    color: var(--color-peach);
   }
 
   .site-nav--magenta .site-nav__menu,
   .site-nav--magenta .site-nav__mobile-links {
-    color: #8e4ed5;
+    color: var(--color-purple);
   }
 
   .site-nav--purple .site-nav__menu,
   .site-nav--purple .site-nav__mobile-links {
-    color: #8e4ed5;
+    color: var(--color-purple);
   }
 
   .site-nav__mobile-links {

@@ -1,6 +1,6 @@
 .memetic-section {
   position: relative;
-  background: #d9595e;
+  background: var(--color-coral);
   color: var(--color-peach);
   min-height: max(calc(1054 * var(--u)), 100svh);
   overflow: hidden;
@@ -18,7 +18,7 @@
 
 .memetic-section__bubble {
   position: relative;
-  color: #f2ddb6;
+  color: var(--color-peach);
   width: calc(402 * var(--u));
   height: calc(182 * var(--u));
   margin-bottom: calc(38 * var(--u));
@@ -53,7 +53,7 @@
 .memetic-section__left h2 {
   position: relative;
   width: calc(369 * var(--u));
-  color: #f2ddb6;
+  color: var(--color-peach);
   font: 400 calc(80 * var(--u)) / calc(90 * var(--u)) var(--font-heading);
   margin: 0 0 0 calc(16 * var(--u));
 }
@@ -106,9 +106,12 @@
 .memetic-carousel {
   position: relative;
   display: grid;
+  /* Figma Arrow frame 443.86 wide: 42 + 33.06 + 293.74 + 33.06 + 42 */
   grid-template-columns: calc(42 * var(--u)) calc(293.739 * var(--u)) calc(42 * var(--u));
   gap: calc(33.0625 * var(--u));
   align-items: center;
+  justify-content: start;
+  width: calc(443.864 * var(--u));
 }
 
 .memetic-carousel button {
@@ -127,21 +130,22 @@
   top: calc(168 * var(--u));
   width: calc(443.864 * var(--u));
   height: calc(39.217 * var(--u));
-  object-fit: fill;
+  object-fit: contain;
   pointer-events: none;
 }
 
+/* Figma Frame 1321317460: 293.739 × 375.781, radius 20 */
 .memetic-carousel__card {
   position: relative;
   width: calc(293.739 * var(--u));
-  height: auto;
-  aspect-ratio: 293.739 / 375.781;
+  height: calc(375.781 * var(--u));
   border-radius: calc(20 * var(--u));
-  background: #f2ddb6;
-  color: #d9595e;
+  background: var(--color-peach);
+  color: var(--color-coral);
   padding: 0;
   text-align: center;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .memetic-carousel__card--next {
@@ -174,25 +178,34 @@
   }
 }
 
+/* Art box: size from Figma insets; each slide overrides via inline style */
 .memetic-carousel__image {
   position: absolute;
   top: 16.5%;
+  right: 8.08%;
+  bottom: 32.94%;
   left: 7.83%;
-  width: 84.09%;
-  height: 50.56%;
+  width: auto;
+  height: auto;
+  max-width: none;
   object-fit: contain;
+  object-position: center center;
   margin: 0;
+  pointer-events: none;
 }
 
+/* Shared title band — Figma text y=306 / 375.781 ≈ 81.43% on every card */
 .memetic-carousel__card h3 {
   position: absolute;
-  top: 81.98%;
+  top: 81.43%;
   left: 50%;
-  width: calc(98 * var(--u));
+  width: max-content;
+  max-width: 90%;
   translate: -50% 0;
-  color: #d9595e;
-  font: 400 calc(28 * var(--u)) / calc(32 * var(--u)) var(--font-heading);
+  color: var(--color-coral);
+  font: 400 calc(28 * var(--u)) / 1 var(--font-heading);
   margin: 0;
+  white-space: nowrap;
 }
 
 .memetic-carousel__social {
@@ -213,7 +226,7 @@
 .memetic-section__footnote {
   font: 600 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
   text-align: center;
-  color: #f2ddb6;
+  color: var(--color-peach);
   margin: calc(42 * var(--u)) auto calc(60 * var(--u));
   max-width: calc(724 * var(--u));
 }
@@ -274,6 +287,7 @@
   }
 
   .memetic-carousel {
+    width: auto;
     grid-template-columns: 30px minmax(0, 293.739px) 30px;
     gap: 4px;
     justify-content: center;
@@ -284,15 +298,23 @@
     height: 30px;
   }
 
+  .memetic-carousel__arrows {
+    width: 100%;
+    left: 0;
+    right: 0;
+    height: 30px;
+    top: 50%;
+    translate: 0 -50%;
+  }
+
   .memetic-carousel__card {
     width: min(100%, 293.739px);
+    height: calc(min(100%, 293.739px) * 375.781 / 293.739);
     border-radius: 20px;
   }
 
   .memetic-carousel__card h3 {
-    width: 98px;
     font-size: 28px;
-    line-height: 32px;
   }
 
   .memetic-carousel__social {
