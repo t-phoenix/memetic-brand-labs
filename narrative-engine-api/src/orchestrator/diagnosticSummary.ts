@@ -1,12 +1,10 @@
 import type { LayerKey } from '../types/index.js';
 
-/** Layers that receive Pattern Library text in their user prompt. */
-export const PATTERN_INJECTION_LAYERS: ReadonlySet<LayerKey> = new Set([
-  'diagnostics',
-  'translation',
-  'positioning',
-  'memetic_analysis',
-]);
+/**
+ * @deprecated Pattern DB injection removed — heuristics live in layer system prompts.
+ * See docs/narrative-engine/pattern-library-roadmap.md
+ */
+export const PATTERN_INJECTION_LAYERS: ReadonlySet<LayerKey> = new Set();
 
 /**
  * Build a short steering block from L2 diagnostics for L3–L6.

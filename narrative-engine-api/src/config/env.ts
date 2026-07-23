@@ -26,6 +26,11 @@ const envSchema = z.object({
   SENTRY_DSN: z.string().optional(),
   STORAGE_BUCKET: z.string().default('share-graphics'),
   ADMIN_PLAYGROUND_DAILY_LIMIT: z.coerce.number().default(50),
+  /** Inject matched pattern_entries into L2–L5 prompts. Default off — enable when retrieval is ready. */
+  PATTERN_LIBRARY_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
 });
 
 export type Env = z.infer<typeof envSchema>;

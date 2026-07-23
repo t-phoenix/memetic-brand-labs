@@ -4,7 +4,6 @@ import { listRuns } from '../lib/adminApi';
 import AdminPageHeader from '../components/AdminPageHeader.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
 import { formatUsd, humanizeTier, formatRelativeTime } from '../lib/humanize.js';
-import { formatDuration } from '../lib/formatters';
 
 const PAGE_SIZE = 25;
 
@@ -20,7 +19,6 @@ export default function RunsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     listRuns({
       limit: PAGE_SIZE,
       offset,
@@ -40,6 +38,7 @@ export default function RunsPage() {
     e.preventDefault();
     setOffset(0);
     setSearch(q);
+    setLoading(true);
   };
 
   return (
@@ -57,14 +56,14 @@ export default function RunsPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <select className="admin-select" value={status} onChange={(e) => { setStatus(e.target.value); setOffset(0); }}>
+        <select className="admin-select" value={status} onChange={(e) => { setStatus(e.target.value); setOffset(0); setLoading(true); }}>
           <option value="">All statuses</option>
           <option value="completed">Completed</option>
           <option value="failed">Failed</option>
           <option value="pending">Pending</option>
           <option value="running">Running</option>
         </select>
-        <select className="admin-select" value={runSource} onChange={(e) => { setRunSource(e.target.value); setOffset(0); }}>
+        <select className="admin-select" value={runSource} onChange={(e) => { setRunSource(e.target.value); setOffset(0); setLoading(true); }}>
           <option value="user">User runs only</option>
           <option value="admin_test">Test runs</option>
           <option value="all">All sources</option>
@@ -109,11 +108,11 @@ export default function RunsPage() {
           </div>
 
           <div className="admin-pagination">
-            <button type="button" className="admin-btn" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>
+            <button type="button" className="admin-btn" disabled={offset === 0} onClick={() => { setLoading(true); setOffset(Math.max(0, offset - PAGE_SIZE)); }}>
               Previous
             </button>
             <span>{offset + 1}–{Math.min(offset + PAGE_SIZE, total)} of {total}</span>
-            <button type="button" className="admin-btn" disabled={offset + PAGE_SIZE >= total} onClick={() => setOffset(offset + PAGE_SIZE)}>
+            <button type="button" className="admin-btn" disabled={offset + PAGE_SIZE >= total} onClick={() => { setLoading(true); setOffset(offset + PAGE_SIZE); }}>
               Next
             </button>
           </div>

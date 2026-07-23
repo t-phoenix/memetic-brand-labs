@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { adminFetch, getAdminKey } from '../lib/adminApi';
+import { adminFetch } from '../lib/adminApi';
 import ServiceCard from '../components/ServiceCard';
 import { formatDate } from '../lib/formatters';
 

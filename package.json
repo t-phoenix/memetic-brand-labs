@@ -1,0 +1,13 @@
+{
+  "name": "memetic-brand-labs",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "check": "bash scripts/pre-commit-checks.sh --all",
+    "check:frontend": "cd frontend && pnpm run lint && pnpm run build",
+    "check:api": "cd narrative-engine-api && npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

@@ -367,6 +367,7 @@ export class AdminService {
       { data: costs },
       { data: runOutputs },
       { data: patterns },
+      { data: website },
     ] = await Promise.all([
       this.db.from('engine_runs').select('*').eq('id', id).maybeSingle(),
       this.db.from('pipeline_stages').select('*').eq('run_id', id).order('entered_at'),
@@ -382,6 +383,7 @@ export class AdminService {
         .select('pattern_id, rank, pattern_entries(title)')
         .eq('run_id', id)
         .order('rank'),
+      this.db.from('website_extractions').select('*').eq('run_id', id).maybeSingle(),
     ]);
 
     const layers = buildPipelineLayers({
@@ -410,6 +412,7 @@ export class AdminService {
       cost_summary: costs,
       pattern_summary: patternSummary,
       layers_legacy: outputs,
+      website_extraction: website ?? null,
     };
   }
 

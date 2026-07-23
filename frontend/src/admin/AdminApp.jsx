@@ -14,14 +14,10 @@ import { getHealth, getAdminKey } from './lib/adminApi';
 import './Admin.css';
 
 export default function AdminApp() {
-  const [authed, setAuthed] = useState(null);
+  const [authed, setAuthed] = useState(() => (getAdminKey() ? null : false));
 
   useEffect(() => {
-    const key = getAdminKey();
-    if (!key) {
-      setAuthed(false);
-      return;
-    }
+    if (!getAdminKey()) return;
     getHealth()
       .then(() => setAuthed(true))
       .catch(() => setAuthed(false));

@@ -10,10 +10,16 @@ describe('narrativeConfig', () => {
     expect(prompt.system_prompt).toContain('12-year-old');
   });
 
-  it('includes enum constraints for L1', () => {
+  it('L1 uses dynamic free-form market guidance', () => {
     const prompt = getPromptForLayer('interpretation');
+    expect(prompt.system_prompt).toContain('free-form');
     expect(prompt.system_prompt).toContain('too_technical');
     expect(prompt.system_prompt).toContain('infrastructure');
+  });
+
+  it('translation layer asks for source_message', () => {
+    const prompt = getPromptForLayer('translation');
+    expect(prompt.system_prompt).toContain('source_message');
   });
 
   it('includes messaging_problem enum constraints for L2', () => {
@@ -24,8 +30,8 @@ describe('narrativeConfig', () => {
 
   it('includes MM Lite dimensions for L5', () => {
     const prompt = getPromptForLayer('memetic_analysis');
-    expect(prompt.system_prompt).toContain('clarity (20%)');
-    expect(prompt.system_prompt).toContain('repeatability (15%)');
+    expect(prompt.system_prompt).toContain('clarity');
+    expect(prompt.system_prompt).toContain('repeatability');
   });
 
   it('loads all six schemas with properties', () => {

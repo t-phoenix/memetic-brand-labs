@@ -23,23 +23,20 @@ describe('prompt optimisation wiring (config)', () => {
     const prompt = getPromptForLayer('diagnostics');
     expect(prompt.system_prompt).toContain('too_technical');
     expect(prompt.system_prompt).toContain('unclear_audience');
-    expect(prompt.version).toBe('1.2.0');
+    expect(prompt.version).toBe('1.3.0');
   });
 
-  it('L1 and L2 templates include mismatch_flags and website context', () => {
+  it('L1 uses free-form market (not enum) and L2 has no pattern placeholder', () => {
     const l1 = getPromptForLayer('interpretation');
     const l2 = getPromptForLayer('diagnostics');
+    expect(l1.system_prompt).toContain('free-form');
+    expect(l1.system_prompt).not.toMatch(/market:\s*Web3\s*\|/);
     expect(l1.user_prompt_template).toContain('{{website_context}}');
-    expect(l1.user_prompt_template).toContain('{{mismatch_flags}}');
-    expect(l1.system_prompt.toLowerCase()).toContain('website');
-    expect(l2.user_prompt_template).toContain('{{building}}');
-    expect(l2.user_prompt_template).toContain('{{audience}}');
-    expect(l2.user_prompt_template).toContain('{{website_context}}');
-    expect(l2.user_prompt_template).toContain('{{mismatch_flags}}');
-    expect(l2.user_prompt_template).toContain('{{patterns}}');
+    expect(l2.user_prompt_template).not.toContain('{{patterns}}');
+    expect(l2.system_prompt).toContain('failure heuristics');
   });
 
-  it('L3–L6 templates include diagnostic_summary; L3–L5 include patterns', () => {
+  it('L3–L6 templates include diagnostic_summary without pattern DB placeholders', () => {
     const l3 = getPromptForLayer('translation');
     const l4 = getPromptForLayer('positioning');
     const l5 = getPromptForLayer('memetic_analysis');
@@ -47,10 +44,8 @@ describe('prompt optimisation wiring (config)', () => {
 
     for (const p of [l3, l4, l5, l6]) {
       expect(p.user_prompt_template).toContain('{{diagnostic_summary}}');
+      expect(p.user_prompt_template).not.toContain('{{patterns}}');
     }
-    expect(l3.user_prompt_template).toContain('{{patterns}}');
-    expect(l4.user_prompt_template).toContain('{{patterns}}');
-    expect(l5.user_prompt_template).toContain('{{patterns}}');
     expect(l6.system_prompt).toContain('L4.narrative_hooks');
   });
 
@@ -67,8 +62,7 @@ describe('prompt optimisation wiring (config)', () => {
       website_context: JSON.stringify({ title: 'Example', h1: 'Identity' }),
       mismatch_flags: JSON.stringify({ audience_mismatch: { form: 'wallet builders', site: 'everyone' } }),
       structured_output: JSON.stringify({ core_function: 'identity', messaging_problem: 'too_technical' }, null, 2),
-      patterns: '1. [failure] Too technical: {}',
-      prior_layers: JSON.stringify({ interpretation: { market: 'Web3' } }, null, 2),
+      prior_layers: JSON.stringify({ interpretation: { market: 'Web3 wallet infrastructure' } }, null, 2),
       diagnostic_summary: buildDiagnosticSummary({
         scores: { clarity: 40, positioning: 70, audience: 50, differentiation: 60, relevance: 80 },
         messaging_problem: 'too_technical',
@@ -96,7 +90,7 @@ describe('prompt optimisation wiring (config)', () => {
           primary_outcome: 'Users prove identity without silos',
           category: 'infrastructure',
           complexity_level: 'high',
-          market: 'Web3',
+          market: 'Web3 wallet infrastructure',
           messaging_problem: 'too_technical',
         },
       },
@@ -110,7 +104,10 @@ describe('prompt optimisation wiring (config)', () => {
       },
       {
         layer: 'translation',
-        output: { simple_explanation: 'Prove who you are without repeating paperwork.' },
+        output: {
+          source_message: 'ZK identity abstraction layer',
+          simple_explanation: 'Prove who you are without repeating paperwork.',
+        },
       },
       {
         layer: 'positioning',

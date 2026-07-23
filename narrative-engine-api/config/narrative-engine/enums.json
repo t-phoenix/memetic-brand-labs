@@ -16,12 +16,5 @@
     { "key": "high", "label": "High" },
     { "key": "medium", "label": "Medium" },
     { "key": "low", "label": "Low" }
-  ],
-  "market": [
-    { "key": "Web3", "label": "Web3" },
-    { "key": "AI", "label": "AI" },
-    { "key": "SaaS", "label": "SaaS" },
-    { "key": "Fintech", "label": "Fintech" },
-    { "key": "Other", "label": "Other" }
   ]
 }

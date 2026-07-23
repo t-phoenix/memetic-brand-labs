@@ -19,7 +19,6 @@ export default function OverviewPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     Promise.all([
       getStats(days),
       getAnalyticsMessaging(),
@@ -45,7 +44,7 @@ export default function OverviewPage() {
         subtitle="How narrative runs are performing — costs, completion, and common messaging issues."
       >
         <div className="admin-toolbar">
-          <select className="admin-select" value={days} onChange={(e) => setDays(Number(e.target.value))}>
+          <select className="admin-select" value={days} onChange={(e) => { setDays(Number(e.target.value)); setLoading(true); }}>
             <option value={7}>Last 7 days</option>
             <option value={14}>Last 14 days</option>
             <option value={30}>Last 30 days</option>

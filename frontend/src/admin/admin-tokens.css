@@ -5,6 +5,7 @@
   --admin-bg: var(--color-dull-peach);
   --admin-surface: var(--color-white);
   --admin-accent: var(--color-purple);
+  --admin-accent-hero: var(--color-purple-hero);
   --admin-accent-soft: var(--color-blue);
   --admin-text: var(--color-black);
   --admin-muted: rgba(33, 29, 22, 0.65);
@@ -12,6 +13,8 @@
   --admin-success: #4ade80;
   --admin-danger: var(--color-red);
   --admin-warning: var(--color-yellow);
-  --admin-shadow: 0 4px 20px rgba(33, 29, 22, 0.06);
-  --admin-shadow-lg: 0 8px 32px rgba(33, 29, 22, 0.08);
+  --admin-shadow: 0 4px 24px rgba(33, 29, 22, 0.07);
+  --admin-shadow-lg: 0 12px 40px rgba(33, 29, 22, 0.1);
+  --admin-radius: 12px;
+  --admin-radius-pill: 999px;
 }

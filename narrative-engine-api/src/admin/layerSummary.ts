@@ -31,14 +31,17 @@ export function summarizeLayerOutput(layerKey: string, output: Record<string, un
       return `Top issue: ${problem ?? 'not identified'}${avg != null ? `. Overall health score: ${avg}/100` : ''}.`;
     }
     case 'translation': {
-      const before = output.original_message ?? output.before;
+      const before = output.source_message ?? output.original_message ?? output.before;
       const after = output.simple_explanation ?? output.after;
-      if (before && after) return `Simplified messaging from "${String(before).slice(0, 80)}…" to clearer language.`;
-      return String(after ?? output.simple_explanation ?? 'Translation completed.');
+      if (before && after) return `Simplified from technical language to a ${String(after).split(' ').length}-word plain explanation.`;
+      return after ? `Plain-language result: "${String(after).slice(0, 120)}"` : 'Translation completed.';
     }
     case 'positioning': {
-      const stmt = output.positioning ?? output.positioning_statement;
-      return stmt ? `Positioning: "${String(stmt).slice(0, 200)}"` : 'Positioning direction generated.';
+      const hooks = output.narrative_hooks as string[] | undefined;
+      const hookCount = Array.isArray(hooks) ? hooks.length : 0;
+      return hookCount > 0
+        ? `Positioning direction with ${hookCount} narrative hook${hookCount > 1 ? 's' : ''}.`
+        : 'Positioning direction generated.';
     }
     case 'memetic_analysis': {
       const hook = output.memetic_narrative_angle ?? output.narrative_hook;

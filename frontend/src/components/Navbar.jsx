@@ -1,11 +1,9 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { neDiscoveryEnabled } from '../lib/featureFlags';
 import './Navbar.css';
 
 function Navbar({ className = "navbar" }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const isNeRoute = location.pathname.startsWith('/narrative-engine') || location.pathname.startsWith('/results');
 
     const handleNavClick = (e, sectionId) => {
         e.preventDefault();

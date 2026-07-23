@@ -35,6 +35,7 @@ export function humanizeLayerKey(key) {
 export function humanizeStatus(status, currentStage) {
   if (status === 'completed') return 'Complete';
   if (status === 'failed') return 'Failed';
+  if (status === 'skipped') return 'Skipped';
   if (status === 'pending') return 'Waiting to start';
   if (status === 'running' || status === 'processing') {
     return `In progress — ${STAGE_LABELS[currentStage] ?? 'Processing…'}`;
@@ -111,6 +112,34 @@ export function humanizeRunSource(source) {
   if (source === 'admin_test') return 'Test run';
   if (source === 'admin_replay') return 'Cloned test';
   return 'User run';
+}
+
+export function humanizeMarket(market, marketDetail) {
+  const primary = market?.trim() || 'Unspecified';
+  if (marketDetail?.trim() && marketDetail.trim() !== primary) {
+    return `${primary} — ${marketDetail.trim()}`;
+  }
+  return primary;
+}
+
+const ENUM_LABELS = {
+  too_technical: 'Too technical',
+  too_vague: 'Too vague',
+  no_differentiation: 'No differentiation',
+  unclear_audience: 'Unclear audience',
+  infrastructure: 'Infrastructure',
+  platform: 'Platform',
+  tool: 'Tool',
+  application: 'Application',
+  service: 'Service',
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+};
+
+export function humanizeEnumKey(key) {
+  if (!key) return '—';
+  return ENUM_LABELS[key] ?? String(key).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export function humanizePaymentStatus(status) {

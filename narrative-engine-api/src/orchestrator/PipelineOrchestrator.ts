@@ -3,7 +3,6 @@ import type { Env } from '../config/env.js';
 import { LLMRouter } from '../llm/LLMRouter.js';
 import { VariableResolver } from './VariableResolver.js';
 import { SchemaValidator } from './SchemaValidator.js';
-import { PatternRetriever } from '../patterns/PatternRetriever.js';
 import { TelemetryService } from '../telemetry/TelemetryService.js';
 import { CostCalculator } from '../telemetry/CostCalculator.js';
 import { extractHomepage } from '../website/HomepageExtractor.js';
@@ -20,7 +19,7 @@ import {
 import { sha256 } from '../utils/hash.js';
 import { getPromptForLayer, getSchema, getSchemaForLayer, formatSchemaInstruction } from '../config/narrativeConfig.js';
 import { layerIndex } from '../admin/layerSummary.js';
-import { PATTERN_INJECTION_LAYERS, buildDiagnosticSummary } from './diagnosticSummary.js';
+import { buildDiagnosticSummary } from './diagnosticSummary.js';
 
 export interface LayerExecuteOpts {
   modelOverride?: string;
@@ -48,7 +47,6 @@ export class PipelineOrchestrator {
   private readonly llm: LLMRouter;
   private readonly resolver = new VariableResolver();
   private readonly validator = new SchemaValidator();
-  private readonly patterns: PatternRetriever;
   private readonly telemetry: TelemetryService;
   private readonly costs: CostCalculator;
   private readonly guardrails = new OutputGuardrailService();
@@ -59,7 +57,6 @@ export class PipelineOrchestrator {
     env: Env,
   ) {
     this.llm = new LLMRouter(env);
-    this.patterns = new PatternRetriever(db);
     this.telemetry = new TelemetryService(db);
     this.costs = new CostCalculator(db);
     this.share = new ShareService(db, env);
@@ -344,28 +341,16 @@ export class PipelineOrchestrator {
     const schemaKey = prompt.output_schema_ref ?? `ne.${layerKey}.v1`;
     const schema = getSchema(schemaKey) ?? getSchemaForLayer(layerKey);
 
-    let patternsText = '';
-    if (PATTERN_INJECTION_LAYERS.has(layerKey)) {
-      const interp = prior.interpretation ?? {};
-      const matched = await this.patterns.retrieve({
-        market: String(interp.market ?? ''),
-        category: String(interp.category ?? ''),
-        messaging_problem: String(interp.messaging_problem ?? ''),
-      });
-      patternsText = this.patterns.formatForPrompt(matched);
-    }
-
     const vars = {
       ...ctx.inputVars,
       structured_output: JSON.stringify(prior.interpretation ?? prior.diagnostics ?? {}, null, 2),
-      patterns: patternsText,
       prior_layers: JSON.stringify(prior, null, 2),
       diagnostic_summary: buildDiagnosticSummary(prior.diagnostics),
     };
 
     const system = `${this.resolver.resolve(prompt.system_prompt, vars)}\n\n${formatSchemaInstruction(schema)}`;
     const user = this.resolver.resolve(prompt.user_prompt_template, vars);
-    return { system, user, schemaKey, schema, vars, patternsText };
+    return { system, user, schemaKey, schema, vars };
   }
 
   private async runLayer(
@@ -376,24 +361,6 @@ export class PipelineOrchestrator {
   ): Promise<Record<string, unknown>> {
     const attempt = await this.createLayerExecution(runId, layerKey, opts.attemptReason ?? 'initial');
     const resolved = await this.resolvePrompts(runId, layerKey, ctx, { attemptId: attempt.id });
-
-    if (resolved.patternsText && PATTERN_INJECTION_LAYERS.has(layerKey)) {
-      const interp = ctx.layerOutputs.interpretation ?? {};
-      const matched = await this.patterns.retrieve({
-        market: String(interp.market ?? ''),
-        category: String(interp.category ?? ''),
-        messaging_problem: String(interp.messaging_problem ?? ''),
-      });
-      for (let i = 0; i < matched.length; i++) {
-        await this.db.from('pattern_matches').insert({
-          run_id: runId,
-          layer_execution_id: attempt.id,
-          pattern_id: matched[i].id,
-          match_method: 'tag_filter',
-          rank: i + 1,
-        });
-      }
-    }
 
     await this.db.from('layer_prompt_snapshots').insert({
       layer_execution_id: attempt.id,

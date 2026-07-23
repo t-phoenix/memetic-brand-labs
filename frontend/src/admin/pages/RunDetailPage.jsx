@@ -10,14 +10,14 @@ import {
 } from '../lib/adminApi';
 import AdminPageHeader from '../components/AdminPageHeader.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
-import PipelineStepper from '../components/PipelineStepper.jsx';
-import LayerOutputPanel from '../components/LayerOutputPanel.jsx';
 import OutputCardsPreview from '../components/OutputCardsPreview.jsx';
 import DiagnosticRadarChart from '../components/DiagnosticRadarChart.jsx';
 import MemeticBarChart from '../components/MemeticBarChart.jsx';
 import EventTimeline from '../components/EventTimeline.jsx';
 import HelpTooltip from '../components/HelpTooltip.jsx';
-import JsonToggle from '../components/JsonToggle.jsx';
+import PipelineFlowOverview from '../components/PipelineFlowOverview.jsx';
+import RunConfigSnapshotPanel from '../components/RunConfigSnapshotPanel.jsx';
+import { mergeLayerWithLegacy, indexLegacyByLayer } from '../lib/runDataPresenters.js';
 import {
   formatUsd,
   humanizeTier,
@@ -65,7 +65,7 @@ export default function RunDetailPage() {
   }, [run?.run?.status, id]);
 
   useEffect(() => {
-    if ((tab === 'costs' || tab === 'advanced') && !llm) {
+    if (tab === 'costs' && !llm) {
       getLlmRequests(id).then(setLlm).catch((e) => setError(e.message));
     }
   }, [tab, id, llm]);
@@ -107,6 +107,10 @@ export default function RunDetailPage() {
   const isTest = er.run_source === 'admin_test' || er.run_source === 'admin_replay';
   const resultCards = pipeline?.outputs ?? [];
   const hasResultCards = resultCards.length >= 4;
+  const legacyByLayer = indexLegacyByLayer(pipeline?.layers_legacy);
+  const enrichedLayers = (pipeline?.layers ?? []).map((layer) =>
+    mergeLayerWithLegacy(layer, legacyByLayer.get(layer.layer_key)),
+  );
   const needsFinalize =
     hasResultCards && er.status !== 'completed' && er.status !== 'running';
 
@@ -207,12 +211,14 @@ export default function RunDetailPage() {
       {error && <div className="admin-error" style={{ marginBottom: '1rem' }}>{error}</div>}
 
       {tab === 'pipeline' && (
-        <>
-          <PipelineStepper layers={pipeline?.layers} currentStage={er.current_stage} />
-          {(pipeline?.layers ?? []).map((layer) => (
-            <LayerOutputPanel key={layer.layer_key} layer={layer} />
-          ))}
-        </>
+        <PipelineFlowOverview
+          run={er}
+          inputs={run.inputs}
+          pipeline={pipeline}
+          costSummary={costs}
+          runDetail={run}
+          enrichedLayers={enrichedLayers}
+        />
       )}
 
       {tab === 'scores' && (
@@ -271,19 +277,9 @@ export default function RunDetailPage() {
       )}
 
       {tab === 'advanced' && (
-        <div className="admin-grid admin-grid--2">
-          <div className="admin-card">
-            <div className="admin-card__label">Inputs</div>
-            <JsonToggle data={run.inputs} label="Show raw inputs" />
-          </div>
-          <div className="admin-card">
-            <div className="admin-card__label">Config snapshot</div>
-            <JsonToggle data={run.config_snapshot} />
-          </div>
-          <div className="admin-card" style={{ gridColumn: '1 / -1' }}>
-            <div className="admin-card__label">Layer outputs (raw)</div>
-            <JsonToggle data={pipeline?.layers_legacy} />
-          </div>
+        <div className="admin-card">
+          <div className="admin-card__label">Config snapshot</div>
+          <RunConfigSnapshotPanel config={run.config_snapshot} />
         </div>
       )}
     </>
