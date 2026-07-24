@@ -29,11 +29,15 @@
 
 @media (max-width: 900px) {
   .hero {
-    display: block;
-    min-height: 0;
-    height: calc(100vw * 904 / 402);
-    max-height: 904px;
-    margin-bottom: -150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100svh;
+    height: 100svh;
+    overflow: hidden;
+    padding: 122px 20px 32px;
+    box-sizing: border-box;
   }
 
   .hero__splash {
@@ -43,54 +47,59 @@
   .hero__mobile-art {
     position: relative;
     display: block;
-    width: min(100vw, 402px);
-    height: 100%;
-    margin: 0 auto;
+    width: min(90vw, 362px);
+    aspect-ratio: 281 / 548;
+    max-height: calc(100svh - 154px);
+    height: auto;
+    margin: auto;
+    flex: 0 1 auto;
   }
 
   .hero__mobile-art img {
     position: absolute;
     max-width: none;
+    object-fit: contain;
   }
 
   .hero__mobile-sun {
-    top: 19.58%;
-    left: 34.62%;
-    width: 52.27%;
-    height: 22.78%;
+    top: 0;
+    left: 25.3%;
+    width: 74.7%;
+    height: 37.6%;
   }
 
   .hero__mobile-hand {
-    top: 40.6%;
-    left: 64.41%;
-    width: 22.39%;
-    height: 11.84%;
+    top: 34.7%;
+    left: 67.9%;
+    width: 32%;
+    height: 19.5%;
   }
 
   .hero__mobile-thumb {
-    top: 31.9%;
-    left: 16.92%;
-    width: 23.43%;
-    height: 12.85%;
+    top: 20.3%;
+    left: 0;
+    width: 33.5%;
+    height: 21.2%;
   }
 
   .hero__mobile-logo {
-    top: 47.46%;
-    left: 16.92%;
-    width: 58.78%;
-    height: 27.11%;
+    top: 46%;
+    left: 0;
+    width: 95.7%;
+    height: 45.3%;
   }
 
   .hero__mobile-art p {
     position: absolute;
-    top: 76.55%;
-    left: 16.92%;
-    width: 66.92%;
+    top: 94.5%;
+    left: 0;
+    width: 95.7%;
     margin: 0;
     color: var(--color-peach);
-    font: 400 clamp(17px, 5.47vw, 22px) / 34px var(--font-body);
+    font: 400 clamp(17px, 4.8vw, 22px) / 1.55 var(--font-body);
     letter-spacing: 0.22px;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: left;
   }
 
   .hero__mobile-art strong {

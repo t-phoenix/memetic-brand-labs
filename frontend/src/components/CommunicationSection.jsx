@@ -6,18 +6,18 @@ export default function CommunicationSection() {
   return (
     <section className="communication-section" data-nav-tone="cream" data-nav-bg="#7979e3">
       <div className="communication-section__inner">
+        <div className="communication-section__illustration" aria-hidden>
+          <picture>
+            <source media="(max-width: 900px)" srcSet={mobileIllustration} />
+            <img src={illustration} alt="" />
+          </picture>
+        </div>
+
         <h1>
           Communication intelligence for
           <br />
           emerging technology companies.
         </h1>
-
-        <div className="communication-section__illustration" aria-hidden>
-          <picture>
-            <source media="(max-width: 600px)" srcSet={mobileIllustration} />
-            <img src={illustration} alt="" />
-          </picture>
-        </div>
 
         <div className="communication-section__copy">
           <p>

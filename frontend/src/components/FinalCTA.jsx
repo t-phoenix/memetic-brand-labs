@@ -45,7 +45,7 @@ function FinalCTA() {
               aria-hidden="true"
             />
             <article className="meme-story__panel" aria-label="A Good Meme Story">
-              <h2 className="meme-story__title">A GOOD MEME STORY</h2>
+              <h2 className="meme-story__title">A Good Meme Story</h2>
               <div
                 className="meme-story__scroll"
                 ref={storyRef}
@@ -101,11 +101,12 @@ function FinalCTA() {
               Narrative Engine
             </a>
           </div>
-          <p className="final-cta__tagline">
-            Communication Intelligence for Emerging Technology Companies. Powered by Memetic
-            Systems.
-          </p>
         </div>
+        <p className="final-cta__tagline">
+          Communication Intelligence for Emerging Technology Companies.
+          <br />
+          <em>Powered by Memetic Systems.</em>
+        </p>
       </div>
     </section>
   );

@@ -235,12 +235,12 @@
 
 @media (max-width: 600px) {
   .workshop-section {
-    min-height: 1850px;
+    min-height: 0;
   }
 
   .workshop-section__inner {
-    min-height: 1850px;
-    padding: 212px 20px 93px;
+    min-height: 0;
+    padding: 100px 20px 64px;
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -294,8 +294,8 @@
     order: 5;
     position: relative;
     width: 100%;
-    height: 583px;
-    margin-top: 88px;
+    height: auto;
+    margin-top: 48px;
     overflow: visible;
   }
 
@@ -306,8 +306,9 @@
   .workshop-art-mobile {
     position: relative;
     display: block;
-    width: 313.895px;
-    height: 583px;
+    width: min(314px, 85vw);
+    aspect-ratio: 314 / 583;
+    height: auto;
     max-width: 100%;
     margin: 0 auto;
   }
@@ -319,38 +320,38 @@
   }
 
   .workshop-art-mobile__sun {
-    top: 34.235px;
-    left: 39.681px;
-    width: 157.754px;
-    height: 154.591px;
+    top: 5.87%;
+    left: 12.64%;
+    width: 50.24%;
+    height: 26.52%;
   }
 
   .workshop-art-mobile__thumb {
     top: 0;
-    left: 205.143px;
-    width: 108.751px;
-    height: 121.45px;
+    left: 65.33%;
+    width: 34.63%;
+    height: 20.83%;
   }
 
   .workshop-art-mobile__wordmark {
-    top: 166.556px;
-    left: 25.47px;
-    width: 263.947px;
-    height: 248.525px;
+    top: 28.57%;
+    left: 8.11%;
+    width: 84.06%;
+    height: 42.63%;
   }
 
   .workshop-art-mobile__bottom {
-    top: 426.068px;
-    left: 43.713px;
-    width: 214.189px;
-    height: 156.932px;
+    top: 73.08%;
+    left: 13.92%;
+    width: 68.21%;
+    height: 26.92%;
   }
 
   .workshop-art-mobile__hand {
-    top: 399.741px;
+    top: 68.57%;
     left: 0;
-    width: 120.265px;
-    height: 135.76px;
+    width: 38.3%;
+    height: 23.29%;
     transform: rotate(-10.07deg);
   }
 

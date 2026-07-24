@@ -1,0 +1,148 @@
+# Post-deploy Supabase sync — runs on push to main when relevant paths change.
+# Skips automatically if required GitHub secrets are not configured (non-breaking).
+#
+# Required secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL                  — https://<ref>.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY     — service_role key (config:sync + seed:patterns)
+#   SUPABASE_ACCESS_TOKEN         — from `supabase login` / dashboard access tokens (db push)
+#   SUPABASE_PROJECT_REF          — 20-char project ref (db push)
+#   SUPABASE_DB_PASSWORD          — database password (db push)
+#
+# Manual run: Actions → "Deploy Sync" → Run workflow
+
+name: Deploy Sync
+
+concurrency:
+  group: deploy-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'narrative-engine-api/config/narrative-engine/**'
+      - 'supabase/migrations/**'
+      - 'supabase/seed/patterns/**'
+      - 'supabase/seed/load-patterns.ts'
+      - '.github/workflows/deploy-sync.yml'
+  workflow_dispatch:
+    inputs:
+      run_config_sync:
+        description: Sync prompts/schemas/enums to Supabase
+        type: boolean
+        default: true
+      run_db_push:
+        description: Push pending Supabase migrations
+        type: boolean
+        default: false
+      run_seed_patterns:
+        description: Load pattern library into Supabase
+        type: boolean
+        default: false
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      config: ${{ steps.outputs.outputs.config }}
+      migrations: ${{ steps.outputs.outputs.migrations }}
+      patterns: ${{ steps.outputs.outputs.patterns }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'push'
+        with:
+          filters: |
+            config:
+              - 'narrative-engine-api/config/narrative-engine/**'
+            migrations:
+              - 'supabase/migrations/**'
+            patterns:
+              - 'supabase/seed/patterns/**'
+              - 'supabase/seed/load-patterns.ts'
+
+      - id: outputs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "config=${{ inputs.run_config_sync }}" >> "$GITHUB_OUTPUT"
+            echo "migrations=${{ inputs.run_db_push }}" >> "$GITHUB_OUTPUT"
+            echo "patterns=${{ inputs.run_seed_patterns }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "config=${{ steps.filter.outputs.config }}" >> "$GITHUB_OUTPUT"
+            echo "migrations=${{ steps.filter.outputs.migrations }}" >> "$GITHUB_OUTPUT"
+            echo "patterns=${{ steps.filter.outputs.patterns }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  config-sync:
+    name: Config sync
+    needs: changes
+    if: >-
+      needs.changes.outputs.config == 'true' &&
+      secrets.SUPABASE_URL != '' &&
+      secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: narrative-engine-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: narrative-engine-api/package-lock.json
+      - run: npm ci
+      - name: Push config to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run config:sync
+
+  db-push:
+    name: DB migrations
+    needs: changes
+    if: >-
+      needs.changes.outputs.migrations == 'true' &&
+      secrets.SUPABASE_ACCESS_TOKEN != '' &&
+      secrets.SUPABASE_PROJECT_REF != '' &&
+      secrets.SUPABASE_DB_PASSWORD != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v2
+        with:
+          version: latest
+      - name: Link project and push migrations
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push
+
+  seed-patterns:
+    name: Seed patterns
+    needs: changes
+    if: >-
+      needs.changes.outputs.patterns == 'true' &&
+      secrets.SUPABASE_URL != '' &&
+      secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: narrative-engine-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: narrative-engine-api/package-lock.json
+      - run: npm ci
+      - name: Load pattern library
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run seed:patterns

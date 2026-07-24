@@ -61,84 +61,96 @@
 }
 
 @media (max-width: 900px) {
-  .communication-section,
-  .communication-section__inner {
-    min-height: 765px;
-  }
-
-  .communication-section__inner {
-    padding: 48px 20px 40px;
-  }
-
-  .communication-section h1 {
-    width: auto;
-    font-size: 40px;
-    line-height: 48px;
-  }
-
-  .communication-section__copy {
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    top: 410px;
-    width: auto;
-    font-size: 18px;
-    line-height: 28px;
-    letter-spacing: 0.18px;
-  }
-
-  .communication-section__illustration {
-    left: auto;
-    right: -72px;
-    bottom: auto;
-    top: 170px;
-    width: 256px;
-    height: 222px;
-    transform: scale(0.72);
-    transform-origin: center;
-  }
-}
-
-@media (max-width: 600px) {
+  /*
+   * Mobile layout (Figma 402px frame, Group 173):
+   * - Sticky nav is 122px — content starts below it
+   * - Illustration: left 20.48%, right 15.92%, flipped
+   * - Headline overlaps illustration bottom by ~30px
+   * - Body copy follows headline in normal document flow
+   */
   .communication-section {
-    min-height: 846px;
+    min-height: 0;
+    overflow: visible;
+    --mobile-nav-h: 122px;
   }
 
   .communication-section__inner {
-    min-height: 846px;
-    padding: 0 20px;
-  }
-
-  .communication-section h1 {
-    position: absolute;
-    top: 254px;
-    left: 20px;
-    width: calc(100% - 40px);
-    font-size: 38px;
-    line-height: 48px;
+    position: relative;
+    min-height: 0;
+    padding:
+      var(--mobile-nav-h)
+      20px
+      56px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
   .communication-section__illustration {
-    top: 62px;
+    position: absolute;
+    top: var(--mobile-nav-h);
     left: 20.48%;
-    right: auto;
-    width: 63.6%;
-    height: 222px;
+    right: 15.92%;
+    width: auto;
+    height: auto;
+    aspect-ratio: 256 / 222;
+    margin: 0;
     transform: scaleX(-1);
-    transform-origin: center;
+    transform-origin: center center;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .communication-section__illustration picture,
+  .communication-section__illustration img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .communication-section h1 {
+    position: relative;
+    z-index: 1;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding-top: min(192px, 47.76vw);
+    font-size: clamp(30px, 9.45vw, 38px);
+    line-height: clamp(38px, 11.94vw, 48px);
   }
 
   .communication-section__copy {
-    top: 493px;
-    left: 20px;
-    right: 20px;
-    font-size: 22px;
-    line-height: 30px;
+    position: relative;
+    z-index: 1;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    margin-top: min(45px, 11.19vw);
+    font-size: clamp(18px, 5.47vw, 22px);
+    line-height: clamp(28px, 7.46vw, 30px);
     letter-spacing: 0.22px;
+    opacity: 1;
+    translate: none;
   }
 
   .communication-section__copy p + p {
-    margin-top: 24px;
-    line-height: 32px;
+    margin-top: min(24px, 5.97vw);
+    line-height: clamp(28px, 7.96vw, 32px);
+  }
+
+  /* Ensure body copy is never stuck invisible from scroll-reveal */
+  .communication-section__copy.landing-reveal {
+    opacity: 1;
+    translate: none;
+    animation: none;
   }
 }

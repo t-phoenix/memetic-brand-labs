@@ -15,6 +15,12 @@
   min-height: 100svh;
 }
 
+@media (max-width: 900px) {
+  .landing > section {
+    min-height: auto;
+  }
+}
+
 .landing-reveal {
   opacity: 0;
   translate: 0 22px;
