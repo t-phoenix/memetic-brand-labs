@@ -81,6 +81,13 @@
   padding-top: calc(55 * var(--u));
 }
 
+.workshop-section__audience {
+  max-width: calc(625 * var(--u));
+  margin: 0 0 calc(24 * var(--u));
+  font: 500 calc(22 * var(--u)) / calc(32 * var(--u)) var(--font-body);
+  letter-spacing: calc(0.22 * var(--u));
+}
+
 .workshop-section__intro {
   max-width: calc(625 * var(--u));
   margin: 0 0 calc(40 * var(--u));

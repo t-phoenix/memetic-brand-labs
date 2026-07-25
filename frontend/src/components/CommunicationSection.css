@@ -1,52 +1,39 @@
 .communication-section {
-  min-height: max(calc(810 * var(--u)), 100svh);
   background: var(--color-purple-hero);
   color: var(--color-peach);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .communication-section__inner {
   width: 100%;
-  min-height: calc(810 * var(--u));
   margin: 0 auto;
-  padding: calc(172 * var(--u)) calc(59 * var(--u)) calc(28 * var(--u));
-  position: relative;
+  padding: calc(172 * var(--u)) calc(59 * var(--u)) calc(80 * var(--u));
 }
 
 .communication-section h1 {
-  width: calc(1093 * var(--u));
-  max-width: 100%;
   margin: 0;
   color: var(--color-peach);
   font: 400 calc(80 * var(--u)) / calc(90 * var(--u)) var(--font-heading);
 }
 
 .communication-section__illustration {
-  position: absolute;
-  left: calc(105 * var(--u));
-  bottom: calc(-5 * var(--u));
-  width: calc(570 * var(--u));
-  height: calc(495 * var(--u));
+  width: 100%;
+  max-width: calc(570 * var(--u));
 }
 
 .communication-section__illustration img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
 }
 
 .communication-section__illustration picture {
   display: block;
   width: 100%;
-  height: 100%;
 }
 
 .communication-section__copy {
-  position: absolute;
-  left: calc(733 * var(--u));
-  top: calc(432 * var(--u));
-  width: calc(646 * var(--u));
   color: var(--color-peach);
   font: 400 calc(24 * var(--u)) / calc(34 * var(--u)) var(--font-body);
   letter-spacing: calc(0.24 * var(--u));
@@ -60,6 +47,67 @@
   font-weight: 600;
 }
 
+/* Desktop / tablet landscape — fluid grid, content-driven height */
+@media (min-width: 901px) {
+  .communication-section {
+    min-height: max(calc(810 * var(--u)), 100svh);
+    display: flex;
+    align-items: stretch;
+  }
+
+  .communication-section__inner {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(24px, 4vw, calc(58 * var(--u)));
+    row-gap: clamp(20px, 3vw, calc(40 * var(--u)));
+    align-items: start;
+    min-height: inherit;
+    box-sizing: border-box;
+  }
+
+  .communication-section h1 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    max-width: calc(1093 * var(--u));
+    align-self: start;
+  }
+
+  .communication-section__illustration {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    justify-self: start;
+    margin-left: clamp(0px, 3.2vw, calc(46 * var(--u)));
+    margin-bottom: calc(-5 * var(--u));
+  }
+
+  .communication-section__copy {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    width: 100%;
+    max-width: calc(646 * var(--u));
+    padding-top: clamp(0px, 2vw, calc(24 * var(--u)));
+    padding-bottom: calc(16 * var(--u));
+  }
+}
+
+/* Narrow desktop — keep grid but tighten type so copy stays balanced */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .communication-section h1 {
+    font-size: clamp(48px, 6.8vw, calc(80 * var(--u)));
+    line-height: 1.1;
+  }
+
+  .communication-section__copy {
+    font-size: clamp(18px, 2vw, calc(24 * var(--u)));
+    line-height: 1.45;
+  }
+}
+
 @media (max-width: 900px) {
   /*
    * Mobile layout (Figma 402px frame, Group 173):
@@ -70,7 +118,6 @@
    */
   .communication-section {
     min-height: 0;
-    overflow: visible;
     --mobile-nav-h: 122px;
   }
 
@@ -80,7 +127,7 @@
     padding:
       var(--mobile-nav-h)
       20px
-      56px;
+      112px;
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -92,6 +139,7 @@
     left: 20.48%;
     right: 15.92%;
     width: auto;
+    max-width: none;
     height: auto;
     aspect-ratio: 256 / 222;
     margin: 0;
@@ -113,12 +161,7 @@
   .communication-section h1 {
     position: relative;
     z-index: 1;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
     width: 100%;
-    max-width: none;
     margin: 0;
     padding-top: min(192px, 47.76vw);
     font-size: clamp(30px, 9.45vw, 38px);
@@ -128,13 +171,10 @@
   .communication-section__copy {
     position: relative;
     z-index: 1;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
     width: 100%;
-    max-width: none;
     margin-top: min(45px, 11.19vw);
+    margin-bottom: 8px;
+    padding-bottom: 16px;
     font-size: clamp(18px, 5.47vw, 22px);
     line-height: clamp(28px, 7.46vw, 30px);
     letter-spacing: 0.22px;

@@ -26,9 +26,7 @@ function HowItWorks() {
     <section className="workshop-section" id="works" data-nav-tone="purple" data-nav-bg="#f2ddb6">
       <div className="workshop-section__inner">
         <h2 className="workshop-section__title">
-          Walk in with a product.
-          <br />
-          Walk out with a story.
+          What does a Memetic Brand Workshop include?
         </h2>
         <div className="workshop-section__left">
           <div className="workshop-art" aria-hidden>
@@ -47,9 +45,14 @@ function HowItWorks() {
           </div>
         </div>
         <div className="workshop-section__right">
+          <p className="workshop-section__audience">
+            The Memetic Brand Workshop is for emerging technology founders whose products are
+            technically strong but difficult to explain—teams preparing for launch, fundraising,
+            community growth, or category creation in AI, Web3, and deep tech.
+          </p>
           <p className="workshop-section__intro">
-            A focused working session designed to improve clarity, positioning, engagement and
-            adoption readiness.
+            Walk in with a product. Walk out with a story. This focused working session is designed
+            to improve clarity, positioning, engagement and adoption readiness.
             <br />
             <br />
             Together we uncover the language, narratives and cultural cues that already exist around

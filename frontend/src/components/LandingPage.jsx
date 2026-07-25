@@ -120,11 +120,27 @@ function LandingPage() {
       <ClaritySection />
       <FinalCTA />
       <footer className="landing-footer" id="adpr">
-        <p>
-          Creative Intelligence OS (CI OS) is currently in development.
-          <br />
-          The Narrative Engine (Beta) provides an early preview of selected capabilities.
-        </p>
+        <div className="landing-footer__copy">
+          <p>
+            Creative Intelligence OS (CI OS) is currently in development.
+            <br />
+            The Narrative Engine (Beta) provides an early preview of selected capabilities.
+          </p>
+          <p className="landing-footer__entity">
+            Memetic Brand Labs is an initiative by{' '}
+            <a href="https://adpr.work" target="_blank" rel="noopener noreferrer">
+              adpr
+            </a>
+            .{' '}
+            <a
+              href="https://www.linkedin.com/company/adpr-work"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Follow adpr on LinkedIn
+            </a>
+          </p>
+        </div>
         <a
           href="https://adpr.work"
           target="_blank"
@@ -132,7 +148,7 @@ function LandingPage() {
           className="landing-footer__logo"
           onClick={() => trackOutboundClick('https://adpr.work', 'adpr_footer')}
         >
-          <img src={adpr} alt="adpr" />
+          <img src={adpr} alt="adpr — parent company of Memetic Brand Labs" />
         </a>
       </footer>
     </div>

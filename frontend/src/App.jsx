@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GoogleAnalytics from './components/GoogleAnalytics';
+import SeoProvider from './components/SeoProvider';
 import LandingPage from './components/LandingPage';
 import ApplicationForm from './components/ApplicationForm';
 import NarrativeEngineRedirect from './pages/NarrativeEngineRedirect';
@@ -13,6 +14,7 @@ function App() {
   return (
     <Router>
       <GoogleAnalytics />
+      <SeoProvider>
       <div className="app">
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -24,6 +26,7 @@ function App() {
           <Route path="/admin/*" element={<AdminApp />} />
         </Routes>
       </div>
+      </SeoProvider>
     </Router>
   );
 }

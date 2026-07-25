@@ -1,34 +1,49 @@
 # Memetic Brand Labs by adpr
 
-## Project Overview
-Memetic Brand Labs is a specialized branding initiative by **adpr.work**. We focus on turning ordinary memes into viral content that drives engagement, specifically tailored for Web3 and AI companies. We do not just create logos or campaigns; we build **Memetic Brand Systems**.
+> Communication intelligence for emerging technology companies. We build communication systems with memetic potential for AI, Web3, infrastructure and deep tech founders.
 
-## Core Mission
-To turn complex technical ideas into culture that spreads. We build shared language, recognizable narratives, and repeatable cultural signals so that ideas don't just reach people—they resonate, repeat, and stick.
+## What is Memetic Brand Labs?
 
-## What We Do
-We help founders transform deep, technical ideas into culture-first branding systems. Think of it as **creative intelligence for the attention economy**, where branding meets behavior, community, and code.
+Memetic Brand Labs (MBL) is an initiative by [adpr](https://adpr.work) that helps emerging technology companies become easier to understand, easier to remember, and harder to ignore. MBL works with founders across AI, Web3, infrastructure, and deep tech to transform technical depth into shared language, recognizable narratives, and repeatable cultural signals.
 
-### Key Features
-- **Shared Language**: Creating a vocabulary that community members adopt and spread.
-- **Recognizable Narratives**: Stories that are easy to understand and retell.
-- **Repeatable Cultural Signals**: Visual and verbal hooks that are engineered for virality.
+## Who is it for?
 
-## Target Audience
-- Web3 Founders
-- AI Companies
-- Deep Tech Innovators
-- Brands looking to leverage internet culture
+- AI company founders
+- Web3 and blockchain founders
+- Infrastructure and deep tech innovators
+- Teams whose product is clear but whose story is not
 
-## Website Structure
-- **/**: Landing page explaining the value proposition, methodology ("Turn Ordinary"), and process.
-- **/application-form**: A guided form for interested clients to apply for the program.
+## What we offer
 
-## Technology Stack
-- **Frontend**: React (Vite)
-- **Styling**: Modern CSS
-- **Routing**: React Router
+### Memetic Brand Workshop
+A focused working session designed to improve clarity, positioning, engagement, and adoption readiness. Founders leave with:
+- A Memetic Brand Direction
+- A Memetic Brand Voice
+- A Narrative & Content Playbook
+- Creative Directions with Memetic Potential
 
-## Contact / Creator
-- **Creator**: adpr
-- **Website**: [adpr.work](https://www.adpr.work)
+Apply at: https://memetic.adpr.work/application-form
+
+### Narrative Engine (Beta)
+An early preview tool that helps founders clarify positioning and narrative. Available at: https://memetic.adpr.work/narrative-engine
+
+## Key concepts
+
+- **Shared Language**: A simpler way to explain what you're building.
+- **Recognisable Narratives**: Stories people immediately recognise.
+- **Memetic Potential**: Ideas people recognise, relate to, repeat and share.
+
+## Website structure
+
+- **/** — Landing page: communication intelligence, workshop overview, Narrative Engine preview
+- **/application-form** — Apply for the Memetic Brand Workshop
+- **/narrative-engine** — Narrative Engine (Beta) intake
+
+## Parent organization
+
+- **adpr**: https://adpr.work
+- **LinkedIn**: https://www.linkedin.com/company/adpr-work
+
+## Contact
+
+For workshop inquiries and partnerships, visit https://adpr.work

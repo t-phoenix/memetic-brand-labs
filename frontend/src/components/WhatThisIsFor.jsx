@@ -8,7 +8,13 @@ function WhatThisIsFor() {
       <div className="strong-section__inner">
         <h2>Strong products deserve to be understood.</h2>
         <div className="strong-section__row">
-          <img className="strong-section__art" src={siren} alt="" width={445} height={339} />
+          <img
+            className="strong-section__art"
+            src={siren}
+            alt="Siren illustration representing products that deserve to be understood"
+            width={445}
+            height={339}
+          />
           <div className="strong-section__body">
             <p>
               Many AI and Web3 products solve real problems.

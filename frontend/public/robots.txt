@@ -1,2 +1,22 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /narrative-engine/run/
+
+# AI search crawlers — explicitly allowed for GEO visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://memetic.adpr.work/sitemap.xml

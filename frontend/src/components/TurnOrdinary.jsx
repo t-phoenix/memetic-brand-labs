@@ -23,7 +23,13 @@ function TurnOrdinary() {
             <strong>That&apos;s why we started MBL.</strong>
           </p>
         </div>
-        <img className="story-section__art" src={scrollQuill} alt="" width={472} height={369} />
+        <img
+          className="story-section__art"
+          src={scrollQuill}
+          alt="Scroll and quill illustration representing brand storytelling"
+          width={472}
+          height={369}
+        />
       </div>
     </section>
   );

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
+import { useSeoOverride } from '../components/useSeoOverride';
 import { getPublicShare, API_URL } from '../lib/narrativeApi';
+import { SITE_URL, DEFAULT_SEO } from '../lib/seo';
 import { trackCtaClick, trackFileDownload, trackShare } from '../lib/analytics';
 import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
 import shareX from '../assets/graphics/figma-v2/share-x.svg';
@@ -10,6 +12,7 @@ import './NarrativeFlow.css';
 
 export default function SharedResultPage() {
   const { shareId } = useParams();
+  const { setOverride } = useSeoOverride();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -18,6 +21,31 @@ export default function SharedResultPage() {
       .then(setData)
       .catch((err) => setError(err.message || 'Share not found'));
   }, [shareId]);
+
+  useEffect(() => {
+    if (!data) return undefined;
+
+    const shareGraphic = data.og_image_path || data.graphic_path_square
+      ? `${API_URL}/v1/results/${shareId}/graphic.png`
+      : DEFAULT_SEO.image;
+    const description =
+      data.og_description ||
+      data.cards?.[0]?.content?.slice(0, 155) ||
+      DEFAULT_SEO.description;
+
+    setOverride({
+      title: data.og_title
+        ? `${data.og_title} | Memetic Brand Labs`
+        : 'Narrative Results | Memetic Brand Labs',
+      description,
+      image: shareGraphic,
+      imageAlt: data.og_title || DEFAULT_SEO.imageAlt,
+      canonical: `${SITE_URL}/results/${shareId}`,
+      robots: 'index, follow',
+    });
+
+    return () => setOverride(null);
+  }, [data, shareId, setOverride]);
 
   if (error) {
     return (
