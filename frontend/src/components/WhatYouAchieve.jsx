@@ -77,7 +77,6 @@ function WhatYouAchieve() {
             </p>
           </div>
           <h2>
-            <img className="memetic-section__quotes" src={quotes} alt="" aria-hidden />
             <span className="memetic-section__title-copy">
               <button
                 type="button"
@@ -89,7 +88,10 @@ function WhatYouAchieve() {
                 onFocus={() => setDialogOpen(true)}
                 onBlur={() => setDialogOpen(false)}
               >
-                <span>Memetic</span>
+                <span className="memetic-section__memetic-line">
+                  <img className="memetic-section__quotes" src={quotes} alt="" aria-hidden="true" />
+                  <span className="memetic-section__memetic">Memetic</span>
+                </span>
                 <span className="memetic-section__potential">Potential</span>
               </button>
             </span>
@@ -103,34 +105,36 @@ function WhatYouAchieve() {
             <strong>They repeat:</strong>
           </p>
           <div
-            className="memetic-carousel"
+            className="memetic-carousel-block"
             onMouseEnter={() => setCarouselPaused(true)}
             onMouseLeave={() => setCarouselPaused(false)}
             onFocusCapture={() => setCarouselPaused(true)}
             onBlurCapture={() => setCarouselPaused(false)}
           >
-            <img className="memetic-carousel__arrows" src={arrow} alt="" aria-hidden />
-            <button type="button" onClick={() => move(-1)} aria-label="Previous card" />
-            <article
-              key={slide.title}
-              className={`memetic-carousel__card memetic-carousel__card--${direction > 0 ? 'next' : 'previous'}`}
-            >
-              <img
-                className="memetic-carousel__image"
-                src={slide.image}
-                alt=""
-                style={{
-                  top: slide.art.top,
-                  right: slide.art.right,
-                  bottom: slide.art.bottom,
-                  left: slide.art.left,
-                }}
-              />
-              <h3>{slide.title}</h3>
-            </article>
-            <button type="button" onClick={() => move(1)} aria-label="Next card" />
+            <div className="memetic-carousel">
+              <img className="memetic-carousel__arrows" src={arrow} alt="" aria-hidden />
+              <button type="button" onClick={() => move(-1)} aria-label="Previous card" />
+              <article
+                key={slide.title}
+                className={`memetic-carousel__card memetic-carousel__card--${direction > 0 ? 'next' : 'previous'}`}
+              >
+                <img
+                  className="memetic-carousel__image"
+                  src={slide.image}
+                  alt=""
+                  style={{
+                    top: slide.art.top,
+                    right: slide.art.right,
+                    bottom: slide.art.bottom,
+                    left: slide.art.left,
+                  }}
+                />
+                <h3>{slide.title}</h3>
+              </article>
+              <button type="button" onClick={() => move(1)} aria-label="Next card" />
+            </div>
+            <img className="memetic-carousel__social" src={social} alt="" />
           </div>
-          <img className="memetic-carousel__social" src={social} alt="" />
           <p className="memetic-section__def">
             When we say <strong>&quot;memetic,&quot;</strong> we simply mean:
             <br />
