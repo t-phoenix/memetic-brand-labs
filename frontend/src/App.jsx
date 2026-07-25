@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import GoogleAnalytics from './components/GoogleAnalytics';
 import LandingPage from './components/LandingPage';
 import ApplicationForm from './components/ApplicationForm';
 import NarrativeEngineRedirect from './pages/NarrativeEngineRedirect';
@@ -11,6 +12,7 @@ import './App.css';
 function App() {
   return (
     <Router>
+      <GoogleAnalytics />
       <div className="app">
         <Routes>
           <Route path="/" element={<LandingPage />} />

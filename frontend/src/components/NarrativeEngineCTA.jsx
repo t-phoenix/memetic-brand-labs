@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { trackCtaClick } from '../lib/analytics';
 import './NarrativeEngineCTA.css';
 
 function NarrativeEngineCTA() {
@@ -14,7 +15,17 @@ function NarrativeEngineCTA() {
             Diagnose how you explain your product — then get four narrative directions in minutes.
           </p>
         </div>
-        <Link to="/narrative-engine" className="ne-cta-band__button">
+        <Link
+          to="/narrative-engine"
+          className="ne-cta-band__button"
+          onClick={() =>
+            trackCtaClick({
+              name: 'analyze_your_narrative',
+              location: 'ne_cta_band',
+              destination: '/narrative-engine',
+            })
+          }
+        >
           Analyze your narrative
         </Link>
       </div>

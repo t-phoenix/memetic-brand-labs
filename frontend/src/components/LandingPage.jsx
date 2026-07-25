@@ -11,6 +11,7 @@ import HowItWorks from './HowItWorks';
 import NarrativeEngineSection from './NarrativeEngineSection';
 import ClaritySection from './ClaritySection';
 import FinalCTA from './FinalCTA';
+import { trackOutboundClick } from '../lib/analytics';
 import adpr from '../assets/graphics/Adpr Memetic Brand Labs_adpr Logo.svg';
 import './LandingFooter.css';
 
@@ -124,7 +125,13 @@ function LandingPage() {
           <br />
           The Narrative Engine (Beta) provides an early preview of selected capabilities.
         </p>
-        <a href="https://adpr.work" target="_blank" rel="noopener noreferrer" className="landing-footer__logo">
+        <a
+          href="https://adpr.work"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="landing-footer__logo"
+          onClick={() => trackOutboundClick('https://adpr.work', 'adpr_footer')}
+        >
           <img src={adpr} alt="adpr" />
         </a>
       </footer>

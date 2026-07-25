@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { trackCtaClick } from '../lib/analytics';
 import memeStory from '../assets/graphics/figma-v2/meme-story-exact.png';
 import './FinalCTA.css';
 
@@ -91,13 +92,33 @@ function FinalCTA() {
           <p className="final-cta__resonate">If this resonates, we can work together.</p>
           <div className="final-cta__block">
             <p>Apply for the</p>
-            <Link to="/application-form" className="final-cta__btn final-cta__btn--solid">
+            <Link
+              to="/application-form"
+              className="final-cta__btn final-cta__btn--solid"
+              onClick={() =>
+                trackCtaClick({
+                  name: 'memetic_brand_workshop',
+                  location: 'final_cta',
+                  destination: '/application-form',
+                })
+              }
+            >
               Memetic Brand Workshop
             </Link>
           </div>
           <div className="final-cta__block">
             <p>Try the beta version</p>
-            <a href="#narrative-engine" className="final-cta__btn final-cta__btn--outline">
+            <a
+              href="#narrative-engine"
+              className="final-cta__btn final-cta__btn--outline"
+              onClick={() =>
+                trackCtaClick({
+                  name: 'narrative_engine',
+                  location: 'final_cta',
+                  destination: '#narrative-engine',
+                })
+              }
+            >
               Narrative Engine
             </a>
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NeLayout from '../components/NeLayout';
 import { analyzeWebsiteForForm, createNarrativeRun, getPricingTiers } from '../lib/narrativeApi';
+import { trackNeRunStart, trackNeWebsiteAnalyze } from '../lib/analytics';
 import './NarrativeEngine.css';
 
 const TIER_LABELS = {
@@ -43,6 +44,7 @@ export default function NarrativeEnginePage() {
     setProcessingWebsite(true);
     setError('');
     setPrefillMessage('');
+    trackNeWebsiteAnalyze();
     try {
       const data = await analyzeWebsiteForForm(form.website.trim());
       setForm((prev) => ({
@@ -66,6 +68,7 @@ export default function NarrativeEnginePage() {
     setError('');
     try {
       const { run_id } = await createNarrativeRun(form);
+      trackNeRunStart({ source: 'ne_page', modelTier: form.model_tier });
       navigate(`/narrative-engine/run/${run_id}`);
     } catch (err) {
       setError(err.message || 'Failed to start analysis');

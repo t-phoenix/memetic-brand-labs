@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { trackCtaClick } from '../lib/analytics';
 import workshopWordmark from '../assets/graphics/figma-v2/workshop-art-top.svg';
 import workshopBottom from '../assets/graphics/figma-v2/workshop-art-bottom.svg';
 import workshopHand from '../assets/graphics/figma-v2/workshop-hand.svg';
@@ -63,7 +64,17 @@ function HowItWorks() {
               </li>
             ))}
           </ul>
-          <Link to="/application-form" className="workshop-section__cta">
+          <Link
+            to="/application-form"
+            className="workshop-section__cta"
+            onClick={() =>
+              trackCtaClick({
+                name: 'memetic_brand_workshop',
+                location: 'how_it_works',
+                destination: '/application-form',
+              })
+            }
+          >
             Memetic Brand Workshop
           </Link>
         </div>

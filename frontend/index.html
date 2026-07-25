@@ -2,6 +2,16 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) — single tag per page, immediately after <head> -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BVW6SV0RDG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    // SPA: React sends page_view on route changes (see src/lib/analytics.js)
+    gtag('config', 'G-BVW6SV0RDG', { send_page_view: false });
+  </script>
+
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/sun.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

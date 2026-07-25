@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
 import { getPublicShare, API_URL } from '../lib/narrativeApi';
+import { trackCtaClick, trackFileDownload, trackShare } from '../lib/analytics';
 import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
 import shareX from '../assets/graphics/figma-v2/share-x.svg';
 import shareLinkedin from '../assets/graphics/figma-v2/share-linkedin.svg';
@@ -87,19 +88,53 @@ export default function SharedResultPage() {
             </p>
             <div className="ne-results__share">
               {shareLinks.map((s) => (
-                <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+                <a
+                  key={s.key}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  onClick={() =>
+                    trackShare({
+                      method: s.key,
+                      contentType: 'shared_narrative_result',
+                      itemId: shareId,
+                    })
+                  }
+                >
                   <img src={s.icon} alt="" width={80} height={80} />
                 </a>
               ))}
             </div>
-            <a className="ne-results__download" href={`${API_URL}/v1/results/${shareId}/graphic.png`} download>
+            <a
+              className="ne-results__download"
+              href={`${API_URL}/v1/results/${shareId}/graphic.png`}
+              download
+              onClick={() =>
+                trackFileDownload({
+                  fileName: 'narrative-share-graphic.png',
+                  fileExtension: 'png',
+                  linkUrl: `${API_URL}/v1/results/${shareId}/graphic.png`,
+                })
+              }
+            >
               Download share graphic
             </a>
           </div>
           <div className="ne-results__col">
             <h3>Perfect?</h3>
             <p>You can still apply, because the workshop goes deeper.</p>
-            <Link to="/application-form" className="ne-flow__pill">
+            <Link
+              to="/application-form"
+              className="ne-flow__pill"
+              onClick={() =>
+                trackCtaClick({
+                  name: 'memetic_brand_workshop',
+                  location: 'shared_result',
+                  destination: '/application-form',
+                })
+              }
+            >
               Memetic Brand Workshop
             </Link>
           </div>

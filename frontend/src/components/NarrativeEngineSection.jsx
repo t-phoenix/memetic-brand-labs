@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { analyzeWebsiteForForm, createNarrativeRun } from '../lib/narrativeApi';
+import { trackNeRunStart, trackNeWebsiteAnalyze } from '../lib/analytics';
 import gears from '../assets/graphics/figma-v2/ne-gears.svg';
 import mobileHeading from '../assets/graphics/figma-v2/mobile-ne-heading.svg';
 import './NarrativeEngineSection.css';
@@ -33,6 +34,7 @@ export default function NarrativeEngineSection() {
 
     setAnalyzing(true);
     setAnalyzeError('');
+    trackNeWebsiteAnalyze();
     try {
       const { answers } = await analyzeWebsiteForForm(website);
       setForm((prev) => ({
@@ -55,6 +57,7 @@ export default function NarrativeEngineSection() {
     setError('');
     try {
       const { run_id } = await createNarrativeRun(form);
+      trackNeRunStart({ source: 'landing_section', modelTier: form.model_tier });
       navigate(`/narrative-engine/run/${run_id}`);
     } catch (err) {
       setError(err.message || 'Failed to start analysis');

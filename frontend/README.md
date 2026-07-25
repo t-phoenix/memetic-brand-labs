@@ -41,6 +41,16 @@ VITE_BASE_CHAIN_ID=8453
 | `VITE_SUPABASE_URL` | For auth | Same as API `SUPABASE_URL` |
 | `VITE_SUPABASE_ANON_KEY` | For auth | Supabase **anon** key (safe for browser) |
 
+### Google Analytics
+
+GA4 is configured in `index.html` (measurement ID `G-BVW6SV0RDG`). Tracking runs on **production builds only**.
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `VITE_GA_MEASUREMENT_ID` | No | Defaults to `G-BVW6SV0RDG`; must match `index.html` if changed |
+
+**Full guide:** [docs/analytics.md](../docs/analytics.md) — event catalog, funnels, how to add new events.
+
 ### 2. Start API and database first
 
 ```bash
@@ -101,8 +111,11 @@ In **Project Settings → Environment Variables** (Production + Preview):
 | `VITE_BASE_CHAIN_ID` | `8453` |
 | `VITE_WALLET_CONNECT_PROJECT_ID` | WalletConnect cloud project ID |
 | `VITE_NE_DISCOVERY` | omit or `false` in production — hides NE from homepage/nav |
+| `VITE_GA_MEASUREMENT_ID` | `G-BVW6SV0RDG` (optional — same as `index.html`) |
 
 **Hidden in production:** Narrative Engine stays at `/narrative-engine` (direct URL). Navbar link and landing CTA only appear in local dev unless `VITE_NE_DISCOVERY=true`.
+
+**Analytics:** See [docs/analytics.md](../docs/analytics.md) for event catalog and GA4 dashboard setup.
 
 Redeploy after adding variables.
 

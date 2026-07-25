@@ -1,6 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from './Navbar';
+import {
+    trackFormStart,
+    trackFormStep,
+    trackFormSubmit,
+} from '../lib/analytics';
 import './ApplicationForm.css';
 
 // Graphics
@@ -26,12 +31,17 @@ const ApplicationForm = () => {
     const step = parseInt(searchParams.get('step') || '1', 10);
 
     const [formData, setFormData] = useState(EMPTY_FORM);
+    const formStartTracked = useRef(false);
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
         document.body.style.overflow = 'auto';
         localStorage.removeItem('applicationFormData');
+        if (!formStartTracked.current) {
+            formStartTracked.current = true;
+            trackFormStart();
+        }
     }, []);
 
     // Handle Step 3 Timeout
@@ -83,6 +93,7 @@ const ApplicationForm = () => {
 
     const handleNext = () => {
         if (validateStep1()) {
+            trackFormStep(2);
             setSearchParams({ step: 2 });
         }
     };
@@ -115,6 +126,7 @@ const ApplicationForm = () => {
             // If you face CORS errors, the data usually still gets recorded.
 
             console.log('Form Submitted to Sheets');
+            trackFormSubmit();
         } catch (error) {
             console.error('Error submitting form:', error);
             // Optionally handle error (alert user), but often we proceed to 'Thank You' to not block the user

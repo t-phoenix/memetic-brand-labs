@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
 import { getRunOutputs, getRunStatus, verifyEmail, API_URL } from '../lib/narrativeApi';
+import {
+  trackCtaClick,
+  trackFileDownload,
+  trackNeEmailUnlock,
+  trackNeRunComplete,
+  trackShare,
+} from '../lib/analytics';
 import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
 import shareX from '../assets/graphics/figma-v2/share-x.svg';
 import shareLinkedin from '../assets/graphics/figma-v2/share-linkedin.svg';
@@ -23,6 +30,7 @@ export default function NarrativeResultsPage() {
   const [emailError, setEmailError] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const completeTracked = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +54,13 @@ export default function NarrativeResultsPage() {
   const hasCards = cards.length > 0;
   const showEmailGate = run && run.status === 'completed' && !hasCards;
 
+  useEffect(() => {
+    if (hasCards && id && !completeTracked.current) {
+      completeTracked.current = true;
+      trackNeRunComplete({ runId: id });
+    }
+  }, [hasCards, id]);
+
   const onVerify = async (e) => {
     e.preventDefault();
     setVerifying(true);
@@ -61,6 +76,7 @@ export default function NarrativeResultsPage() {
       const refreshed = await getRunStatus(id);
       if (refreshed.share_id) setShareId(refreshed.share_id);
       if (refreshed.outputs?.length) setOutputs(refreshed.outputs);
+      trackNeEmailUnlock({ runId: id });
     } catch (err) {
       setEmailError(err.message || 'Could not verify email');
     } finally {
@@ -152,7 +168,20 @@ export default function NarrativeResultsPage() {
                 {shareLinks.length > 0 && (
                   <div className="ne-results__share">
                     {shareLinks.map((s) => (
-                      <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+                      <a
+                        key={s.key}
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        onClick={() =>
+                          trackShare({
+                            method: s.key,
+                            contentType: 'narrative_result',
+                            itemId: shareId,
+                          })
+                        }
+                      >
                         <img src={s.icon} alt="" width={80} height={80} />
                       </a>
                     ))}
@@ -168,6 +197,13 @@ export default function NarrativeResultsPage() {
                     className="ne-results__download"
                     href={`${API_URL}/v1/results/${shareId}/graphic.png`}
                     download
+                    onClick={() =>
+                      trackFileDownload({
+                        fileName: 'narrative-share-graphic.png',
+                        fileExtension: 'png',
+                        linkUrl: `${API_URL}/v1/results/${shareId}/graphic.png`,
+                      })
+                    }
                   >
                     Download share graphic
                   </a>
@@ -177,7 +213,17 @@ export default function NarrativeResultsPage() {
               <div className="ne-results__col">
                 <h3>Perfect?</h3>
                 <p>You can still apply, because the workshop goes deeper.</p>
-                <Link to="/application-form" className="ne-flow__pill">
+                <Link
+                  to="/application-form"
+                  className="ne-flow__pill"
+                  onClick={() =>
+                    trackCtaClick({
+                      name: 'memetic_brand_workshop',
+                      location: 'ne_results',
+                      destination: '/application-form',
+                    })
+                  }
+                >
                   Memetic Brand Workshop
                 </Link>
               </div>

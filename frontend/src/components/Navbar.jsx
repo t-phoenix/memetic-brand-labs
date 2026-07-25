@@ -1,4 +1,5 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { trackNavClick, trackOutboundClick } from '../lib/analytics';
 import './Navbar.css';
 
 function Navbar({ className = "navbar" }) {
@@ -7,6 +8,7 @@ function Navbar({ className = "navbar" }) {
 
     const handleNavClick = (e, sectionId) => {
         e.preventDefault();
+        trackNavClick({ section: sectionId, source: 'navbar' });
         if (location.pathname === '/' || location.pathname === '') {
             const element = document.getElementById(sectionId);
             if (element) {
@@ -35,7 +37,14 @@ function Navbar({ className = "navbar" }) {
                             narrative engine
                         </Link>
                     )} */}
-                    <a href="https://adpr.work" target="_blank" rel="noopener noreferrer">adpr</a>
+                    <a
+                        href="https://adpr.work"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackOutboundClick('https://adpr.work', 'adpr')}
+                    >
+                        adpr
+                    </a>
                 </div>
             </div>
         </nav>
