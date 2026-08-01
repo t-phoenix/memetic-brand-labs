@@ -11,9 +11,13 @@
   margin: 0 auto;
   padding: calc(178 * var(--u)) calc(151 * var(--u)) 0;
   display: grid;
-  grid-template-columns: calc(402 * var(--u)) 1fr;
+  grid-template-columns: calc(402 * var(--u)) minmax(0, 1fr);
   gap: calc(178 * var(--u));
   align-items: start;
+}
+
+.memetic-section__right {
+  min-width: 0;
 }
 
 .memetic-section__bubble {
@@ -208,25 +212,26 @@
 
 .memetic-carousel-block {
   display: grid;
-  grid-template-columns: calc(42 * var(--u)) calc(293.739 * var(--u)) calc(42 * var(--u));
+  grid-template-columns: calc(42 * var(--u)) minmax(0, calc(293.739 * var(--u))) calc(42 * var(--u));
   gap: calc(33.0625 * var(--u));
-  width: fit-content;
-  max-width: 100%;
+  width: min(100%, calc(443.864 * var(--u)));
+  min-width: 0;
 }
 
 .memetic-carousel {
   position: relative;
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: calc(42 * var(--u)) calc(293.739 * var(--u)) calc(42 * var(--u));
-  gap: calc(33.0625 * var(--u));
+  display: flex;
   align-items: center;
-  justify-content: start;
+  gap: calc(33.0625 * var(--u));
+  width: 100%;
+  min-width: 0;
 }
 
 .memetic-carousel button {
   position: relative;
   z-index: 2;
+  flex: 0 0 calc(42 * var(--u));
   width: calc(42 * var(--u));
   height: calc(42 * var(--u));
   padding: 0;
@@ -238,7 +243,7 @@
   z-index: 1;
   left: 0;
   top: calc(168 * var(--u));
-  width: calc(443.864 * var(--u));
+  width: 100%;
   height: calc(39.217 * var(--u));
   object-fit: contain;
   pointer-events: none;
@@ -247,6 +252,7 @@
 /* Figma Frame 1321317460: 293.739 × 375.781, radius 20 */
 .memetic-carousel__card {
   position: relative;
+  flex: 0 0 calc(293.739 * var(--u));
   width: calc(293.739 * var(--u));
   aspect-ratio: 293.739 / 375.781;
   height: auto;
@@ -256,7 +262,6 @@
   padding: 0;
   text-align: center;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .memetic-carousel__card--next {
@@ -290,10 +295,19 @@
 }
 
 /* Art box: size from Figma insets; each slide overrides via inline style */
-.memetic-carousel__image {
+.memetic-carousel__art {
   position: absolute;
+  overflow: hidden;
+}
+
+.memetic-carousel__image {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   object-fit: contain;
   object-position: center center;
+  display: block;
   margin: 0;
   pointer-events: none;
 }
@@ -303,6 +317,7 @@
   position: absolute;
   top: 81.43%;
   left: 50%;
+  z-index: 1;
   width: max-content;
   max-width: 90%;
   translate: -50% 0;
@@ -373,7 +388,7 @@
   }
 
   .memetic-carousel-block {
-    max-width: 100%;
+    width: min(100%, calc(443.864 * var(--u)));
   }
 }
 
@@ -446,19 +461,18 @@
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
-    grid-template-columns: 36px 1fr 36px;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
     gap: 8px;
   }
 
   .memetic-carousel {
-    grid-template-columns: 36px 1fr 36px;
     gap: 8px;
   }
 
   .memetic-carousel button {
+    flex: 0 0 36px;
     width: 36px;
     height: 36px;
-    flex-shrink: 0;
   }
 
   .memetic-carousel__arrows {
@@ -473,7 +487,9 @@
   }
 
   .memetic-carousel__card {
+    flex: 1 1 auto;
     width: 100%;
+    min-width: 0;
     max-width: 294px;
     margin: 0 auto;
     aspect-ratio: 293.739 / 375.781;
@@ -517,16 +533,16 @@
 
   .memetic-carousel-block {
     max-width: 100%;
-    grid-template-columns: 32px 1fr 32px;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
     gap: 4px;
   }
 
   .memetic-carousel {
-    grid-template-columns: 32px 1fr 32px;
     gap: 4px;
   }
 
   .memetic-carousel button {
+    flex: 0 0 32px;
     width: 32px;
     height: 32px;
   }

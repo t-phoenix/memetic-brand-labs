@@ -118,17 +118,17 @@ function WhatYouAchieve() {
                 key={slide.title}
                 className={`memetic-carousel__card memetic-carousel__card--${direction > 0 ? 'next' : 'previous'}`}
               >
-                <img
-                  className="memetic-carousel__image"
-                  src={slide.image}
-                  alt=""
+                <div
+                  className="memetic-carousel__art"
                   style={{
                     top: slide.art.top,
                     right: slide.art.right,
                     bottom: slide.art.bottom,
                     left: slide.art.left,
                   }}
-                />
+                >
+                  <img className="memetic-carousel__image" src={slide.image} alt="" />
+                </div>
                 <h3>{slide.title}</h3>
               </article>
               <button type="button" onClick={() => move(1)} aria-label="Next card" />
