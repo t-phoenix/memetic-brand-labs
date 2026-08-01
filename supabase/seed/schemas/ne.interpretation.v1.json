@@ -8,7 +8,8 @@
     "primary_outcome": { "type": "string" },
     "category": { "type": "string" },
     "complexity_level": { "type": "string" },
-    "market": { "type": "string" },
+    "market": { "type": "string", "description": "Free-form industry/niche label (2-8 words), e.g. Web3 wallet infrastructure" },
+    "market_detail": { "type": "string", "description": "Optional sub-niche or buyer qualifier" },
     "messaging_problem": { "type": "string" }
   }
 }

@@ -11,10 +11,15 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@privy-io/react-auth": "^3.35.2",
+    "@supabase/supabase-js": "^2.49.0",
+    "@x402/evm": "^2.19.0",
+    "@x402/fetch": "^2.19.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
-    "recharts": "^3.9.0"
+    "recharts": "^3.9.0",
+    "viem": "^2.55.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

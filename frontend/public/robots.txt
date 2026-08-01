@@ -20,3 +20,7 @@ User-agent: PerplexityBot
 Allow: /
 
 Sitemap: https://memetic.adpr.work/sitemap.xml
+
+# Agent discovery
+# LLM-readable API docs: https://memetic.adpr.work/llms.txt
+# API capabilities: https://api.memetic.adpr.work/v1/capabilities

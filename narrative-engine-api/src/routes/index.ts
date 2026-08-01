@@ -6,23 +6,39 @@ import { ShareService } from '../share/ShareService.js';
 import { enqueueRun } from '../jobs/queue.js';
 import { authOptional, requireAuth } from './auth.js';
 import { hashIp } from '../utils/hash.js';
-import { syncRunRevenue } from '../telemetry/TelemetryService.js';
 import { extractHomepage } from '../website/HomepageExtractor.js';
 import { LLMRouter } from '../llm/LLMRouter.js';
 import { formatDbError, pingDatabase } from '../db/health.js';
+import { PaymentRequiredSent } from '../services/X402PaymentService.js';
+import { createCommerceContext } from './access.js';
 
 export async function registerRoutes(app: FastifyInstance, env: Env) {
   const db = getSupabase(env);
   const runs = new RunService(db);
   const share = new ShareService(db, env);
   const llm = new LLMRouter(env);
+  const commerce = createCommerceContext(env);
 
-  app.get('/health', async () => {
+  app.get('/health', async (request, reply) => {
+    const apiBase = env.API_PUBLIC_URL ?? `http://localhost:${env.PORT}`;
+    reply.header(
+      'Link',
+      [
+        `<${apiBase}/v1/capabilities>; rel="capabilities"`,
+        `<${apiBase}/openapi.json>; rel="openapi"`,
+        `<${apiBase}/llms.txt>; rel="llms"`,
+      ].join(', '),
+    );
     const dbHealth = await pingDatabase(db);
     return {
       status: dbHealth.ok ? 'ok' : 'degraded',
       version: 'ne-v1.0.0',
       database: dbHealth.ok ? 'connected' : dbHealth.message,
+      discovery: {
+        capabilities: `${apiBase}/v1/capabilities`,
+        openapi: `${apiBase}/openapi.json`,
+        llms: `${apiBase}/llms.txt`,
+      },
     };
   });
 
@@ -93,8 +109,16 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
       await db.from('user_sessions').update({ ip_hash: hashIp(ip, env.IP_HASH_SALT) }).eq('session_id', sid);
     }
 
-    enqueueRun(env, runId);
-    return reply.code(201).send({ run_id: runId, status: 'pending', session_id: sid });
+    // Pipeline starts only after auth — use POST /v1/narrative-runs/start or intake email flow
+    await db.from('engine_runs').update({ access_status: 'pending_auth' }).eq('id', runId);
+
+    return reply.code(201).send({
+      run_id: runId,
+      status: 'pending_auth',
+      requires_auth: true,
+      session_id: sid,
+      message: 'Complete verification to start analysis. Use POST /v1/narrative-runs/start.',
+    });
   });
 
   app.get('/v1/narrative-runs/:id', async (request) => {
@@ -110,10 +134,15 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
       progress_pct: run.progress_pct,
     };
 
-    if (run.email_verified_for_run || request.user?.id === run.user_id) {
+    if (await commerce.access.hasAccess(id)) {
       const outputs = await runs.getOutputs(id);
       response.outputs = outputs.cards;
       response.share_id = outputs.share_id;
+      response.access_status = 'unlocked';
+    } else {
+      const accessStatus = await commerce.access.getAccessStatus(id);
+      response.access_status = accessStatus.access_status;
+      response.recovery_actions = accessStatus.recovery_actions;
     }
 
     return response;
@@ -124,8 +153,17 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
     const { id } = request.params as { id: string };
     const run = await runs.getRunStatus(id);
     if (!run) return reply.code(404).send({ error: { code: 'not_found', message: 'Run not found' } });
-    if (!run.email_verified_for_run && request.user?.id !== run.user_id) {
-      return reply.code(403).send({ error: { code: 'email_required', message: 'Verify email to view outputs' } });
+    if (!(await commerce.access.hasAccess(id)) && request.user?.id !== run.user_id) {
+      const accessStatus = await commerce.access.getAccessStatus(id);
+      return reply.code(403).send({
+        error: {
+          code: 'access_required',
+          message: 'Verify email or pay to view outputs',
+          user_message: 'Unlock your results with company email, Google sign-in, or USDC payment.',
+          retryable: true,
+          recovery_actions: accessStatus.recovery_actions,
+        },
+      });
     }
     const outputs = await runs.getOutputs(id);
     return {
@@ -135,61 +173,69 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
     };
   });
 
-  app.post('/v1/narrative-runs/:id/verify-email', async (request) => {
+  app.post('/v1/narrative-runs/:id/verify-email', async (request, reply) => {
     const { id } = request.params as { id: string };
     const { email } = request.body as { email: string };
-    return runs.verifyEmail(id, email);
+    try {
+      return await commerce.emailVerification.requestVerification(id, email);
+    } catch (e) {
+      if (e && typeof e === 'object' && 'body' in e) {
+        const err = e as { statusCode: number; body: unknown };
+        return reply.code(err.statusCode).send(err.body);
+      }
+      throw e;
+    }
   });
 
   app.post('/v1/narrative-runs/rerun', async (request, reply) => {
     await authOptional(request, env);
     requireAuth(request);
 
-    const paymentHeader = request.headers.payment ?? request.headers['x-payment'];
-    if (!paymentHeader && env.X402_PAY_TO) {
-      return reply.code(402).send({
-        error: { code: 'payment_required', message: 'USDC payment required on Base' },
-        payment: {
-          amount_usdc: env.RERUN_PRICE_USDC,
-          network: 'eip155:8453',
-          asset: 'USDC',
-          pay_to: env.X402_PAY_TO,
-          facilitator: env.X402_FACILITATOR_URL,
-        },
-      });
-    }
-
     const body = request.body as Record<string, string>;
-    const { runId } = await runs.createRun(
-      {
-        building: body.building,
-        audience: body.audience,
-        challenge: body.challenge,
-        differentiation: body.differentiation,
-        website: body.website,
-        model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'standard',
-        parent_run_id: body.prior_run_id,
-        session_id: body.session_id,
-      },
-      { userId: request.user!.id, isFirstRun: false, paymentStatus: 'paid' },
-    );
+    const apiBase = env.API_PUBLIC_URL ?? `http://localhost:${env.PORT}`;
 
-    if (paymentHeader) {
-      await db.from('payment_transactions').insert({
-        run_id: runId,
-        user_id: request.user!.id,
-        amount_usdc: env.RERUN_PRICE_USDC,
-        payer_address: 'unknown',
-        payee_address: env.X402_PAY_TO ?? '',
-        tx_hash: String(paymentHeader).slice(0, 64) || `pending-${runId}`,
-        facilitator: env.X402_FACILITATOR_URL,
-        status: 'confirmed',
+    try {
+      const payment = await commerce.x402.requirePayment(request, reply, {
+        skuKey: 'human_unlock',
+        userId: request.user!.id,
+        resourcePath: `${apiBase}/v1/narrative-runs/rerun`,
+        description: 'Narrative Engine paid rerun',
       });
-      await syncRunRevenue(db, runId, env.RERUN_PRICE_USDC);
-    }
 
-    enqueueRun(env, runId);
-    return reply.code(201).send({ run_id: runId, status: 'pending' });
+      const { runId } = await runs.createRun(
+        {
+          building: body.building,
+          audience: body.audience,
+          challenge: body.challenge,
+          differentiation: body.differentiation,
+          website: body.website,
+          model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'standard',
+          parent_run_id: body.prior_run_id,
+          session_id: body.session_id,
+        },
+        { userId: request.user!.id, isFirstRun: false, paymentStatus: 'paid', runSource: 'human_paid' },
+      );
+
+      if (payment.paid) {
+        await commerce.x402.completeRunUnlock(runId, payment);
+      } else if ('devBypass' in payment) {
+        await commerce.access.grantAccess({
+          runId,
+          grantType: 'x402_payment',
+          unlockMethod: 'x402_dev_bypass',
+        });
+      }
+
+      enqueueRun(env, runId);
+      return reply.code(201).send({ run_id: runId, status: 'pending' });
+    } catch (e) {
+      if (e instanceof PaymentRequiredSent) return;
+      if (e && typeof e === 'object' && 'body' in e) {
+        const err = e as { statusCode: number; body: unknown };
+        return reply.code(err.statusCode).send(err.body);
+      }
+      throw e;
+    }
   });
 
   app.get('/v1/results/:shareId', async (request, reply) => {

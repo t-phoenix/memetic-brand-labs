@@ -68,7 +68,7 @@ export default function PlaygroundPage() {
       return () => clearInterval(t);
     }
     return undefined;
-  }, [runId, run?.run?.status, mode]);
+  }, [runId, run?.run, mode]);
 
   const onCreate = async (e) => {
     e.preventDefault();

@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
-import { getRunOutputs, getRunStatus, verifyEmail, API_URL } from '../lib/narrativeApi';
+import UnlockResultsPanel from '../components/UnlockResultsPanel';
+import ResultsShareActions from '../components/ResultsShareActions';
+import { getRunStatus } from '../lib/narrativeApi';
 import {
   trackCtaClick,
-  trackFileDownload,
   trackNeEmailUnlock,
   trackNeRunComplete,
-  trackShare,
 } from '../lib/analytics';
-import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
-import shareX from '../assets/graphics/figma-v2/share-x.svg';
-import shareLinkedin from '../assets/graphics/figma-v2/share-linkedin.svg';
+import { resultCardClassName } from '../lib/resultCardStyles';
 import './NarrativeFlow.css';
 
 const FALLBACK_TITLES = [
@@ -26,11 +24,18 @@ export default function NarrativeResultsPage() {
   const [run, setRun] = useState(null);
   const [outputs, setOutputs] = useState(null);
   const [shareId, setShareId] = useState(null);
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [verifying, setVerifying] = useState(false);
   const [loadError, setLoadError] = useState('');
   const completeTracked = useRef(false);
+
+  const handleUnlocked = (out) => {
+    if (out.cards) setOutputs(out.cards);
+    if (out.share_id) setShareId(out.share_id);
+    if (out.share_url) {
+      const match = out.share_url.match(/\/results\/([^/]+)/);
+      if (match) setShareId(match[1]);
+    }
+    trackNeEmailUnlock({ runId: id });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -61,56 +66,10 @@ export default function NarrativeResultsPage() {
     }
   }, [hasCards, id]);
 
-  const onVerify = async (e) => {
-    e.preventDefault();
-    setVerifying(true);
-    setEmailError('');
-    try {
-      await verifyEmail(id, email);
-      const out = await getRunOutputs(id);
-      if (out.cards) setOutputs(out.cards);
-      if (out.share_url) {
-        const match = out.share_url.match(/\/results\/([^/]+)/);
-        if (match) setShareId(match[1]);
-      }
-      const refreshed = await getRunStatus(id);
-      if (refreshed.share_id) setShareId(refreshed.share_id);
-      if (refreshed.outputs?.length) setOutputs(refreshed.outputs);
-      trackNeEmailUnlock({ runId: id });
-    } catch (err) {
-      setEmailError(err.message || 'Could not verify email');
-    } finally {
-      setVerifying(false);
-    }
-  };
-
   const shareUrl =
     shareId && typeof window !== 'undefined'
       ? `${window.location.origin}/results/${shareId}`
       : '';
-
-  const shareLinks = shareUrl
-    ? [
-        {
-          key: 'telegram',
-          href: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}`,
-          icon: shareTelegram,
-          label: 'Share on Telegram',
-        },
-        {
-          key: 'x',
-          href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`,
-          icon: shareX,
-          label: 'Share on X',
-        },
-        {
-          key: 'linkedin',
-          href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-          icon: shareLinkedin,
-          label: 'Share on LinkedIn',
-        },
-      ]
-    : [];
 
   return (
     <div className="ne-flow ne-flow--results">
@@ -118,41 +77,23 @@ export default function NarrativeResultsPage() {
       <main className="ne-flow__main ne-flow__main--results">
         {loadError && <p className="ne-flow__error">{loadError}</p>}
 
-        {showEmailGate && (
-          <form className="ne-flow__email" onSubmit={onVerify}>
-            <h1>Enter your email to see results</h1>
-            <p>We&apos;ll save your directions — no spam, just your narrative output.</p>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              required
-              autoComplete="email"
-            />
-            {emailError && (
-              <p className="ne-flow__error" role="alert">
-                {emailError}
-              </p>
-            )}
-            <button type="submit" className="ne-flow__pill" disabled={verifying}>
-              {verifying ? 'Unlocking…' : 'Continue'}
-            </button>
-          </form>
-        )}
+        {showEmailGate && <UnlockResultsPanel runId={id} onUnlocked={handleUnlocked} />}
 
         {hasCards && (
           <>
             <div className="ne-results__grid">
               {cards.slice(0, 4).map((card, i) => (
-                <article key={card.key || i} className="ne-results__card">
+                <article key={card.key || i} className={resultCardClassName(i)}>
                   <h2>{card.label || FALLBACK_TITLES[i] || `Direction ${i + 1}`}</h2>
                   <p>{card.content}</p>
                 </article>
               ))}
               {cards.length < 4 &&
-                FALLBACK_TITLES.slice(cards.length).map((title) => (
-                  <article key={title} className="ne-results__card ne-results__card--empty">
+                FALLBACK_TITLES.slice(cards.length).map((title, i) => (
+                  <article
+                    key={title}
+                    className={`ne-results__card ne-results__card--${['coral', 'purple', 'magenta', 'blue'][(cards.length + i) % 4]} ne-results__card--empty`}
+                  >
                     <h2>{title}</h2>
                   </article>
                 ))}
@@ -165,49 +106,7 @@ export default function NarrativeResultsPage() {
                   But a useful start. (
                   <em>If you like it, share it with your community.</em>)
                 </p>
-                {shareLinks.length > 0 && (
-                  <div className="ne-results__share">
-                    {shareLinks.map((s) => (
-                      <a
-                        key={s.key}
-                        href={s.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={s.label}
-                        onClick={() =>
-                          trackShare({
-                            method: s.key,
-                            contentType: 'narrative_result',
-                            itemId: shareId,
-                          })
-                        }
-                      >
-                        <img src={s.icon} alt="" width={80} height={80} />
-                      </a>
-                    ))}
-                  </div>
-                )}
-                {shareId && (
-                  <p className="ne-results__share-url">
-                    <Link to={`/results/${shareId}`}>{shareUrl}</Link>
-                  </p>
-                )}
-                {shareId && (
-                  <a
-                    className="ne-results__download"
-                    href={`${API_URL}/v1/results/${shareId}/graphic.png`}
-                    download
-                    onClick={() =>
-                      trackFileDownload({
-                        fileName: 'narrative-share-graphic.png',
-                        fileExtension: 'png',
-                        linkUrl: `${API_URL}/v1/results/${shareId}/graphic.png`,
-                      })
-                    }
-                  >
-                    Download share graphic
-                  </a>
-                )}
+                <ResultsShareActions shareId={shareId} shareUrl={shareUrl} />
               </div>
 
               <div className="ne-results__col">

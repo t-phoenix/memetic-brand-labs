@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   getRun,
@@ -42,18 +42,21 @@ export default function RunDetailPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState('');
 
-  const load = () =>
-    Promise.all([getRun(id), getRunPipeline(id)]).then(([runRes, pipeRes]) => {
-      setRun(runRes);
-      setPipeline(pipeRes);
-    });
+  const load = useCallback(
+    () =>
+      Promise.all([getRun(id), getRunPipeline(id)]).then(([runRes, pipeRes]) => {
+        setRun(runRes);
+        setPipeline(pipeRes);
+      }),
+    [id],
+  );
 
   useEffect(() => {
     setLoading(true);
     load()
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [load]);
 
   useEffect(() => {
     const er = run?.run;
@@ -62,7 +65,7 @@ export default function RunDetailPage() {
       load().catch(() => {});
     }, 3000);
     return () => clearInterval(t);
-  }, [run?.run?.status, id]);
+  }, [run?.run, load]);
 
   useEffect(() => {
     if (tab === 'costs' && !llm) {
@@ -194,6 +197,42 @@ export default function RunDetailPage() {
           <div className="admin-card__value" style={{ fontSize: '1.25rem' }}>{er.progress_pct ?? 0}%</div>
         </div>
       </div>
+
+      {run.access && (
+        <div className="admin-card" style={{ marginBottom: '1.5rem' }}>
+          <div className="admin-card__label">Access & contact</div>
+          <div className="admin-table-wrap" style={{ marginTop: '0.75rem', border: 'none' }}>
+            <table className="admin-table">
+              <tbody>
+                <tr>
+                  <td>Contact email</td>
+                  <td>{run.access.contact_email ?? '—'}</td>
+                </tr>
+                <tr>
+                  <td>Unlock method</td>
+                  <td>{run.access.unlock_method ?? '—'}</td>
+                </tr>
+                <tr>
+                  <td>Access status</td>
+                  <td>{run.access.access_status ?? '—'}</td>
+                </tr>
+                <tr>
+                  <td>Payer wallet</td>
+                  <td>{run.access.payer_wallet ?? '—'}</td>
+                </tr>
+                <tr>
+                  <td>Results email</td>
+                  <td>
+                    {run.access.results_email_status
+                      ? `${run.access.results_email_status}${run.access.results_email_sent_at ? ` · ${formatRelativeTime(run.access.results_email_sent_at)}` : ''}`
+                      : '—'}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="admin-tabs">
         {TABS.map((t) => (

@@ -6,6 +6,8 @@ export interface AuthUser {
   id: string;
   email?: string;
   role?: string;
+  privyUserId?: string;
+  isPrivy?: boolean;
 }
 
 declare module 'fastify' {

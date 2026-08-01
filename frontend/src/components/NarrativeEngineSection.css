@@ -4,6 +4,7 @@
   color: var(--color-peach);
   min-height: calc(1200 * var(--u));
   overflow: hidden;
+  --ne-input-bg: var(--color-purple-deep);
 }
 
 .ne-section__inner {
@@ -129,7 +130,7 @@
   height: calc(58 * var(--u));
   border-radius: calc(50 * var(--u));
   border: calc(2 * var(--u)) solid var(--color-peach);
-  background: var(--color-purple);
+  background: var(--ne-input-bg);
   color: var(--color-peach);
   font-family: var(--font-body);
   font-weight: 500;
@@ -167,6 +168,31 @@
   letter-spacing: calc(0.15 * var(--u));
   text-transform: none;
   transition: transform 0.15s ease, opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--u));
+  min-width: calc(120 * var(--u));
+}
+
+.ne-website-intake__spinner {
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  border: calc(2 * var(--u)) solid rgba(142, 78, 213, 0.25);
+  border-top-color: var(--color-purple);
+  border-radius: 50%;
+  animation: ne-website-intake-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ne-website-intake-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ne-website-intake__btn.is-loading {
+  opacity: 0.92;
 }
 
 .ne-website-intake__btn:hover:not(:disabled) {
@@ -212,7 +238,7 @@
   height: calc(58 * var(--u));
   border-radius: calc(50 * var(--u));
   border: calc(2 * var(--u)) solid var(--color-peach);
-  background: var(--color-purple);
+  background: var(--ne-input-bg);
   color: var(--color-peach);
   font-family: var(--font-body);
   font-weight: 500;
@@ -233,6 +259,28 @@
 
 .ne-field input:focus {
   border-color: var(--color-white);
+}
+
+.ne-field input.ne-field__input--typing {
+  border-color: var(--color-white);
+  box-shadow: 0 0 0 calc(2 * var(--u)) rgba(255, 255, 255, 0.12);
+  caret-color: var(--color-peach);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ne-field input.ne-field__input--typing {
+    animation: ne-field-typing-glow 1.1s ease-in-out infinite;
+  }
+}
+
+@keyframes ne-field-typing-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 calc(2 * var(--u)) rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 0 calc(3 * var(--u)) rgba(255, 255, 255, 0.18);
+  }
 }
 
 .ne-section__cta {
@@ -456,4 +504,18 @@
     margin-top: 10px;
     font-size: 22px;
   }
+}
+
+.ne-section__auth-test-link {
+  display: block;
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #111;
+  text-decoration: underline;
+  opacity: 0.75;
+}
+
+.ne-section__auth-test-link:hover {
+  opacity: 1;
 }

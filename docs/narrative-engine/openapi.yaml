@@ -83,3 +83,63 @@ paths:
   /v1/me/runs/{id}:
     delete:
       summary: GDPR delete run
+  /v1/capabilities:
+    get:
+      summary: Agent service discovery (SKUs, pricing, usage)
+  /v1/agent/analyze:
+    post:
+      summary: Paid brand analysis for AI agents (x402)
+      description: |
+        Requires x402 USDC payment on Base. Set output_scope to cards or full_pipeline.
+        First request without payment header returns 402 with x402Version 2 and accepts[].
+        Retry with payment-signature (or x-payment / payment) header after wallet payment.
+      parameters:
+        - name: payment-signature
+          in: header
+          required: false
+          schema: { type: string }
+          description: x402 payment proof (also accepts x-payment or payment)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [building, audience, challenge, differentiation]
+              properties:
+                building: { type: string }
+                audience: { type: string }
+                challenge: { type: string }
+                differentiation: { type: string }
+                website: { type: string }
+                output_scope: { type: string, enum: [cards, full_pipeline] }
+      responses:
+        '402':
+          description: Payment required (x402)
+        '201':
+          description: Run created
+  /v1/agent/runs/{id}:
+    get:
+      summary: Poll agent run status
+  /v1/agent/runs/{id}/outputs:
+    get:
+      summary: Agent run outputs (cards or full pipeline)
+      parameters:
+        - name: scope
+          in: query
+          schema: { type: string, enum: [cards, full] }
+  /v1/runs/{id}/access-status:
+    get:
+      summary: Human unlock state and recovery actions
+  /v1/runs/{id}/unlock:
+    post:
+      summary: Unlock results with x402 USDC payment
+      responses:
+        '402':
+          description: Payment required
+  /v1/runs/{id}/request-email-verification:
+    post:
+      summary: Send company email magic link
+  /v1/runs/{id}/unlock/oauth:
+    post:
+      summary: Unlock via Privy OAuth (Bearer token)

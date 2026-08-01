@@ -1,0 +1,16 @@
+<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="80" height="80" rx="40" fill="var(--fill-0, #C24A8C)"/>
+  <g transform="translate(40 40)">
+    <g transform="scale(2.1)">
+      <path
+        d="M13.828 10.172a4 4 0 0 0-5.656 0l-4 4a4 4 0 1 0 5.656 5.656l1.102-1.101m-.758-4.899a4 4 0 0 0 5.656 0l4-4a4 4 0 1 0-5.656-5.656l-1.1 1.1"
+        transform="translate(-12 -12)"
+        stroke="var(--fill-0, #F2DDB6)"
+        stroke-width="1.67"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+    </g>
+  </g>
+</svg>

@@ -5,11 +5,13 @@ import { getSupabase } from '../db/client.js';
 import { AdminService } from '../services/AdminService.js';
 import { AdminPlaygroundService } from '../services/AdminPlaygroundService.js';
 import { requireAdmin } from './auth.js';
+import { createCommerceContext } from './access.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, env: Env) {
   const db = getSupabase(env);
   const admin = new AdminService(db, env);
   const playground = new AdminPlaygroundService(db, env);
+  const commerce = createCommerceContext(env);
 
   const guard = (request: Parameters<typeof requireAdmin>[0]) => requireAdmin(request, env);
 
@@ -165,5 +167,53 @@ export async function registerAdminRoutes(app: FastifyInstance, env: Env) {
   app.get('/v1/admin/patterns', async (request) => {
     guard(request);
     return admin.getPatterns();
+  });
+
+  app.get('/v1/admin/business-config', async (request) => {
+    guard(request);
+    return { config: await commerce.config.list() };
+  });
+
+  app.patch('/v1/admin/business-config/:key', async (request) => {
+    guard(request);
+    const { key } = request.params as { key: string };
+    const { value, updated_by } = request.body as { value: unknown; updated_by?: string };
+    await commerce.config.set(key, value, updated_by);
+    return { config_key: key, updated: true };
+  });
+
+  app.get('/v1/admin/product-skus', async (request) => {
+    guard(request);
+    return { skus: await commerce.skuPricing.listSkus() };
+  });
+
+  app.patch('/v1/admin/product-skus/:sku_key', async (request) => {
+    guard(request);
+    const { sku_key } = request.params as { sku_key: string };
+    const body = request.body as Record<string, unknown>;
+    const sku = await commerce.skuPricing.updateSku(sku_key, body as never);
+    return { sku };
+  });
+
+  app.post('/v1/admin/runs/:id/grant-access', async (request) => {
+    guard(request);
+    const { id } = request.params as { id: string };
+    const { output_scope } = (request.body as { output_scope?: string }) ?? {};
+    await commerce.access.grantAccess({
+      runId: id,
+      grantType: 'admin_override',
+      outputScope: output_scope === 'full_pipeline' ? 'full_pipeline' : 'cards',
+      unlockMethod: 'admin_override',
+    });
+    return { granted: true };
+  });
+
+  app.post('/v1/admin/runs/:id/resend-results-email', async (request, reply) => {
+    guard(request);
+    const { id } = request.params as { id: string };
+    const { email } = request.body as { email: string };
+    if (!email) return reply.code(400).send({ error: { message: 'email required' } });
+    await commerce.resultsEmail.resend(id, email);
+    return { sent: true };
   });
 }

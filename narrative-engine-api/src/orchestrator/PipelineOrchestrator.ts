@@ -8,6 +8,8 @@ import { CostCalculator } from '../telemetry/CostCalculator.js';
 import { extractHomepage } from '../website/HomepageExtractor.js';
 import { OutputGuardrailService } from '../services/OutputGuardrailService.js';
 import { ShareService } from '../share/ShareService.js';
+import type { ResultsEmailService } from '../services/ResultsEmailService.js';
+import type { AdminNotificationService } from '../services/AdminNotificationService.js';
 import {
   LAYER_KEYS,
   STAGE_PROGRESS,
@@ -43,6 +45,11 @@ export interface RunContext {
   tier: string;
 }
 
+export interface PipelineOrchestratorOpts {
+  resultsEmail?: ResultsEmailService;
+  adminNotifications?: AdminNotificationService;
+}
+
 export class PipelineOrchestrator {
   private readonly llm: LLMRouter;
   private readonly resolver = new VariableResolver();
@@ -51,15 +58,20 @@ export class PipelineOrchestrator {
   private readonly costs: CostCalculator;
   private readonly guardrails = new OutputGuardrailService();
   private readonly share: ShareService;
+  private readonly resultsEmail?: ResultsEmailService;
+  private readonly adminNotifications?: AdminNotificationService;
 
   constructor(
     private readonly db: SupabaseClient,
     env: Env,
+    opts: PipelineOrchestratorOpts = {},
   ) {
     this.llm = new LLMRouter(env);
     this.telemetry = new TelemetryService(db);
     this.costs = new CostCalculator(db);
     this.share = new ShareService(db, env);
+    this.resultsEmail = opts.resultsEmail;
+    this.adminNotifications = opts.adminNotifications;
   }
 
   async execute(runId: string): Promise<void> {
@@ -234,6 +246,8 @@ export class PipelineOrchestrator {
       share_ok: !shareError,
       ...(shareError ? { share_error: shareError } : {}),
     });
+    void this.resultsEmail?.enqueueOnComplete(runId);
+    void this.adminNotifications?.notifyRunCompleted(runId);
   }
 
   private async markCompleted(runId: string, warn?: { share_error?: string }) {

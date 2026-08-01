@@ -6,18 +6,17 @@
 INSERT INTO enum_definitions (enum_key, values, engine_scope) VALUES ('messaging_problem', '[{"key":"too_technical","label":"Too technical","active":true},{"key":"too_vague","label":"Too vague","active":true},{"key":"no_differentiation","label":"No differentiation","active":true},{"key":"unclear_audience","label":"Unclear audience","active":true}]'::jsonb, '{narrative}') ON CONFLICT (enum_key) DO UPDATE SET values = EXCLUDED.values;
 INSERT INTO enum_definitions (enum_key, values, engine_scope) VALUES ('category', '[{"key":"infrastructure","label":"Infrastructure","active":true},{"key":"platform","label":"Platform","active":true},{"key":"tool","label":"Tool","active":true},{"key":"application","label":"Application","active":true},{"key":"service","label":"Service","active":true}]'::jsonb, '{narrative}') ON CONFLICT (enum_key) DO UPDATE SET values = EXCLUDED.values;
 INSERT INTO enum_definitions (enum_key, values, engine_scope) VALUES ('complexity_level', '[{"key":"high","label":"High","active":true},{"key":"medium","label":"Medium","active":true},{"key":"low","label":"Low","active":true}]'::jsonb, '{narrative}') ON CONFLICT (enum_key) DO UPDATE SET values = EXCLUDED.values;
-INSERT INTO enum_definitions (enum_key, values, engine_scope) VALUES ('market', '[{"key":"Web3","label":"Web3","active":true},{"key":"AI","label":"AI","active":true},{"key":"SaaS","label":"SaaS","active":true},{"key":"Fintech","label":"Fintech","active":true},{"key":"Other","label":"Other","active":true}]'::jsonb, '{narrative}') ON CONFLICT (enum_key) DO UPDATE SET values = EXCLUDED.values;
 
 -- schema_registry
 INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.diagnostics.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["scores","findings"],"properties":{"scores":{"type":"object","required":["clarity","positioning","audience","differentiation","relevance"],"properties":{"clarity":{"type":"number","minimum":0,"maximum":100},"positioning":{"type":"number","minimum":0,"maximum":100},"audience":{"type":"number","minimum":0,"maximum":100},"differentiation":{"type":"number","minimum":0,"maximum":100},"relevance":{"type":"number","minimum":0,"maximum":100}}},"findings":{"type":"object"},"messaging_problem":{"type":"string"}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
-INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.interpretation.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["core_function","target_user","primary_outcome","category","complexity_level","market","messaging_problem"],"properties":{"core_function":{"type":"string"},"target_user":{"type":"string"},"primary_outcome":{"type":"string"},"category":{"type":"string"},"complexity_level":{"type":"string"},"market":{"type":"string"},"messaging_problem":{"type":"string"}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
+INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.interpretation.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["core_function","target_user","primary_outcome","category","complexity_level","market","messaging_problem"],"properties":{"core_function":{"type":"string"},"target_user":{"type":"string"},"primary_outcome":{"type":"string"},"category":{"type":"string"},"complexity_level":{"type":"string"},"market":{"type":"string","description":"Free-form industry/niche label (2-8 words), e.g. Web3 wallet infrastructure"},"market_detail":{"type":"string","description":"Optional sub-niche or buyer qualifier"},"messaging_problem":{"type":"string"}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
 INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.memetic_analysis.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["memetic_narrative_angle","memetic_lite"],"properties":{"memetic_narrative_angle":{"type":"string"},"memetic_lite":{"type":"object","properties":{"clarity":{"type":"number","minimum":0,"maximum":100},"relatability":{"type":"number","minimum":0,"maximum":100},"identity_signal":{"type":"number","minimum":0,"maximum":100},"analogy_potential":{"type":"number","minimum":0,"maximum":100},"simplicity":{"type":"number","minimum":0,"maximum":100},"repeatability":{"type":"number","minimum":0,"maximum":100}}},"qualitative":{"type":"object","properties":{"familiarity":{"type":"string"},"contrast":{"type":"string"},"shared_truth":{"type":"string"},"participation_potential":{"type":"string"}}}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
 INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.output_generation.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["simple_explanation","positioning","messaging_hook","memetic_narrative_angle"],"properties":{"simple_explanation":{"type":"string"},"positioning":{"type":"string"},"messaging_hook":{"type":"string"},"memetic_narrative_angle":{"type":"string"}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
 INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.positioning.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["positioning"],"properties":{"positioning":{"type":"string"},"analogy":{"type":["string","null"]},"narrative_hooks":{"type":"array","items":{"type":"string"}}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
-INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.translation.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["simple_explanation"],"properties":{"simple_explanation":{"type":"string","maxLength":200}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
+INSERT INTO schema_registry (schema_key, json_schema) VALUES ('ne.translation.v1', '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["simple_explanation"],"properties":{"source_message":{"type":"string","description":"The technical or jargon-heavy phrasing being translated (from founder input)"},"simple_explanation":{"type":"string","maxLength":200}}}'::jsonb) ON CONFLICT (schema_key) DO UPDATE SET json_schema = EXCLUDED.json_schema;
 
 -- prompt_templates
-INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'interpretation', '1.2.0', 'You are a narrative compression engine for complex technology startups.
+INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'interpretation', '1.4.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
 
@@ -31,26 +30,29 @@ Principles:
 
 You are the Interpretation Engine (L1). Extract structured meaning from founder input and optional website context.
 
-Return fields: core_function, target_user, primary_outcome, category, complexity_level, market, messaging_problem.
+Return fields: core_function, target_user, primary_outcome, category, complexity_level, market, market_detail (optional), messaging_problem.
 
-Use ONLY the allowed enum keys listed below for category, complexity_level, market, and messaging_problem.
+market — REQUIRED free-form string (2–8 words): describe the specific industry/niche dynamically. Be precise, not generic.
+Good: "Web3 wallet infrastructure", "AI sales copilot for SMBs", "Climate risk analytics for insurers", "Legal contract automation"
+Bad: "Other", "SaaS", "Tech", "Software"
 
-When website_context is present, compare homepage title/H1/CTA/meta to the form answers. Weigh both sources: prefer concrete founder answers for intent, but note when site copy contradicts audience, outcome, or differentiation (e.g. site says "for everyone" while form names a narrow audience).
+market_detail — optional extra qualifier (buyer type, geography, sub-vertical) when it adds clarity.
 
-Example: Product "API for on-chain identity" + Audience "crypto wallets" + site H1 "Identity for everyone" → messaging_problem unclear_audience or too_vague, target_user = crypto wallets.
+Use ONLY the allowed enum keys listed below for category, complexity_level, and messaging_problem (market is NOT an enum).
+
+When website_context is present, compare homepage title/H1/CTA/meta to the form answers. Weigh both sources: prefer concrete founder answers for intent, but note when site copy contradicts audience, outcome, or differentiation.
 
 Output JSON only. No markdown.
 Allowed enum keys:
 - messaging_problem: too_technical | too_vague | no_differentiation | unclear_audience
 - category: infrastructure | platform | tool | application | service
-- complexity_level: high | medium | low
-- market: Web3 | AI | SaaS | Fintech | Other', 'Product: {{building}}
+- complexity_level: high | medium | low', 'Product: {{building}}
 Audience: {{audience}}
 Problem: {{challenge}}
 Differentiation: {{differentiation}}
 Website context: {{website_context}}
 Mismatch flags: {{mismatch_flags}}', '[]', 'ne.interpretation.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
-INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'diagnostics', '1.2.0', 'You are a narrative compression engine for complex technology startups.
+INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'diagnostics', '1.3.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
 
@@ -62,13 +64,11 @@ Principles:
 - Analogies founders and investors recognize
 - Diagnose before generating — honour diagnostic priorities when present
 
-You are the Communication Diagnostics Engine (L2). Diagnose founder messaging clarity using founder inputs, structured L1 interpretation, optional website context, mismatch flags, and matched patterns.
+You are the Communication Diagnostics Engine (L2). Diagnose founder messaging clarity using founder inputs, structured L1 interpretation, optional website context, and mismatch flags.
+
+Apply known messaging failure heuristics (no external pattern DB): too technical / jargon-heavy, feature-first (features before outcomes), unclear audience, weak differentiation, vague outcomes, insider language, category confusion, form-vs-site mismatch.
 
 Score each dimension 0–100: clarity, positioning, audience, differentiation, relevance.
-
-Detect: jargon density, weak differentiation, insider language, vague outcomes, form-vs-site inconsistencies.
-
-Example findings keys: audience_too_broad, jargon_overload, feature_dumping, weak_outcome, site_form_mismatch.
 
 Return scores object, findings object (specific issues), and messaging_problem (enum key).
 
@@ -89,11 +89,8 @@ Mismatch flags:
 {{mismatch_flags}}
 
 Structured L1:
-{{structured_output}}
-
-Matched patterns:
-{{patterns}}', '[]', 'ne.diagnostics.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
-INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'translation', '1.2.0', 'You are a narrative compression engine for complex technology startups.
+{{structured_output}}', '[]', 'ne.diagnostics.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
+INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'translation', '1.4.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
 
@@ -107,19 +104,18 @@ Principles:
 
 You are the Narrative Translation Engine (L3). Convert technical descriptions to human, outcome-first language.
 
-Apply the 12-year-old clarity test. simple_explanation must be at most 15 words. No jargon. No hype. No buzzwords (e.g. revolutionary, seamless, next-gen).
+Return source_message (the jargon-heavy or technical phrasing you are translating) AND simple_explanation (the plain-language result).
 
-Replace technical terms with outcomes users feel. Address diagnostic priorities when provided.
+Apply the 12-year-old clarity test. simple_explanation must be at most 15 words. No jargon. No hype. No buzzwords.
+
+Draw on clarity heuristics: lead with user outcome, replace protocol/infra jargon with felt benefits, address diagnostic priorities when provided.
 
 Output JSON only. No markdown.', 'Diagnostic priorities:
 {{diagnostic_summary}}
 
 Structured data:
-{{structured_output}}
-
-Patterns:
-{{patterns}}', '[]', 'ne.translation.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
-INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'positioning', '1.2.0', 'You are a narrative compression engine for complex technology startups.
+{{structured_output}}', '[]', 'ne.translation.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
+INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'positioning', '1.3.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
 
@@ -135,9 +131,9 @@ You are the Positioning Engine (L4). Place the product in a clear category.
 
 Prefer format: "[Category] for [target user]" — keep positioning under ~8 words when possible.
 
-Use an analogy only when it genuinely helps comprehension — otherwise set analogy to null. Avoid forced "Uber for X" / "Stripe for Y" analogies unless the parallel is precise.
+Use an analogy only when it genuinely helps — otherwise null. Avoid forced "Uber for X" unless precise.
 
-Also return up to 3 narrative_hooks (short sentences) as candidate messaging hooks for L6.
+Return up to 3 narrative_hooks. Reference success framing heuristics: outcome-first, category ownership, familiar comparisons (Stripe/Notion-style simplicity) only when apt.
 
 Address diagnostic priorities when provided.
 
@@ -145,11 +141,8 @@ Output JSON only. No markdown.', 'Diagnostic priorities:
 {{diagnostic_summary}}
 
 Prior layers:
-{{prior_layers}}
-
-Patterns:
-{{patterns}}', '[]', 'ne.positioning.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
-INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'memetic_analysis', '1.2.0', 'You are a narrative compression engine for complex technology startups.
+{{prior_layers}}', '[]', 'ne.positioning.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
+INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'memetic_analysis', '1.3.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
 
@@ -163,17 +156,11 @@ Principles:
 
 You are the Memetic Analysis Engine (L5). Analyze communication directions people may recognise — NOT internet memes. No meme slang. No virality claims.
 
-Score memetic_lite dimensions 0–100:
-- clarity (20%): understandable in ~5 seconds
-- relatability (20%): audience already grasps the concept
-- identity_signal (15%): who naturally relates (builder, founder, dev, etc.)
-- analogy_potential (15%): familiar comparison available
-- simplicity (15%): low cognitive load
-- repeatability (15%): easy to retell
+Score memetic_lite dimensions 0–100: clarity, relatability, identity_signal, analogy_potential, simplicity, repeatability.
 
-Also return qualitative: familiarity, contrast, shared_truth, participation_potential.
+Qualitative: familiarity, contrast, shared_truth, participation_potential.
 
-Return memetic_narrative_angle as the direction for Card 4 — choose the angle with the strongest qualitative signals (familiarity + contrast + shared truth + participation).
+Return memetic_narrative_angle for Card 4. Apply behaviour heuristics: identity signal, shared truth, simplifies complexity — without trend-chasing.
 
 Address diagnostic priorities when provided.
 
@@ -181,10 +168,7 @@ Output JSON only. No markdown.', 'Diagnostic priorities:
 {{diagnostic_summary}}
 
 Prior layers:
-{{prior_layers}}
-
-Patterns:
-{{patterns}}', '[]', 'ne.memetic_analysis.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
+{{prior_layers}}', '[]', 'ne.memetic_analysis.v1', true) ON CONFLICT (engine_type, layer_key, version) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, user_prompt_template = EXCLUDED.user_prompt_template, output_schema_ref = EXCLUDED.output_schema_ref, is_active = EXCLUDED.is_active;
 INSERT INTO prompt_templates (engine_type, layer_key, version, system_prompt, user_prompt_template, variables, output_schema_ref, is_active) VALUES ('narrative', 'output_generation', '1.2.0', 'You are a narrative compression engine for complex technology startups.
 
 Quality bar: Rewrite startup messaging so a 12-year-old could understand it. If it passes that test, it spreads.
@@ -201,9 +185,7 @@ You are the Output Generation Engine (L6). Assemble final narrative cards from a
 
 Return: simple_explanation, positioning, messaging_hook (exactly ONE sentence), memetic_narrative_angle.
 
-Choose the strongest messaging_hook from L4.narrative_hooks when present — do not invent a wholly new angle. You may lightly polish wording for clarity.
-
-No virality claims. No meme slang. Keep simple_explanation aligned with L3 (≤15 words, outcome-first).
+Choose the strongest messaging_hook from L4.narrative_hooks when present. No virality claims. Keep simple_explanation aligned with L3 (≤15 words).
 
 Address diagnostic priorities when provided.
 

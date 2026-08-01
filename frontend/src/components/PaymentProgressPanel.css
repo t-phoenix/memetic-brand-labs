@@ -1,0 +1,81 @@
+.ne-pay-progress {
+  max-width: 520px;
+}
+
+.ne-pay-progress__spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1.25rem;
+  border: 3px solid rgba(142, 78, 213, 0.2);
+  border-top-color: var(--color-magenta, #8e4ed5);
+  border-radius: 50%;
+  animation: ne-pay-progress-spin 0.9s linear infinite;
+}
+
+@keyframes ne-pay-progress-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ne-pay-progress__sub {
+  opacity: 0.85;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+}
+
+.ne-pay-progress__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ne-pay-progress__steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 0.92rem;
+  opacity: 0.55;
+}
+
+.ne-pay-progress__steps li.is-active {
+  opacity: 1;
+  border: 1px solid rgba(142, 78, 213, 0.35);
+  background: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+}
+
+.ne-pay-progress__steps li.is-done {
+  opacity: 0.9;
+}
+
+.ne-pay-progress__marker {
+  flex: 0 0 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(142, 78, 213, 0.12);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-magenta, #8e4ed5);
+}
+
+.ne-pay-progress__steps li.is-done .ne-pay-progress__marker {
+  background: #2d6a4f;
+  color: #fff;
+}
+
+.ne-pay-progress__steps li.is-active .ne-pay-progress__marker {
+  background: var(--color-magenta, #8e4ed5);
+  color: #fff;
+}

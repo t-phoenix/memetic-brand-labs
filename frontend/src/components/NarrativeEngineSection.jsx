@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { analyzeWebsiteForForm, createNarrativeRun } from '../lib/narrativeApi';
+import { analyzeWebsiteForForm } from '../lib/narrativeApi';
+import { animateIntakeFormAnswers } from '../lib/animateIntakeFormAnswers';
+import { savePendingIntake } from '../lib/pendingIntake';
 import { trackNeRunStart, trackNeWebsiteAnalyze } from '../lib/analytics';
 import gears from '../assets/graphics/figma-v2/ne-gears.svg';
 import mobileHeading from '../assets/graphics/figma-v2/mobile-ne-heading.svg';
@@ -20,8 +22,10 @@ export default function NarrativeEngineSection() {
   const [form, setForm] = useState(INITIAL);
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [typingField, setTypingField] = useState(null);
   const [error, setError] = useState('');
   const [analyzeError, setAnalyzeError] = useState('');
+  const typingAbortRef = useRef(null);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -32,33 +36,60 @@ export default function NarrativeEngineSection() {
       return;
     }
 
+    typingAbortRef.current?.abort();
+    const controller = new AbortController();
+    typingAbortRef.current = controller;
+
     setAnalyzing(true);
     setAnalyzeError('');
+    setTypingField(null);
     trackNeWebsiteAnalyze();
     try {
       const { answers } = await analyzeWebsiteForForm(website);
-      setForm((prev) => ({
-        ...prev,
-        building: answers.building || prev.building,
-        audience: answers.audience || prev.audience,
-        challenge: answers.challenge || prev.challenge,
-        differentiation: answers.differentiation || prev.differentiation,
-      }));
+      setAnalyzing(false);
+
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (prefersReducedMotion) {
+        setForm((prev) => ({
+          ...prev,
+          building: answers.building || prev.building,
+          audience: answers.audience || prev.audience,
+          challenge: answers.challenge || prev.challenge,
+          differentiation: answers.differentiation || prev.differentiation,
+        }));
+      } else {
+        await animateIntakeFormAnswers(
+          answers,
+          (patch) => setForm((prev) => ({ ...prev, ...patch })),
+          setTypingField,
+          controller.signal,
+        );
+      }
     } catch (err) {
+      if (controller.signal.aborted) return;
       setAnalyzeError(err.message || 'Could not analyze website');
     } finally {
-      setAnalyzing(false);
+      if (!controller.signal.aborted) {
+        setAnalyzing(false);
+        setTypingField(null);
+      }
     }
   };
 
+  const intakeBusy = analyzing || typingField !== null;
+
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (intakeBusy) return;
     setLoading(true);
     setError('');
     try {
-      const { run_id } = await createNarrativeRun(form);
       trackNeRunStart({ source: 'landing_section', modelTier: form.model_tier });
-      navigate(`/narrative-engine/run/${run_id}`);
+      savePendingIntake(form);
+      navigate('/narrative-engine/authorize', { state: { intake: form } });
     } catch (err) {
       setError(err.message || 'Failed to start analysis');
     } finally {
@@ -115,11 +146,15 @@ export default function NarrativeEngineSection() {
                   />
                   <button
                     type="button"
-                    className="ne-website-intake__btn"
+                    className={`ne-website-intake__btn${analyzing ? ' is-loading' : ''}`}
                     onClick={onAnalyzeWebsite}
-                    disabled={analyzing || loading}
+                    disabled={intakeBusy || loading}
+                    aria-busy={analyzing}
                   >
-                    {analyzing ? 'Analyzing…' : 'Analyze'}
+                    {analyzing && (
+                      <span className="ne-website-intake__spinner" aria-hidden="true" />
+                    )}
+                    <span>{analyzing ? 'Analyzing' : 'Analyze'}</span>
                   </button>
                 </div>
               </label>
@@ -141,17 +176,35 @@ export default function NarrativeEngineSection() {
                 onChange={onChange}
                 required
                 autoComplete="off"
+                readOnly={typingField === 'building'}
+                className={typingField === 'building' ? 'ne-field__input--typing' : undefined}
               />
             </label>
 
             <label className="ne-field">
               <span>Who is it for?</span>
-              <input name="audience" value={form.audience} onChange={onChange} required autoComplete="off" />
+              <input
+                name="audience"
+                value={form.audience}
+                onChange={onChange}
+                required
+                autoComplete="off"
+                readOnly={typingField === 'audience'}
+                className={typingField === 'audience' ? 'ne-field__input--typing' : undefined}
+              />
             </label>
 
             <label className="ne-field">
               <span>What challenge are you solving?</span>
-              <input name="challenge" value={form.challenge} onChange={onChange} required autoComplete="off" />
+              <input
+                name="challenge"
+                value={form.challenge}
+                onChange={onChange}
+                required
+                autoComplete="off"
+                readOnly={typingField === 'challenge'}
+                className={typingField === 'challenge' ? 'ne-field__input--typing' : undefined}
+              />
             </label>
 
             <label className="ne-field">
@@ -162,6 +215,8 @@ export default function NarrativeEngineSection() {
                 onChange={onChange}
                 required
                 autoComplete="off"
+                readOnly={typingField === 'differentiation'}
+                className={typingField === 'differentiation' ? 'ne-field__input--typing' : undefined}
               />
             </label>
 
@@ -171,8 +226,8 @@ export default function NarrativeEngineSection() {
               </p>
             )}
 
-            <button type="submit" className="ne-section__cta" disabled={loading}>
-              {loading ? 'Starting…' : 'Analyze Your Narrative'}
+            <button type="submit" className="ne-section__cta" disabled={loading || intakeBusy}>
+              {loading ? 'Continuing…' : 'Analyze Your Narrative'}
             </button>
           </form>
         </div>

@@ -69,6 +69,7 @@
 :root {
   --color-purple: #8e4ed5;
   --color-purple-hero: #7979e3;
+  --color-purple-deep: color-mix(in srgb, var(--color-purple) 78%, var(--color-black) 22%);
   --color-red: #d8474d;
   --color-yellow: #efc960;
   --color-pink: #ff80d2;

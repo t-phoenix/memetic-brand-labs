@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SiteNav from '../components/SiteNav';
+import ResultsShareActions from '../components/ResultsShareActions';
 import { useSeoOverride } from '../components/useSeoOverride';
 import { getPublicShare, API_URL } from '../lib/narrativeApi';
 import { SITE_URL, DEFAULT_SEO } from '../lib/seo';
-import { trackCtaClick, trackFileDownload, trackShare } from '../lib/analytics';
-import shareTelegram from '../assets/graphics/figma-v2/share-telegram.svg';
-import shareX from '../assets/graphics/figma-v2/share-x.svg';
-import shareLinkedin from '../assets/graphics/figma-v2/share-linkedin.svg';
+import { trackCtaClick } from '../lib/analytics';
+import { resultCardClassName } from '../lib/resultCardStyles';
 import './NarrativeFlow.css';
 
 export default function SharedResultPage() {
@@ -74,34 +73,14 @@ export default function SharedResultPage() {
 
   const cards = data.cards || [];
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/results/${shareId}` : '';
-  const shareLinks = [
-    {
-      key: 'telegram',
-      href: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}`,
-      icon: shareTelegram,
-      label: 'Share on Telegram',
-    },
-    {
-      key: 'x',
-      href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`,
-      icon: shareX,
-      label: 'Share on X',
-    },
-    {
-      key: 'linkedin',
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-      icon: shareLinkedin,
-      label: 'Share on LinkedIn',
-    },
-  ];
 
   return (
     <div className="ne-flow ne-flow--results">
       <SiteNav tone="magenta" />
       <main className="ne-flow__main ne-flow__main--results">
         <div className="ne-results__grid">
-          {cards.map((card) => (
-            <article key={card.key} className="ne-results__card">
+          {cards.map((card, i) => (
+            <article key={card.key || i} className={resultCardClassName(i)}>
               <h2>{card.label}</h2>
               <p>{card.content}</p>
             </article>
@@ -114,40 +93,11 @@ export default function SharedResultPage() {
             <p>
               But a useful start. (<em>If you like it, share it with your community.</em>)
             </p>
-            <div className="ne-results__share">
-              {shareLinks.map((s) => (
-                <a
-                  key={s.key}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  onClick={() =>
-                    trackShare({
-                      method: s.key,
-                      contentType: 'shared_narrative_result',
-                      itemId: shareId,
-                    })
-                  }
-                >
-                  <img src={s.icon} alt="" width={80} height={80} />
-                </a>
-              ))}
-            </div>
-            <a
-              className="ne-results__download"
-              href={`${API_URL}/v1/results/${shareId}/graphic.png`}
-              download
-              onClick={() =>
-                trackFileDownload({
-                  fileName: 'narrative-share-graphic.png',
-                  fileExtension: 'png',
-                  linkUrl: `${API_URL}/v1/results/${shareId}/graphic.png`,
-                })
-              }
-            >
-              Download share graphic
-            </a>
+            <ResultsShareActions
+              shareId={shareId}
+              shareUrl={shareUrl}
+              contentType="shared_narrative_result"
+            />
           </div>
           <div className="ne-results__col">
             <h3>Perfect?</h3>

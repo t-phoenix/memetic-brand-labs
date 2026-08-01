@@ -27,6 +27,18 @@ Apply at: https://memetic.adpr.work/application-form
 ### Narrative Engine (Beta)
 An early preview tool that helps founders clarify positioning and narrative. Available at: https://memetic.adpr.work/narrative-engine
 
+### Narrative Engine API (agents, x402)
+Machine-readable brand positioning analysis for AI agents. Pay-per-call with USDC on Base (x402).
+
+- Capabilities: https://api.memetic.adpr.work/v1/capabilities
+- API llms.txt: https://api.memetic.adpr.work/llms.txt
+- OpenAPI: https://api.memetic.adpr.work/openapi.json
+- Analyze (paid): POST https://api.memetic.adpr.work/v1/agent/analyze
+  - `output_scope=cards` (~$0.25 USDC) — four narrative direction cards
+  - `output_scope=full_pipeline` (~$2.50 USDC) — cards + L1–L6 layer diagnostics JSON
+- Required body fields: `building`, `audience`, `challenge`, `differentiation`; optional `website`, `model_tier`
+- Poll: GET `/v1/agent/runs/{run_id}` until `status=completed`, then GET `/v1/agent/runs/{run_id}/outputs?scope=cards|full`
+
 ## Key concepts
 
 - **Shared Language**: A simpler way to explain what you're building.

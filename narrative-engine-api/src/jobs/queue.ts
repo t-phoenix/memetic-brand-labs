@@ -4,6 +4,9 @@ import { resolveRedisUrl } from '../config/env.js';
 import { getSupabase } from '../db/client.js';
 import { PipelineOrchestrator } from '../orchestrator/PipelineOrchestrator.js';
 import { healStuckFinalize } from '../orchestrator/runCompletion.js';
+import { BusinessConfigService } from '../services/BusinessConfigService.js';
+import { ResultsEmailService } from '../services/ResultsEmailService.js';
+import { AdminNotificationService } from '../services/AdminNotificationService.js';
 
 const QUEUE_NAME = 'narrative-pipeline';
 const REDIS_ENQUEUE_TIMEOUT_MS = 5_000;
@@ -115,7 +118,10 @@ export function enqueueRun(env: Env, runId: string) {
 
 export async function processRunInline(env: Env, runId: string) {
   const db = getSupabase(env);
-  const orchestrator = new PipelineOrchestrator(db, env);
+  const config = new BusinessConfigService(db, env);
+  const resultsEmail = new ResultsEmailService(db, env, config);
+  const adminNotifications = new AdminNotificationService(db, env, config);
+  const orchestrator = new PipelineOrchestrator(db, env, { resultsEmail, adminNotifications });
   try {
     await orchestrator.execute(runId);
   } catch (err) {

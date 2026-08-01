@@ -32,7 +32,7 @@ export class RunService {
       userId?: string;
       isFirstRun?: boolean;
       paymentStatus?: string;
-      runSource?: 'user' | 'admin_test' | 'admin_replay';
+      runSource?: 'user' | 'admin_test' | 'admin_replay' | 'agent' | 'human_paid';
       clientVersion?: string;
     },
   ) {
@@ -56,6 +56,7 @@ export class RunService {
         progress_pct: 5,
         run_source: opts.runSource ?? 'user',
         client_version: opts.clientVersion ?? null,
+        output_scope_requested: (input as { output_scope?: string }).output_scope ?? 'cards',
       })
       .select('id')
       .single();
@@ -155,14 +156,19 @@ export class RunService {
   }
 
   async verifyEmail(runId: string, email: string) {
+    // Legacy endpoint — delegates to confirm after client-side magic link (Supabase callback)
     const emailHash = sha256(email.toLowerCase());
     await this.db.from('auth_events').insert({
       run_id: runId,
-      event_type: 'magic_link.sent',
+      event_type: 'magic_link.legacy_confirm',
       email_hash: emailHash,
     });
-    await this.db.from('engine_runs').update({ email_verified_for_run: true }).eq('id', runId);
-    return { sent: true };
+    // Do NOT grant without real verification — return pending state
+    return {
+      sent: false,
+      deprecated: true,
+      message: 'Use POST /v1/runs/:id/request-email-verification then confirm via magic link callback.',
+    };
   }
 
   async deleteRun(runId: string, userId: string) {

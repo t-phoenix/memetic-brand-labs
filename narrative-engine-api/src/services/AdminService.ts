@@ -253,11 +253,18 @@ export class AdminService {
     let runIds: string[] | null = null;
     if (q?.trim()) {
       const term = `%${q.trim()}%`;
-      const { data: inputs } = await this.db
-        .from('run_inputs')
-        .select('run_id')
-        .or(`building.ilike.${term},audience.ilike.${term}`);
-      runIds = (inputs ?? []).map((i) => i.run_id);
+      const [{ data: inputs }, { data: emailRuns }] = await Promise.all([
+        this.db
+          .from('run_inputs')
+          .select('run_id')
+          .or(`building.ilike.${term},audience.ilike.${term}`),
+        this.db.from('engine_runs').select('id').ilike('contact_email', term),
+      ]);
+      const ids = new Set([
+        ...(inputs ?? []).map((i) => i.run_id),
+        ...(emailRuns ?? []).map((r) => r.id),
+      ]);
+      runIds = [...ids];
       if (runIds.length === 0) return { runs: [], total: 0 };
     }
 
@@ -265,6 +272,7 @@ export class AdminService {
       .from('engine_runs')
       .select(
         `id, status, model_tier, created_at, completed_at, progress_pct, total_duration_ms, run_source, current_stage,
+         contact_email, unlock_method, access_status, payer_wallet,
          run_inputs(building, audience),
          run_cost_summaries(total_llm_cost_usd)`,
         { count: 'exact' },
@@ -287,10 +295,22 @@ export class AdminService {
 
     const ids = (data ?? []).map((r) => r.id);
     const layerCounts = new Map<string, number>();
+    const oauthEmails = new Map<string, string>();
     if (ids.length > 0) {
-      const { data: outputs } = await this.db.from('layer_outputs').select('run_id').in('run_id', ids);
+      const [{ data: outputs }, { data: grants }] = await Promise.all([
+        this.db.from('layer_outputs').select('run_id').in('run_id', ids),
+        this.db
+          .from('run_access_grants')
+          .select('run_id, metadata')
+          .in('run_id', ids)
+          .eq('grant_type', 'oauth'),
+      ]);
       for (const o of outputs ?? []) {
         layerCounts.set(o.run_id, (layerCounts.get(o.run_id) ?? 0) + 1);
+      }
+      for (const g of grants ?? []) {
+        const email = (g.metadata as { email?: string })?.email;
+        if (email && !oauthEmails.has(g.run_id)) oauthEmails.set(g.run_id, email);
       }
     }
 
@@ -309,6 +329,10 @@ export class AdminService {
         progress_pct: row.progress_pct,
         building: inputs?.building ?? null,
         audience: inputs?.audience ?? null,
+        contact_email: row.contact_email ?? oauthEmails.get(row.id) ?? null,
+        unlock_method: row.unlock_method ?? null,
+        access_status: row.access_status ?? null,
+        payer_wallet: row.payer_wallet ?? null,
         total_llm_cost_usd: costs?.total_llm_cost_usd != null ? Number(costs.total_llm_cost_usd) : null,
         duration_ms: row.total_duration_ms,
         layers_complete: layersComplete,
@@ -336,22 +360,50 @@ export class AdminService {
       }
     }
 
-    const [{ data: inputs }, { data: config }, { data: costs }, { data: share }, { data: payments }] =
+    const [{ data: inputs }, { data: config }, { data: costs }, { data: share }, { data: payments }, { data: emailDelivery }, { data: oauthGrant }] =
       await Promise.all([
         this.db.from('run_inputs').select('*').eq('run_id', id).maybeSingle(),
         this.db.from('run_config_snapshots').select('*').eq('run_id', id).maybeSingle(),
         this.db.from('run_cost_summaries').select('*').eq('run_id', id).maybeSingle(),
         this.db.from('share_assets').select('share_id, is_public, og_title').eq('run_id', id).maybeSingle(),
         this.db.from('payment_transactions').select('amount_usdc, status, created_at').eq('run_id', id).maybeSingle(),
+        this.db
+          .from('result_email_deliveries')
+          .select('status, sent_at')
+          .eq('run_id', id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        this.db
+          .from('run_access_grants')
+          .select('metadata')
+          .eq('run_id', id)
+          .eq('grant_type', 'oauth')
+          .order('granted_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
+    const oauthEmail = (oauthGrant?.metadata as { email?: string })?.email ?? null;
+
     return {
-      run,
+      run: {
+        ...run,
+        contact_email: run.contact_email ?? oauthEmail,
+      },
       inputs,
       config_snapshot: config,
       cost_summary: costs,
       share,
       payment: payments,
+      access: {
+        contact_email: run.contact_email ?? oauthEmail,
+        unlock_method: run.unlock_method ?? null,
+        access_status: run.access_status ?? null,
+        payer_wallet: run.payer_wallet ?? null,
+        results_email_status: emailDelivery?.status ?? null,
+        results_email_sent_at: emailDelivery?.sent_at ?? null,
+      },
     };
   }
 
@@ -507,7 +559,7 @@ export class AdminService {
   async exportRunsCsv(params: { from?: string; to?: string; status?: string }) {
     let query = this.db
       .from('engine_runs')
-      .select('id, status, model_tier, run_source, created_at, completed_at, total_duration_ms, run_inputs(building, audience), run_cost_summaries(total_llm_cost_usd)')
+      .select('id, status, model_tier, run_source, created_at, completed_at, total_duration_ms, contact_email, unlock_method, run_inputs(building, audience), run_cost_summaries(total_llm_cost_usd)')
       .order('created_at', { ascending: false })
       .limit(10000);
 
@@ -516,7 +568,7 @@ export class AdminService {
     if (params.status) query = query.eq('status', params.status);
 
     const { data } = await query;
-    const rows = [['run_id', 'status', 'tier', 'source', 'building', 'audience', 'cost_usd', 'created_at', 'completed_at']];
+    const rows = [['run_id', 'status', 'tier', 'source', 'building', 'audience', 'contact_email', 'unlock_method', 'cost_usd', 'created_at', 'completed_at']];
     for (const r of data ?? []) {
       const inputs = Array.isArray(r.run_inputs) ? r.run_inputs[0] : r.run_inputs;
       const costs = Array.isArray(r.run_cost_summaries) ? r.run_cost_summaries[0] : r.run_cost_summaries;
@@ -527,6 +579,8 @@ export class AdminService {
         r.run_source ?? 'user',
         inputs?.building ?? '',
         inputs?.audience ?? '',
+        r.contact_email ?? '',
+        r.unlock_method ?? '',
         String(costs?.total_llm_cost_usd ?? ''),
         r.created_at,
         r.completed_at ?? '',

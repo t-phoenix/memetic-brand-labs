@@ -52,7 +52,7 @@ export default function RunsPage() {
       <form className="admin-toolbar" onSubmit={handleSearch}>
         <input
           className="admin-input"
-          placeholder="Search brand or audience…"
+          placeholder="Search brand, audience, or email…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
@@ -82,7 +82,9 @@ export default function RunsPage() {
                 <tr>
                   <th>When</th>
                   <th>Brand</th>
+                  <th>Email</th>
                   <th>Status</th>
+                  <th>Unlock</th>
                   <th>Tier</th>
                   <th>Pipeline</th>
                   <th>Cost</th>
@@ -94,7 +96,9 @@ export default function RunsPage() {
                   <tr key={run.id}>
                     <td title={run.created_at}>{formatRelativeTime(run.created_at)}</td>
                     <td>{run.building ?? '—'}</td>
+                    <td>{run.contact_email ?? '—'}</td>
                     <td><StatusBadge status={run.status} currentStage={run.current_stage} /></td>
+                    <td>{run.unlock_method ?? '—'}</td>
                     <td>{humanizeTier(run.model_tier)}</td>
                     <td>{run.layers_complete ?? 0}/{run.layers_total ?? 6}</td>
                     <td>{run.total_llm_cost_usd != null ? formatUsd(run.total_llm_cost_usd) : '—'}</td>
