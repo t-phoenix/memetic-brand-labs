@@ -67,6 +67,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   const [emailStatusLoading, setEmailStatusLoading] = useState(false);
 
   const [quote, setQuote] = useState(null);
+  const [selectedTier, setSelectedTier] = useState('fast');
   const [walletInfo, setWalletInfo] = useState(null);
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [walletPickerOpen, setWalletPickerOpen] = useState(false);
@@ -83,8 +84,25 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
     : 'Unlock your four narrative direction cards.';
 
   useEffect(() => {
-    getHumanUnlockQuote().then(setQuote).catch(() => undefined);
-  }, []);
+    getHumanUnlockQuote(selectedTier)
+      .then(setQuote)
+      .catch(() => undefined);
+  }, [selectedTier]);
+
+  useEffect(() => {
+    if (!walletInfo?.wallet || !quote) return;
+    void (async () => {
+      try {
+        const provider = await walletInfo.wallet.getEthereumProvider();
+        const bal = await getUsdcBalance(walletInfo.address, provider);
+        setBalance(bal.numeric);
+        setSufficient(hasSufficientBalance(bal.numeric, quote.price_usdc));
+        setPaySummary(buildPaymentSummary({ quote, walletAddress: walletInfo.address }));
+      } catch {
+        /* ignore balance refresh errors */
+      }
+    })();
+  }, [walletInfo, quote]);
 
   const refreshOAuthStatus = useCallback(async () => {
     if (!authenticated) {
@@ -352,7 +370,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
     try {
       const wallet = await connectSelectedWallet(walletId);
       const { network, balance: bal } = await loadWalletDetails(wallet);
-      const q = quote ?? (await getHumanUnlockQuote());
+      const q = quote ?? (await getHumanUnlockQuote(selectedTier));
       const enough = hasSufficientBalance(bal.numeric, q.price_usdc);
 
       setWalletInfo({ wallet, network, address: wallet.address });
@@ -423,7 +441,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
     try {
       const onProgress = handlePaymentProgress;
       if (isPreRun) {
-        const result = await startRunWithX402(intake, walletInfo.wallet, { onProgress });
+        const result = await startRunWithX402({ ...intake, model_tier: selectedTier }, walletInfo.wallet, { onProgress });
         setPaymentStep('done');
         setPaymentStatusDetail('Payment confirmed. Starting your analysis…');
         await new Promise((r) => setTimeout(r, 500));
@@ -431,7 +449,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
         return;
       }
 
-      const result = await unlockRunWithX402(runId, walletInfo.wallet, { onProgress });
+      const result = await unlockRunWithX402(runId, walletInfo.wallet, { onProgress, modelTier: selectedTier });
       if (result?.unlocked) {
         setPaymentStep('done');
         setPaymentStatusDetail('Unlocked. Loading your directions…');
@@ -465,6 +483,9 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   };
 
   const priceLabel = quote ? `${quote.price_usdc} USDC` : '~$0.10 USDC';
+  const tierOptions = quote?.tiers ?? [];
+  const freeEmailTierLabel = quote?.free_email_tier_label ?? 'Quality';
+  const complimentaryEmailNote = `Verified company emails receive our ${freeEmailTierLabel.toLowerCase()}-tier analysis at no charge — we invest in giving you the clearest possible output.`;
   const googleEmail = user?.google?.email || oauthStatus?.email || user?.email?.address;
   const googleSignedIn = authenticated && Boolean(user?.google || oauthStatus?.email);
   const googleFreeUsed = Boolean(oauthStatus?.oauth_free_used);
@@ -623,6 +644,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
             autoComplete="email"
           />
           <p className="ne-unlock__hint">No Gmail/Yahoo — use Google sign-in above for personal email.</p>
+          <p className="ne-unlock__hint ne-unlock__hint--subtle">{complimentaryEmailNote}</p>
           <button
             type="submit"
             className="ne-flow__pill"
@@ -633,6 +655,25 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
         </form>
 
         <p className="ne-unlock__divider">— or pay with USDC on {getChainName()} —</p>
+
+        {tierOptions.length > 0 && (
+          <div className="ne-tier-picker">
+            <label className="ne-tier-picker__label" htmlFor="ne-tier-select">Analysis depth</label>
+            <select
+              id="ne-tier-select"
+              className="ne-tier-picker__select"
+              value={selectedTier}
+              onChange={(e) => setSelectedTier(e.target.value)}
+              disabled={busy}
+            >
+              {tierOptions.map((t) => (
+                <option key={t.tier_key} value={t.tier_key}>
+                  {t.label} — {t.price_usdc} USDC
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {walletInfo && (
           <div

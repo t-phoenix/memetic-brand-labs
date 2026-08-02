@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   createPlaygroundRun,
@@ -10,6 +10,8 @@ import {
   finalizePlaygroundRun,
   retryPlaygroundLayer,
 } from '../lib/adminApi';
+import { analyzeWebsiteForForm } from '../../lib/narrativeApi';
+import { animateIntakeFormAnswers } from '../../lib/animateIntakeFormAnswers';
 import AdminPageHeader from '../components/AdminPageHeader.jsx';
 import PipelineStepper from '../components/PipelineStepper.jsx';
 import LayerOutputPanel from '../components/LayerOutputPanel.jsx';
@@ -36,6 +38,11 @@ export default function PlaygroundPage() {
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState('');
+  const [prefillMessage, setPrefillMessage] = useState('');
+  const [typingField, setTypingField] = useState(null);
+  const typingAbortRef = useRef(null);
   const [form, setForm] = useState({
     building: '',
     audience: '',
@@ -70,8 +77,64 @@ export default function PlaygroundPage() {
     return undefined;
   }, [runId, run?.run, mode]);
 
+  const intakeBusy = analyzing || typingField !== null;
+
+  const onAnalyzeWebsite = async () => {
+    const website = form.website.trim();
+    if (!website) {
+      setAnalyzeError('Enter a website URL first.');
+      return;
+    }
+
+    typingAbortRef.current?.abort();
+    const controller = new AbortController();
+    typingAbortRef.current = controller;
+
+    setAnalyzing(true);
+    setAnalyzeError('');
+    setPrefillMessage('');
+    setTypingField(null);
+
+    try {
+      const { answers } = await analyzeWebsiteForForm(website);
+      setAnalyzing(false);
+
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (prefersReducedMotion) {
+        setForm((prev) => ({
+          ...prev,
+          building: answers.building || prev.building,
+          audience: answers.audience || prev.audience,
+          challenge: answers.challenge || prev.challenge,
+          differentiation: answers.differentiation || prev.differentiation,
+        }));
+      } else {
+        await animateIntakeFormAnswers(
+          answers,
+          (patch) => setForm((prev) => ({ ...prev, ...patch })),
+          setTypingField,
+          controller.signal,
+        );
+      }
+
+      setPrefillMessage('Answers prefilled from your website. Edit anything before starting the run.');
+    } catch (err) {
+      if (controller.signal.aborted) return;
+      setAnalyzeError(err.message || 'Could not analyze website');
+    } finally {
+      if (!controller.signal.aborted) {
+        setAnalyzing(false);
+        setTypingField(null);
+      }
+    }
+  };
+
   const onCreate = async (e) => {
     e.preventDefault();
+    if (intakeBusy) return;
     setBusy('create');
     setError('');
     try {
@@ -167,17 +230,75 @@ export default function PlaygroundPage() {
           <button type="button" className="admin-tab admin-tab--active">New test run</button>
         </div>
         {error && <div className="admin-error">{error}</div>}
-        <form className="ne-form admin-card" onSubmit={onCreate} style={{ maxWidth: 560 }}>
+        <form className="ne-form admin-card admin-playground-form" onSubmit={onCreate} style={{ maxWidth: 560 }}>
+          <div className="admin-website-intake">
+            <label className="admin-website-intake__label">
+              <span>Start with your website</span>
+              <div className="admin-website-intake__row">
+                <input
+                  type="url"
+                  value={form.website}
+                  onChange={(e) => setForm({ ...form, website: e.target.value })}
+                  placeholder="https://yourcompany.com"
+                  autoComplete="url"
+                />
+                <button
+                  type="button"
+                  className={`admin-website-intake__btn${analyzing ? ' is-loading' : ''}`}
+                  onClick={onAnalyzeWebsite}
+                  disabled={intakeBusy || !!busy}
+                  aria-busy={analyzing}
+                >
+                  {analyzing && <span className="admin-website-intake__spinner" aria-hidden="true" />}
+                  <span>{analyzing ? 'Analyzing' : 'Analyze'}</span>
+                </button>
+              </div>
+            </label>
+            <p className="admin-website-intake__hint">
+              We&apos;ll read the homepage and prefill the fields below.
+            </p>
+            {analyzeError && (
+              <p className="admin-error admin-website-intake__error" role="alert">{analyzeError}</p>
+            )}
+            {prefillMessage && <p className="admin-success admin-website-intake__success">{prefillMessage}</p>}
+          </div>
+
           <label>What are you building?</label>
-          <textarea required rows={2} value={form.building} onChange={(e) => setForm({ ...form, building: e.target.value })} />
+          <textarea
+            required
+            rows={2}
+            value={form.building}
+            onChange={(e) => setForm({ ...form, building: e.target.value })}
+            readOnly={typingField === 'building'}
+            className={typingField === 'building' ? 'ne-field__input--typing' : undefined}
+          />
           <label>Who is it for?</label>
-          <textarea required rows={2} value={form.audience} onChange={(e) => setForm({ ...form, audience: e.target.value })} />
+          <textarea
+            required
+            rows={2}
+            value={form.audience}
+            onChange={(e) => setForm({ ...form, audience: e.target.value })}
+            readOnly={typingField === 'audience'}
+            className={typingField === 'audience' ? 'ne-field__input--typing' : undefined}
+          />
           <label>What challenge are you solving?</label>
-          <textarea required rows={2} value={form.challenge} onChange={(e) => setForm({ ...form, challenge: e.target.value })} />
+          <textarea
+            required
+            rows={2}
+            value={form.challenge}
+            onChange={(e) => setForm({ ...form, challenge: e.target.value })}
+            readOnly={typingField === 'challenge'}
+            className={typingField === 'challenge' ? 'ne-field__input--typing' : undefined}
+          />
           <label>What makes you different?</label>
-          <textarea required rows={2} value={form.differentiation} onChange={(e) => setForm({ ...form, differentiation: e.target.value })} />
-          <label>Website <span className="ne-optional">(optional)</span></label>
-          <input type="url" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+          <textarea
+            required
+            rows={2}
+            value={form.differentiation}
+            onChange={(e) => setForm({ ...form, differentiation: e.target.value })}
+            readOnly={typingField === 'differentiation'}
+            className={typingField === 'differentiation' ? 'ne-field__input--typing' : undefined}
+          />
           <label>Quality tier</label>
           <select value={form.model_tier} onChange={(e) => setForm({ ...form, model_tier: e.target.value })}>
             <option value="fast">Fast</option>
@@ -189,7 +310,7 @@ export default function PlaygroundPage() {
             <option value="step">Step by step</option>
             <option value="full">Full pipeline</option>
           </select>
-          <button type="submit" className="ne-btn-primary" disabled={!!busy}>
+          <button type="submit" className="ne-btn-primary" disabled={!!busy || intakeBusy}>
             {busy ? 'Creating…' : 'Create & start'}
           </button>
         </form>

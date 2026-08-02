@@ -10,6 +10,7 @@ import { extractHomepage } from '../website/HomepageExtractor.js';
 import { LLMRouter } from '../llm/LLMRouter.js';
 import { formatDbError, pingDatabase } from '../db/health.js';
 import { PaymentRequiredSent } from '../services/X402PaymentService.js';
+import { normalizeModelTier } from '../services/SkuPricingService.js';
 import { createCommerceContext } from './access.js';
 
 export async function registerRoutes(app: FastifyInstance, env: Env) {
@@ -195,8 +196,10 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
     const apiBase = env.API_PUBLIC_URL ?? `http://localhost:${env.PORT}`;
 
     try {
+      const modelTier = normalizeModelTier(body.model_tier, 'standard');
       const payment = await commerce.x402.requirePayment(request, reply, {
         skuKey: 'human_unlock',
+        modelTier,
         userId: request.user!.id,
         resourcePath: `${apiBase}/v1/narrative-runs/rerun`,
         description: 'Narrative Engine paid rerun',
@@ -209,7 +212,7 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
           challenge: body.challenge,
           differentiation: body.differentiation,
           website: body.website,
-          model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'standard',
+          model_tier: modelTier,
           parent_run_id: body.prior_run_id,
           session_id: body.session_id,
         },

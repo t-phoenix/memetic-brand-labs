@@ -95,11 +95,13 @@ export class ResultsEmailService {
         'Apply for the Memetic Brand Workshop',
       );
       const shareUrl = share?.share_id ? `${this.env.FRONTEND_URL}/results/${share.share_id}` : null;
+      const apiBase = this.env.API_PUBLIC_URL ?? `http://localhost:${this.env.PORT}`;
+      const graphicUrl = share?.share_id ? `${apiBase}/v1/results/${share.share_id}/graphic.png` : null;
 
       const workshop = { enabled: workshopEnabled, url: workshopUrl, label: workshopLabel };
       const subject = `Your Narrative Engine directions${input?.building ? ` — ${String(input.building).slice(0, 60)}` : ''}`;
-      const html = buildResultsHtml(cards ?? [], shareUrl, includeShare, workshop);
-      const text = buildResultsText(cards ?? [], shareUrl, includeShare, workshop);
+      const html = buildResultsHtml(cards ?? [], shareUrl, graphicUrl, includeShare, workshop);
+      const text = buildResultsText(cards ?? [], shareUrl, graphicUrl, includeShare, workshop);
 
       const result = await resend.emails.send({
         from,
@@ -163,20 +165,33 @@ type WorkshopCta = { enabled: boolean; url: string; label: string };
 function buildResultsHtml(
   cards: Array<{ card_label: string; content: string }>,
   shareUrl: string | null,
+  graphicUrl: string | null,
   includeShare: boolean,
   workshop: WorkshopCta,
 ) {
-  const cardBlocks = cards
-    .map(
-      (c) => `<div style="margin:16px 0;padding:16px;border:1px solid #e5e5e5;border-radius:8px;">
+  const graphic = graphicUrl
+    ? `<div style="margin:0 0 24px;">
+        <img src="${graphicUrl}" alt="Your four narrative direction cards" style="display:block;width:100%;max-width:1096px;height:auto;border-radius:12px;" />
+      </div>`
+    : '';
+
+  const cardBlocks = graphicUrl
+    ? ''
+    : cards
+        .map(
+          (c) => `<div style="margin:16px 0;padding:16px;border:1px solid #e5e5e5;border-radius:8px;">
         <h3 style="margin:0 0 8px;font-size:14px;color:#666;">${escapeHtml(c.card_label)}</h3>
         <p style="margin:0;font-size:16px;line-height:1.5;">${escapeHtml(c.content)}</p>
       </div>`,
-    )
-    .join('');
+        )
+        .join('');
 
   const cta = includeShare && shareUrl
     ? `<p style="margin:24px 0;"><a href="${shareUrl}" style="background:#111;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;">View & share online</a></p>`
+    : '';
+
+  const download = graphicUrl
+    ? `<p style="margin:0 0 24px;color:#666;font-size:14px;">Download your result graphic: <a href="${graphicUrl}">narrative-directions.png</a></p>`
     : '';
 
   const workshopBlock = workshop.enabled
@@ -187,10 +202,12 @@ function buildResultsHtml(
       </div>`
     : '';
 
-  return `<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#111;">
+  return `<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#111;">
     <h1 style="font-size:20px;">Your narrative directions</h1>
     <p style="color:#666;">From Memetic Brand Labs Narrative Engine</p>
+    ${graphic}
     ${cardBlocks}
+    ${download}
     ${cta}
     ${workshopBlock}
     <p style="font-size:12px;color:#999;margin-top:32px;">You received this because you ran Narrative Engine at memetic.adpr.work</p>
@@ -200,15 +217,17 @@ function buildResultsHtml(
 function buildResultsText(
   cards: Array<{ card_label: string; content: string }>,
   shareUrl: string | null,
+  graphicUrl: string | null,
   includeShare: boolean,
   workshop: WorkshopCta,
 ) {
-  const lines = cards.map((c) => `${c.card_label}\n${c.content}\n`);
+  const lines = graphicUrl ? [] : cards.map((c) => `${c.card_label}\n${c.content}\n`);
+  const graphic = graphicUrl ? `\nDownload your result graphic: ${graphicUrl}\n` : '';
   const share = includeShare && shareUrl ? `\nView online: ${shareUrl}\n` : '';
   const workshopText = workshop.enabled
     ? `\n\nWant to go deeper?\nThe Memetic Brand Workshop goes further than these directions.\n${workshop.label}: ${workshop.url}\n`
     : '';
-  return `Your narrative directions\n\n${lines.join('\n')}${share}${workshopText}`;
+  return `Your narrative directions\n\n${lines.join('\n')}${graphic}${share}${workshopText}`;
 }
 
 function escapeHtml(s: string) {

@@ -12,7 +12,7 @@ export default function ResultsShareActions({ shareId, shareUrl, contentType = '
 
   if (!shareId || !shareUrl) return null;
 
-  const downloadUrl = `${API_URL}/v1/results/${shareId}/graphic.png`;
+  const downloadUrl = `${API_URL}/v1/results/${shareId}/graphic.png?v=4`;
 
   const socialLinks = [
     {
@@ -85,7 +85,7 @@ export default function ResultsShareActions({ shareId, shareUrl, contentType = '
         className="ne-results__share-btn"
         href={downloadUrl}
         download
-        aria-label="Download share graphic"
+        aria-label="Download result cards"
         onClick={() =>
           trackFileDownload({
             fileName: 'narrative-share-graphic.png',

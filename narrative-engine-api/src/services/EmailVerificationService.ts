@@ -45,7 +45,7 @@ export class EmailVerificationService {
     }
 
     const emailHash = sha256(normalized);
-    if (await this.access.hasEmailGrantForPrincipal(emailHash)) {
+    if (await this.access.isEmailFreeUnlockBlocked(normalized, emailHash, this.config)) {
       await this.recordFailure(runId, 'email_free_used', 'email');
       throw apiError('email_free_used', 'Email free unlock already used', {
         statusCode: 403,
@@ -153,7 +153,7 @@ export class EmailVerificationService {
     const normalized = email.trim().toLowerCase();
     const emailHash = sha256(normalized);
 
-    if (await this.access.hasEmailGrantForPrincipal(emailHash)) {
+    if (await this.access.isEmailFreeUnlockBlocked(normalized, emailHash, this.config)) {
       throw apiError('email_free_used', 'Email free unlock already used', {
         statusCode: 403,
         userMessage:
@@ -189,6 +189,12 @@ export class EmailVerificationService {
       await this.db.from('access_attempts').update({ status: 'succeeded' }).eq('id', attemptId);
     }
 
+    const freeEmailTier = await this.config.getFreeEmailModelTier();
+    await this.db
+      .from('engine_runs')
+      .update({ model_tier: freeEmailTier, pricing_tier_key: freeEmailTier })
+      .eq('id', runId);
+
     await this.access.grantAccess({
       runId,
       grantType: 'email_verified',
@@ -212,7 +218,7 @@ export class EmailVerificationService {
   }
 
   async grantOAuthAccess(runId: string, privyUserId: string, email?: string) {
-    if (await this.access.hasOAuthGrantForPrincipal(privyUserId)) {
+    if (await this.access.isOAuthFreeUnlockBlocked(privyUserId, email, this.config)) {
       throw apiError('oauth_free_used', 'OAuth free unlock already used', {
         statusCode: 403,
         userMessage:
@@ -222,6 +228,12 @@ export class EmailVerificationService {
       });
     }
     await this.ensureUnlockable(runId);
+    const oauthTier = await this.config.getFreeOAuthModelTier();
+    await this.db
+      .from('engine_runs')
+      .update({ model_tier: oauthTier, pricing_tier_key: oauthTier })
+      .eq('id', runId);
+
     const allowPersonal = await this.config.get<boolean>('access.allow_oauth_personal_email', true);
     if (email && !allowPersonal) {
       const domain = emailDomain(email);

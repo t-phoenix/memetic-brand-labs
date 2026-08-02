@@ -456,6 +456,34 @@
   margin: 0.5rem 0 1rem;
 }
 
+.ne-unlock__hint--subtle {
+  font-size: 0.75rem;
+  opacity: 0.55;
+  margin-top: 0.25rem;
+  line-height: 1.45;
+}
+
+.ne-tier-picker {
+  margin: 0.75rem 0 1rem;
+}
+
+.ne-tier-picker__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.ne-tier-picker__select {
+  width: 100%;
+  max-width: 20rem;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid rgba(33, 29, 22, 0.12);
+  border-radius: 8px;
+  font: inherit;
+  background: var(--color-white);
+}
+
 .ne-unlock__recovery {
   display: flex;
   flex-wrap: wrap;

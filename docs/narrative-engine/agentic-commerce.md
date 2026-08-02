@@ -20,11 +20,20 @@ See the implementation plan for full context. Complete these steps before accept
 3. Set `VITE_PRIVY_APP_ID` (frontend) and `PRIVY_APP_ID` + `PRIVY_APP_SECRET` (API)
 4. Add allowed origins: production + localhost
 
-## Resend (results email)
+## Resend (results + admin notification email)
 
-1. Verify domain `memetic.adpr.work` (SPF, DKIM, DMARC)
-2. Set `RESEND_API_KEY` on Render
-3. Set `email.results_from` in admin business config
+Narrative Engine delivers email through **Resend** — not Supabase Auth. Magic-link verification still uses Supabase; results cards and internal “run completed” alerts use Resend.
+
+**Full setup guide:** [resend-email-setup.md](./resend-email-setup.md)
+
+Quick checklist:
+
+1. Create a [Resend](https://resend.com) account and **verify domain** `memetic.adpr.work` (SPF, DKIM, DMARC in DNS)
+2. Create an API key → set `RESEND_API_KEY` on Render **and** in local `narrative-engine-api/.env`
+3. Set `RESULTS_EMAIL_FROM` (or admin **Configuration → From address**) to an address on the verified domain, e.g. `Memetic Brand Labs <results@memetic.adpr.work>`
+4. Enable **Send results email** and **Send notification emails on run completion** in admin Configuration
+5. Test with a **public** `/narrative-engine` run (Playground `admin_test` runs skip admin notifications)
+6. Confirm delivery in Resend **Emails → Logs** and `admin_notification_deliveries` / `result_email_deliveries` tables
 
 ## Supabase (magic link verification)
 

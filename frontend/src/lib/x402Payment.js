@@ -95,7 +95,7 @@ export async function startRunWithX402(intake, wallet, { onProgress } = {}) {
   return data;
 }
 
-export async function unlockRunWithX402(runId, wallet, { onProgress } = {}) {
+export async function unlockRunWithX402(runId, wallet, { onProgress, modelTier } = {}) {
   onProgress?.('wallet');
   const fetchWithPayment = await createPaymentFetchFromWallet(wallet, onProgress);
   const idempotencyKey = crypto.randomUUID();
@@ -105,7 +105,7 @@ export async function unlockRunWithX402(runId, wallet, { onProgress } = {}) {
       'Content-Type': 'application/json',
       'idempotency-key': idempotencyKey,
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify(modelTier ? { model_tier: modelTier } : {}),
   });
   onProgress?.('verifying');
   const data = await parseJsonResponse(res);

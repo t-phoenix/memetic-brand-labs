@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { BusinessConfigService } from './BusinessConfigService.js';
 
 export type AccessPrincipal = {
   type: 'privy_user' | 'email_hash' | 'wallet' | 'user_id';
@@ -33,15 +34,30 @@ export class AccessGateService {
     return (count ?? 0) > 0;
   }
 
-  async getOAuthStatus(privyUserId: string, email?: string) {
+  async getOAuthStatus(privyUserId: string, email?: string, config?: BusinessConfigService) {
     const oauthFreeUsed = await this.hasOAuthGrantForPrincipal(privyUserId);
+    const unlimited = email && config ? await config.hasUnlimitedRunsForEmail(email) : false;
     return {
       authenticated: true,
       email,
       privy_user_id: privyUserId,
-      oauth_free_used: oauthFreeUsed,
-      can_use_oauth: !oauthFreeUsed,
+      oauth_free_used: oauthFreeUsed && !unlimited,
+      can_use_oauth: unlimited || !oauthFreeUsed,
     };
+  }
+
+  async isEmailFreeUnlockBlocked(email: string, emailHash: string, config: BusinessConfigService): Promise<boolean> {
+    if (await config.hasUnlimitedRunsForEmail(email)) return false;
+    return await this.hasEmailGrantForPrincipal(emailHash);
+  }
+
+  async isOAuthFreeUnlockBlocked(
+    privyUserId: string,
+    email: string | undefined,
+    config: BusinessConfigService,
+  ): Promise<boolean> {
+    if (email && (await config.hasUnlimitedRunsForEmail(email))) return false;
+    return await this.hasOAuthGrantForPrincipal(privyUserId);
   }
 
   async hasAccess(runId: string, scope: 'cards' | 'full_pipeline' = 'cards'): Promise<boolean> {

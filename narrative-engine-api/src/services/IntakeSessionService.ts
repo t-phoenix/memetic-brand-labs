@@ -139,7 +139,7 @@ export class IntakeSessionService {
     }
 
     const emailHash = sha256(normalized);
-    if (await this.access.hasEmailGrantForPrincipal(emailHash)) {
+    if (await this.access.isEmailFreeUnlockBlocked(normalized, emailHash, this.config)) {
       throw apiError('email_free_used', 'Email free unlock already used', {
         statusCode: 403,
         userMessage:
@@ -211,7 +211,7 @@ export class IntakeSessionService {
     const normalized = email.trim().toLowerCase();
     const emailHash = sha256(normalized);
 
-    if (await this.access.hasEmailGrantForPrincipal(emailHash)) {
+    if (await this.access.isEmailFreeUnlockBlocked(normalized, emailHash, this.config)) {
       throw apiError('email_free_used', 'Email free unlock already used', {
         statusCode: 403,
         userMessage:
@@ -243,9 +243,10 @@ export class IntakeSessionService {
 
     const { data: session } = await this.db.from('narrative_intake_sessions').select('intake, session_id').eq('id', intakeId).single();
     const intake = session!.intake as IntakePayload;
+    const freeEmailTier = await this.config.getFreeEmailModelTier();
 
     return this.startRunFromIntake(
-      { ...intake, session_id: intake.session_id ?? (session!.session_id as string) },
+      { ...intake, session_id: intake.session_id ?? (session!.session_id as string), model_tier: freeEmailTier },
       {
         grantType: 'email_verified',
         principalType: 'email_hash',

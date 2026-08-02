@@ -20,6 +20,7 @@ async function main() {
     allowedHeaders: [
       'Content-Type',
       'Authorization',
+      'X-Admin-Key',
       'X-Session-Id',
       'idempotency-key',
       'payment-identifier',

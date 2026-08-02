@@ -3,7 +3,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { Env } from '../config/env.js';
 import type { BusinessConfigService } from './BusinessConfigService.js';
-import type { SkuPricingService } from './SkuPricingService.js';
+import type { SkuPricingService, ModelTierKey } from './SkuPricingService.js';
+import { normalizeModelTier } from './SkuPricingService.js';
 import type { AccessGateService } from './AccessGateService.js';
 import { apiError } from '../lib/apiError.js';
 import { usdcAddressForNetwork } from '../lib/chainAssets.js';
@@ -71,13 +72,15 @@ export class X402PaymentService {
     reply: FastifyReply,
     opts: {
       skuKey: string;
+      modelTier?: ModelTierKey | string;
       runId?: string;
       userId?: string;
       resourcePath: string;
       description: string;
     },
   ): Promise<PaymentResult> {
-    const sku = await this.skuPricing.getSku(opts.skuKey);
+    const modelTier = normalizeModelTier(opts.modelTier);
+    const sku = await this.skuPricing.getSku(opts.skuKey, modelTier);
     if (!sku || !sku.is_active) {
       throw apiError('sku_unavailable', 'Product SKU not available', { statusCode: 503 });
     }
@@ -124,6 +127,8 @@ export class X402PaymentService {
         accepts,
         resource: opts.resourcePath,
         description: opts.description,
+        model_tier: modelTier,
+        price_usdc: sku.price_usdc,
         ...(Object.keys(extensions).length > 0 ? { extensions } : {}),
       };
 

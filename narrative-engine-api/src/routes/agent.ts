@@ -9,6 +9,7 @@ import { enqueueRun } from '../jobs/queue.js';
 import { PaymentRequiredSent } from '../services/X402PaymentService.js';
 import { apiError } from '../lib/apiError.js';
 import { usdcAddressForNetwork } from '../lib/chainAssets.js';
+import { normalizeModelTier } from '../services/SkuPricingService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -41,6 +42,23 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
       await Promise.all(AGENT_SKU_KEYS.map((key) => ctx.skuPricing.getSku(key)))
     ).filter((s): s is NonNullable<typeof s> => Boolean(s));
 
+    const products = await Promise.all(
+      AGENT_SKU_KEYS.map(async (skuKey) => {
+        const sku = skus.find((s) => s.sku_key === skuKey);
+        if (!sku) return null;
+        const model_tiers = await ctx.skuPricing.getTierPricesForSku(skuKey);
+        return {
+          sku: sku.sku_key,
+          label: sku.label,
+          price_usdc: sku.price_usdc,
+          output_scope: sku.output_scope,
+          route: sku.x402_route_template,
+          bazaar_metadata: sku.bazaar_metadata ?? {},
+          model_tiers,
+        };
+      }),
+    );
+
     return {
       service: serviceName,
       description:
@@ -62,16 +80,12 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
         bazaar_extension: bazaarEnabled,
         flow: 'POST without payment header → 402 with accepts[] → retry with payment-signature header',
       },
-      products: skus.map((s) => ({
-        sku: s.sku_key,
-        label: s.label,
-        price_usdc: s.price_usdc,
-        output_scope: s.output_scope,
-        route: s.x402_route_template,
-        bazaar_metadata: s.bazaar_metadata ?? {},
-      })),
+      products: products.filter(Boolean),
       usage: {
-        create: 'POST /v1/agent/analyze with brand intake fields and output_scope (cards|full_pipeline)',
+        create:
+          'POST /v1/agent/analyze with brand intake fields, output_scope (cards|full_pipeline), and optional model_tier (fast|standard|quality)',
+        model_tier:
+          'Pass model_tier in the analyze body. The 402 payment amount matches the tier price from GET /v1/capabilities products[].model_tiers',
         poll: 'GET /v1/agent/runs/:id until status=completed',
         outputs: 'GET /v1/agent/runs/:id/outputs?scope=cards|full',
       },
@@ -103,19 +117,15 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
     const body = request.body as Record<string, string>;
     const outputScope = (body.output_scope === 'full_pipeline' ? 'full_pipeline' : 'cards') as 'cards' | 'full_pipeline';
     const skuKey = outputScope === 'full_pipeline' ? 'agent_full' : 'agent_cards';
-    const sku = await ctx.skuPricing.getSku(skuKey);
-    if (!sku) {
-      return reply.code(503).send({ error: { code: 'sku_unavailable', message: 'Agent SKU not configured' } });
-    }
+    const modelTier = normalizeModelTier(body.model_tier, 'fast');
 
     try {
       const payment = await ctx.x402.requirePayment(request, reply, {
         skuKey,
+        modelTier,
         resourcePath: `${apiBase}/v1/agent/analyze`,
-        description: sku.label,
+        description: `Agent analyze (${outputScope}, ${modelTier})`,
       });
-
-      const modelTier = (sku.model_tier_key as 'fast' | 'standard' | 'quality') ?? 'fast';
 
       const { runId, sessionId } = await ctx.runs.createRun(
         {
@@ -250,13 +260,27 @@ function buildApiLlmsTxt(apiBase: string) {
 4. Poll GET ${apiBase}/v1/agent/runs/{run_id} until status=completed
 5. GET ${apiBase}/v1/agent/runs/{run_id}/outputs?scope=cards|full
 
-## Products
+## Products (model_tier affects price — see GET /v1/capabilities)
 
-- output_scope=cards (~$0.25 USDC) — four narrative direction cards
-- output_scope=full_pipeline (~$2.50 USDC) — cards + L1–L6 layer diagnostics JSON
+- output_scope=cards — four narrative direction cards
+  - fast: ~$0.25 USDC | standard: ~$0.50 | quality: ~$1.00
+- output_scope=full_pipeline — cards + L1–L6 layer diagnostics JSON
+  - fast: ~$2.50 | standard: ~$5.00 | quality: ~$10.00
 
 ## Required body fields
 
-building, audience, challenge, differentiation; optional website, model_tier, output_scope
+building, audience, challenge, differentiation; optional website, output_scope, model_tier (fast|standard|quality; default fast)
+
+## Example
+
+POST ${apiBase}/v1/agent/analyze
+{
+  "building": "...",
+  "audience": "...",
+  "challenge": "...",
+  "differentiation": "...",
+  "output_scope": "cards",
+  "model_tier": "quality"
+}
 `;
 }

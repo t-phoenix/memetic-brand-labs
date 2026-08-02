@@ -25,7 +25,8 @@ Use this checklist before and after launching agent-facing x402 endpoints. See a
 - [ ] Unpaid `POST /v1/agent/analyze` → `402` with `x402Version: 2`, `accepts[]`, `resource`
 - [ ] When `discovery.bazaar_enabled=true`, 402 includes `extensions.bazaar`
 - [ ] Capabilities documents network, USDC asset, facilitator, pay_to, payment header names
-- [ ] Capabilities prices respect `business_config` overrides (`pricing.agent_*_usdc`)
+- [ ] Capabilities `products[].model_tiers` lists fast / standard / quality prices per SKU
+- [ ] `model_tier` in analyze body changes 402 amount (default `fast`)
 - [ ] Paid retry with `payment-signature` (or `x-payment` / `payment`) → `201` + `run_id`
 
 ## Verification (smoke tests)
@@ -38,7 +39,7 @@ curl -sI https://api.memetic.adpr.work/health | grep -i link
 # Unpaid analyze → 402
 curl -s -X POST https://api.memetic.adpr.work/v1/agent/analyze \
   -H 'Content-Type: application/json' \
-  -d '{"building":"Test","audience":"Devs","challenge":"Clarity","differentiation":"Speed","output_scope":"cards"}'
+  -d '{"building":"Test","audience":"Devs","challenge":"Clarity","differentiation":"Speed","output_scope":"cards","model_tier":"quality"}'
 
 # Poll + outputs (after paid run)
 curl -s https://api.memetic.adpr.work/v1/agent/runs/{run_id}
@@ -52,12 +53,12 @@ curl -s "https://api.memetic.adpr.work/v1/agent/runs/{run_id}/outputs?scope=card
 - [ ] `POST /v1/runs/:id/unlock` — human x402 skip-email unlock (~$0.10 USDC)
 - [ ] `GET /v1/commerce/human-unlock-quote` — price quote without payment
 
-## SKUs (default)
+## SKUs (default tier prices — editable in admin Configuration → Commerce)
 
-| SKU | Audience | Price | Scope |
-|-----|----------|-------|-------|
-| `agent_cards` | agent | $0.25 USDC | 4 cards |
-| `agent_full` | agent | $2.50 USDC | full pipeline |
-| `human_unlock` | human | $0.10 USDC | skip email gate |
+| SKU | Tier | USDC |
+|-----|------|------|
+| `agent_cards` | fast / standard / quality | $0.25 / $0.50 / $1.00 |
+| `agent_full` | fast / standard / quality | $2.50 / $5.00 / $10.00 |
+| `human_unlock` | fast / standard / quality | $0.10 / $0.20 / $0.40 |
 
-Prices are editable in admin **Configuration → Commerce** without redeploy.
+Complimentary company-email runs use admin-configured `access.free_email_model_tier` (default quality). OAuth free runs use quality.

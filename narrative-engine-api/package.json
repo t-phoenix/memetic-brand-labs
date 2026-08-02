@@ -16,6 +16,8 @@
     "config:generate": "tsx scripts/generate-config-seed.ts",
     "config:sync": "tsx scripts/sync-config.ts",
     "config:all": "npm run config:generate && npm run config:sync",
+    "backfill:oauth-emails": "tsx scripts/backfill-oauth-contact-emails.ts",
+    "regenerate:share-graphics": "tsx scripts/regenerate-share-graphics.ts",
     "seed:patterns": "NODE_PATH=./node_modules tsx ../supabase/seed/load-patterns.ts",
     "smoke": "bash scripts/smoke-test.sh"
   },

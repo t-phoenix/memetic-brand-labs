@@ -15,6 +15,7 @@ import { RunService } from '../services/RunService.js';
 import { apiError, emailDomain, isConsumerDomain } from '../lib/apiError.js';
 import { sha256 } from '../utils/hash.js';
 import { PaymentRequiredSent } from '../services/X402PaymentService.js';
+import { normalizeModelTier } from '../services/SkuPricingService.js';
 import { authOptional } from './auth.js';
 import { formatDbError } from '../db/health.js';
 
@@ -43,7 +44,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
     if (!user?.privyUserId) {
       return { authenticated: false, oauth_free_used: false, can_use_oauth: true };
     }
-    return ctx.access.getOAuthStatus(user.privyUserId, user.email);
+    return ctx.access.getOAuthStatus(user.privyUserId, user.email, ctx.config);
   });
 
   app.get('/v1/auth/email-status', async (request, reply) => {
@@ -64,7 +65,8 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
     const blocklist = await ctx.config.consumerBlocklist();
     const consumerDomain = isConsumerDomain(domain, blocklist);
     const emailHash = sha256(normalized);
-    const emailFreeUsed = await ctx.access.hasEmailGrantForPrincipal(emailHash);
+    const unlimited = await ctx.config.hasUnlimitedRunsForEmail(normalized);
+    const emailFreeUsed = unlimited ? false : await ctx.access.hasEmailGrantForPrincipal(emailHash);
 
     return {
       email: normalized,
@@ -133,15 +135,19 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
   app.post('/v1/runs/:id/unlock', async (request, reply) => {
     const { id } = request.params as { id: string };
     await authOptional(request, env);
-    const body = (request.body as { recipient_email?: string }) ?? {};
+    const body = (request.body as { recipient_email?: string; model_tier?: string }) ?? {};
+
+    const { data: runRow } = await ctx.db.from('engine_runs').select('model_tier').eq('id', id).maybeSingle();
+    const modelTier = (body.model_tier ?? runRow?.model_tier ?? 'fast') as 'fast' | 'standard' | 'quality';
 
     try {
       const payment = await ctx.x402.requirePayment(request, reply, {
         skuKey: 'human_unlock',
+        modelTier,
         runId: id,
         userId: request.user?.id,
         resourcePath: `${apiBase}/v1/runs/${id}/unlock`,
-        description: 'Unlock Narrative Engine results (4 cards)',
+        description: 'Unlock Narrative Engine results (4 direction cards)',
       });
       await ctx.x402.completeRunUnlock(id, payment, { recipientEmail: body.recipient_email });
       await ctx.pipeline.startPipeline(id);
@@ -185,18 +191,40 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
     return { cancelled: true };
   });
 
-  app.get('/v1/commerce/human-unlock-quote', async (_request, reply) => {
-    const sku = await ctx.skuPricing.getSku('human_unlock');
-    if (!sku) {
+  app.get('/v1/commerce/human-unlock-quote', async (request, reply) => {
+    const { tier: tierFilter } = request.query as { tier?: string };
+    const { data: skuRow } = await ctx.db.from('product_skus').select('*').eq('sku_key', 'human_unlock').maybeSingle();
+    if (!skuRow) {
       return reply.code(503).send({ error: { code: 'sku_unavailable', message: 'SKU not available' } });
     }
     const network = await ctx.config.x402Network();
     const payTo = await ctx.config.x402PayTo();
+    const { data: tierMeta } = await ctx.db.from('pricing_tiers').select('tier_key, label, price_usdc');
+    const tierLabels = new Map((tierMeta ?? []).map((t) => [t.tier_key as string, t.label as string]));
+
+    const tierPrices = await ctx.skuPricing.getTierPricesForSku('human_unlock');
+    const tiers = tierPrices.map((t) => ({
+      tier_key: t.tier_key,
+      label: tierLabels.get(t.tier_key) ?? t.tier_key,
+      price_usdc: t.price_usdc,
+      amount_atomic: t.amount_atomic,
+    }));
+
+    const freeEmailModelTier = await ctx.config.getFreeEmailModelTier();
+    const freeEmailTierLabel = tierLabels.get(freeEmailModelTier) ?? freeEmailModelTier;
+
+    const selectedTier = tierFilter
+      ? tiers.find((t) => t.tier_key === tierFilter) ?? tiers[0]
+      : tiers[0];
+
     return {
-      sku_key: sku.sku_key,
-      label: sku.label,
-      price_usdc: sku.price_usdc,
-      amount_atomic: ctx.skuPricing.usdcToAtomic(sku.price_usdc),
+      sku_key: 'human_unlock',
+      label: skuRow.label as string,
+      price_usdc: selectedTier?.price_usdc ?? tiers[0]?.price_usdc,
+      amount_atomic: selectedTier?.amount_atomic ?? tiers[0]?.amount_atomic,
+      tiers,
+      free_email_model_tier: freeEmailModelTier,
+      free_email_tier_label: freeEmailTierLabel,
       network,
       chain_name: network === 'eip155:8453' ? 'Base' : network,
       asset: 'USDC',
@@ -269,7 +297,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
       challenge: body.challenge,
       differentiation: body.differentiation,
       website: body.website,
-      model_tier: (body.model_tier as 'fast' | 'standard' | 'quality') ?? 'fast',
+      model_tier: normalizeModelTier(body.model_tier, 'fast'),
       session_id: sessionId,
     };
 
@@ -289,7 +317,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
         });
       }
       try {
-        if (await ctx.access.hasOAuthGrantForPrincipal(user.privyUserId)) {
+        if (await ctx.access.isOAuthFreeUnlockBlocked(user.privyUserId, user.email, ctx.config)) {
           return reply.code(403).send({
             error: {
               code: 'oauth_free_used',
@@ -305,16 +333,20 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
           !request.user ||
           !(await ctx.db.from('users').select('first_free_run_used_at').eq('id', request.user.id).maybeSingle()).data
             ?.first_free_run_used_at;
-        return await ctx.intake.startRunFromIntake(intake, {
-          userId: request.user?.id,
-          grantType: 'oauth',
-          principalType: 'privy_user',
-          principalId: user.privyUserId,
-          recipientEmail: user.email,
-          unlockMethod: 'oauth',
-          isFirstRun: isFirst,
-          metadata: { email: user.email },
-        });
+        const oauthTier = await ctx.config.getFreeOAuthModelTier();
+        return await ctx.intake.startRunFromIntake(
+          { ...intake, model_tier: oauthTier },
+          {
+            userId: request.user?.id,
+            grantType: 'oauth',
+            principalType: 'privy_user',
+            principalId: user.privyUserId,
+            recipientEmail: user.email,
+            unlockMethod: 'oauth',
+            isFirstRun: isFirst,
+            metadata: { email: user.email },
+          },
+        );
       } catch (e) {
         return sendApiError(reply, e);
       }
@@ -329,6 +361,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
 
       const payment = await ctx.x402.requirePayment(request, reply, {
         skuKey: 'human_unlock',
+        modelTier: intake.model_tier,
         userId: request.user?.id,
         resourcePath: `${apiBase}/v1/narrative-runs/start`,
         description: 'Narrative Engine analysis (4 direction cards)',
@@ -339,7 +372,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
         !(await ctx.db.from('users').select('first_free_run_used_at').eq('id', request.user.id).maybeSingle()).data
           ?.first_free_run_used_at;
 
-      const sku = await ctx.skuPricing.getSku('human_unlock');
+      const sku = await ctx.skuPricing.getSku('human_unlock', intake.model_tier);
       const payTo = await ctx.config.x402PayTo();
 
       const result = await ctx.intake.startRunFromIntake(intake, {

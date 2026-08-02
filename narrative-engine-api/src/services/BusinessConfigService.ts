@@ -50,6 +50,37 @@ export class BusinessConfigService {
     return this.get<string[]>('access.consumer_domain_blocklist', CONSUMER_DOMAINS);
   }
 
+  /** Emails listed under admin run notification recipients (normalized, lowercase). */
+  async adminNotifyRecipients(): Promise<string[]> {
+    const recipients = await this.get<string[]>('email.admin_notify_recipients', []);
+    return (recipients ?? []).map((e) => e.trim().toLowerCase()).filter(Boolean);
+  }
+
+  /**
+   * Admin notification recipients can run the narrative engine multiple times without
+   * the one-time free email/OAuth unlock limit (when toggle is enabled).
+   */
+  async hasUnlimitedRunsForEmail(email: string): Promise<boolean> {
+    const enabled = await this.get<boolean>('access.admin_recipient_unlimited_runs_enabled', false);
+    if (!enabled) return false;
+    const normalized = email.trim().toLowerCase();
+    if (!normalized) return false;
+    const recipients = await this.adminNotifyRecipients();
+    return recipients.includes(normalized);
+  }
+
+  /** Complimentary tier for verified company-email runs (admin-configurable). */
+  async getFreeEmailModelTier(): Promise<'fast' | 'standard' | 'quality'> {
+    const raw = await this.get<string>('access.free_email_model_tier', 'quality');
+    const tier = typeof raw === 'string' ? raw.replace(/"/g, '').toLowerCase() : 'quality';
+    if (tier === 'fast' || tier === 'standard' || tier === 'quality') return tier;
+    return 'quality';
+  }
+
+  async getFreeOAuthModelTier(): Promise<'quality'> {
+    return 'quality';
+  }
+
   async x402PayTo(): Promise<string> {
     const fromDb = await this.get<string>('x402.pay_to', '');
     return fromDb || this.env.X402_PAY_TO || '';

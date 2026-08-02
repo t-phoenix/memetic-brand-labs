@@ -121,8 +121,9 @@ export async function confirmIntakeEmailVerification(intakeId, email, attemptId)
   return parseJsonResponse(res);
 }
 
-export async function getHumanUnlockQuote() {
-  const res = await fetch(`${API_URL}/v1/commerce/human-unlock-quote`);
+export async function getHumanUnlockQuote(tier) {
+  const q = tier ? `?tier=${encodeURIComponent(tier)}` : '';
+  const res = await fetch(`${API_URL}/v1/commerce/human-unlock-quote${q}`);
   return parseJsonResponse(res);
 }
 

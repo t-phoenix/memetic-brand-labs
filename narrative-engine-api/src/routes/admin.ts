@@ -6,6 +6,7 @@ import { AdminService } from '../services/AdminService.js';
 import { AdminPlaygroundService } from '../services/AdminPlaygroundService.js';
 import { requireAdmin } from './auth.js';
 import { createCommerceContext } from './access.js';
+import { normalizeModelTier } from '../services/SkuPricingService.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, env: Env) {
   const db = getSupabase(env);
@@ -193,6 +194,25 @@ export async function registerAdminRoutes(app: FastifyInstance, env: Env) {
     const body = request.body as Record<string, unknown>;
     const sku = await commerce.skuPricing.updateSku(sku_key, body as never);
     return { sku };
+  });
+
+  app.get('/v1/admin/product-sku-tier-prices', async (request) => {
+    guard(request);
+    const prices = await commerce.skuPricing.listSkuTierPrices();
+    const skus = await commerce.skuPricing.listSkus();
+    return { prices, skus };
+  });
+
+  app.patch('/v1/admin/product-sku-tier-prices/:sku_key/:tier_key', async (request) => {
+    guard(request);
+    const { sku_key, tier_key } = request.params as { sku_key: string; tier_key: string };
+    const { price_usdc } = request.body as { price_usdc: number };
+    const row = await commerce.skuPricing.updateTierPrice(
+      sku_key,
+      normalizeModelTier(tier_key),
+      Number(price_usdc),
+    );
+    return { price: row };
   });
 
   app.post('/v1/admin/runs/:id/grant-access', async (request) => {

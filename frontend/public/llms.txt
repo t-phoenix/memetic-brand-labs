@@ -34,9 +34,11 @@ Machine-readable brand positioning analysis for AI agents. Pay-per-call with USD
 - API llms.txt: https://api.memetic.adpr.work/llms.txt
 - OpenAPI: https://api.memetic.adpr.work/openapi.json
 - Analyze (paid): POST https://api.memetic.adpr.work/v1/agent/analyze
-  - `output_scope=cards` (~$0.25 USDC) — four narrative direction cards
-  - `output_scope=full_pipeline` (~$2.50 USDC) — cards + L1–L6 layer diagnostics JSON
-- Required body fields: `building`, `audience`, `challenge`, `differentiation`; optional `website`, `model_tier`
+  - `output_scope=cards` — four narrative direction cards (tier pricing via `model_tier`)
+  - `output_scope=full_pipeline` — cards + L1–L6 layer diagnostics JSON
+  - `model_tier`: `fast` | `standard` | `quality` (default `fast`) — 402 amount matches tier; see `GET /v1/capabilities` products[].model_tiers
+  - Example tier prices (USDC): cards fast $0.25 / standard $0.50 / quality $1.00; full fast $2.50 / standard $5.00 / quality $10.00
+- Required body fields: `building`, `audience`, `challenge`, `differentiation`; optional `website`, `output_scope`, `model_tier`
 - Poll: GET `/v1/agent/runs/{run_id}` until `status=completed`, then GET `/v1/agent/runs/{run_id}/outputs?scope=cards|full`
 
 ## Key concepts

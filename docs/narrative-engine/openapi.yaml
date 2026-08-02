@@ -113,6 +113,7 @@ paths:
                 differentiation: { type: string }
                 website: { type: string }
                 output_scope: { type: string, enum: [cards, full_pipeline] }
+                model_tier: { type: string, enum: [fast, standard, quality], default: fast }
       responses:
         '402':
           description: Payment required (x402)

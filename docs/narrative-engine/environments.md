@@ -75,7 +75,13 @@ WORKER_MODE=false
 
 STORAGE_BUCKET=share-graphics
 IP_HASH_SALT=local-dev-salt
+
+# Resend (optional locally — required for results + admin notification email)
+RESEND_API_KEY=re_...
+RESULTS_EMAIL_FROM=Memetic Brand Labs <results@memetic.adpr.work>
 ```
+
+See [resend-email-setup.md](./resend-email-setup.md) for Resend dashboard + DNS steps (domain must be verified before sends work).
 
 **Do not** point local `.env` at production Supabase unless you are doing a one-off prod debug — and never run Playground or migrations against prod from a laptop.
 

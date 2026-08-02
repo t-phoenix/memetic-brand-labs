@@ -142,6 +142,16 @@ Click **Apply**, then fill secrets marked `sync: false`.
 | `STORAGE_BUCKET` | `share-graphics` | |
 | `X402_PAY_TO` | `0x...` | Base treasury (optional until payments live) |
 | `RERUN_PRICE_USDC` | `10` | |
+| `RESEND_API_KEY` | `re_...` | Required for results + admin notification email |
+| `RESULTS_EMAIL_FROM` | `Memetic Brand Labs <results@memetic.adpr.work>` | Must use a domain verified in Resend |
+| `FRONTEND_URL` | `https://memetic.adpr.work` | Links in email bodies |
+| `API_PUBLIC_URL` | `https://memetic-brand-labs.onrender.com` | Share graphic URLs in admin emails |
+
+### Resend (email delivery)
+
+Results email and internal run-completion notifications are sent via **[Resend](https://resend.com)**. Configure the Resend dashboard (domain DNS + API key) before expecting mail to deliver.
+
+**Step-by-step:** [resend-email-setup.md](./resend-email-setup.md)
 
 ### Environment variables (worker service)
 
