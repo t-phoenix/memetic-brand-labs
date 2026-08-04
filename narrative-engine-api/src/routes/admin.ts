@@ -185,21 +185,31 @@ export async function registerAdminRoutes(app: FastifyInstance, env: Env) {
 
   app.get('/v1/admin/product-skus', async (request) => {
     guard(request);
-    return { skus: await commerce.skuPricing.listSkus() };
+    return { skus: await commerce.skuPricing.listAllSkus() };
   });
 
-  app.patch('/v1/admin/product-skus/:sku_key', async (request) => {
+  app.patch('/v1/admin/product-skus/:sku_key', async (request, reply) => {
     guard(request);
     const { sku_key } = request.params as { sku_key: string };
-    const body = request.body as Record<string, unknown>;
-    const sku = await commerce.skuPricing.updateSku(sku_key, body as never);
-    return { sku };
+    const body = request.body as { is_active?: boolean };
+    if (typeof body.is_active !== 'boolean') {
+      return reply.code(400).send({
+        error: { code: 'bad_request', message: 'is_active (boolean) is required' },
+      });
+    }
+    try {
+      const sku = await commerce.skuPricing.updateSku(sku_key, { is_active: body.is_active });
+      return { sku };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to update SKU';
+      return reply.code(500).send({ error: { code: 'database_error', message } });
+    }
   });
 
   app.get('/v1/admin/product-sku-tier-prices', async (request) => {
     guard(request);
     const prices = await commerce.skuPricing.listSkuTierPrices();
-    const skus = await commerce.skuPricing.listSkus();
+    const skus = await commerce.skuPricing.listAllSkus();
     return { prices, skus };
   });
 

@@ -28,7 +28,9 @@ Apply at: https://memetic.adpr.work/application-form
 An early preview tool that helps founders clarify positioning and narrative. Available at: https://memetic.adpr.work/narrative-engine
 
 ### Narrative Engine API (agents, x402)
-Machine-readable brand positioning analysis for AI agents. Pay-per-call with USDC on Base (x402).
+Machine-readable brand positioning analysis for AI agents. Pay-per-call with USDC on Base (x402) when products are enabled in admin.
+
+Product availability is dynamic — check `GET /v1/capabilities` before integrating. Admin can disable `human_unlock`, `agent_cards`, or `agent_full` independently.
 
 - Capabilities: https://api.memetic.adpr.work/v1/capabilities
 - API llms.txt: https://api.memetic.adpr.work/llms.txt

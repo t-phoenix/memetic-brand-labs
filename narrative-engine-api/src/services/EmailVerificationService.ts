@@ -4,7 +4,7 @@ import type { Env } from '../config/env.js';
 import type { BusinessConfigService } from './BusinessConfigService.js';
 import type { AccessGateService } from './AccessGateService.js';
 import type { PipelineService } from './PipelineService.js';
-import { apiError, emailDomain, isConsumerDomain } from '../lib/apiError.js';
+import { apiError, emailDomain, filterX402RecoveryActions, isConsumerDomain } from '../lib/apiError.js';
 import { buildMagicLinkRedirect } from '../lib/magicLinkRedirect.js';
 import { sha256 } from '../utils/hash.js';
 
@@ -16,6 +16,11 @@ export class EmailVerificationService {
     private readonly access: AccessGateService,
     private readonly pipeline?: PipelineService,
   ) {}
+
+  private async humanRecoveryActions(actions: Parameters<typeof filterX402RecoveryActions>[0]) {
+    const enabled = await this.config.isHumanX402Enabled();
+    return filterX402RecoveryActions(actions, enabled) ?? [];
+  }
 
   async requestVerification(runId: string, email: string, opts?: { resend?: boolean }) {
     const normalized = email.trim().toLowerCase();
@@ -36,11 +41,11 @@ export class EmailVerificationService {
         userMessage:
           'Personal emails like Gmail cannot be used here. Continue with Google above, or use your company email.',
         retryable: true,
-        recoveryActions: [
+        recoveryActions: await this.humanRecoveryActions([
           { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
           { action: 'change_email', label: 'Try a company email', method: 'email' },
           { action: 'pay_unlock', label: 'Unlock with USDC', method: 'x402' },
-        ],
+        ]),
       });
     }
 
@@ -52,11 +57,11 @@ export class EmailVerificationService {
         userMessage:
           'Your free company email verification was already used. Try a different company email, sign in with Google, or pay with USDC.',
         retryable: false,
-        recoveryActions: [
+        recoveryActions: await this.humanRecoveryActions([
           { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
           { action: 'use_oauth', label: 'Try Google sign-in', method: 'oauth' },
           { action: 'change_email', label: 'Try a different company email', method: 'email' },
-        ],
+        ]),
       });
     }
 
@@ -69,10 +74,10 @@ export class EmailVerificationService {
           statusCode: 429,
           userMessage: 'Too many attempts. Wait a few minutes or use Google sign-in / USDC unlock.',
           retryable: true,
-          recoveryActions: [
+          recoveryActions: await this.humanRecoveryActions([
             { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
             { action: 'pay_unlock', label: 'Unlock with USDC', method: 'x402' },
-          ],
+          ]),
         });
       }
     }
@@ -159,10 +164,10 @@ export class EmailVerificationService {
         userMessage:
           'Your free company email verification was already used. Try a different company email, sign in with Google, or pay with USDC.',
         retryable: false,
-        recoveryActions: [
+        recoveryActions: await this.humanRecoveryActions([
           { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
           { action: 'use_oauth', label: 'Try Google sign-in', method: 'oauth' },
-        ],
+        ]),
       });
     }
 
@@ -224,7 +229,9 @@ export class EmailVerificationService {
         userMessage:
           'Your free Google sign-in was already used on another analysis. Pay with USDC to unlock this one.',
         retryable: false,
-        recoveryActions: [{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }],
+        recoveryActions: await this.humanRecoveryActions([
+          { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
+        ]),
       });
     }
     await this.ensureUnlockable(runId);

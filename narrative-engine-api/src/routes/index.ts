@@ -195,6 +195,17 @@ export async function registerRoutes(app: FastifyInstance, env: Env) {
     const body = request.body as Record<string, string>;
     const apiBase = env.API_PUBLIC_URL ?? `http://localhost:${env.PORT}`;
 
+    if (!(await commerce.config.isHumanX402Enabled())) {
+      return reply.code(503).send({
+        error: {
+          code: 'sku_unavailable',
+          message: 'Product SKU not available',
+          user_message: 'USDC payment for reruns is temporarily unavailable.',
+          retryable: false,
+        },
+      });
+    }
+
     try {
       const modelTier = normalizeModelTier(body.model_tier, 'standard');
       const payment = await commerce.x402.requirePayment(request, reply, {

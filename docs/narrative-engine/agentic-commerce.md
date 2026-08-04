@@ -44,6 +44,7 @@ Quick checklist:
 
 1. Set strong `ADMIN_API_KEY`
 2. Use **Configuration → Commerce** to tune SKU prices without redeploy
+3. Use **Configuration → x402 product availability** to disable human or agent x402 independently (`product_skus.is_active`). OAuth and company-email flows keep working.
 
 ## Agent API
 

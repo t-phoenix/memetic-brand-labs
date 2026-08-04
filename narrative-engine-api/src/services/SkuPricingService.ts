@@ -121,6 +121,19 @@ export class SkuPricingService {
     return data ?? [];
   }
 
+  /** Admin: include inactive SKUs so toggles reflect true state. */
+  async listAllSkus(audience?: 'human' | 'agent') {
+    let q = this.db.from('product_skus').select('*');
+    if (audience) q = q.eq('audience', audience);
+    const { data } = await q.order('sku_key');
+    return data ?? [];
+  }
+
+  async isSkuActive(skuKey: string): Promise<boolean> {
+    const { data } = await this.db.from('product_skus').select('is_active').eq('sku_key', skuKey).maybeSingle();
+    return data?.is_active === true;
+  }
+
   async updateSku(skuKey: string, patch: Partial<ProductSku>) {
     const { data, error } = await this.db
       .from('product_skus')

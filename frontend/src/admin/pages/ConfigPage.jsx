@@ -1,12 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { adminFetch } from '../lib/adminApi';
+import AdminConfirmSaveModal from '../components/AdminConfirmSaveModal.jsx';
 import ConfigFieldEditor from '../components/ConfigFieldEditor.jsx';
 import {
   EnumRegistryPanel,
   PromptTemplatesRegistry,
   SchemaRegistryPanel,
 } from '../components/VersionRegistryPanel.jsx';
-import { groupCommerceConfig } from '../lib/configFieldMeta';
+import { CONFIG_FIELD_META, groupCommerceConfig, SKU_X402_META } from '../lib/configFieldMeta';
+
+const X402_SKU_KEYS = ['human_unlock', 'agent_cards', 'agent_full'];
+
+function formatDisplayValue(value, type) {
+  if (type === 'boolean') return value ? 'Enabled' : 'Disabled';
+  if (Array.isArray(value)) return value.join(', ');
+  if (value == null) return '—';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
 
 export default function ConfigPage() {
   const [config, setConfig] = useState(null);
@@ -17,54 +28,146 @@ export default function ConfigPage() {
   const [error, setError] = useState('');
   const [saveMsg, setSaveMsg] = useState('');
 
-  const load = () =>
-    Promise.all([
-      adminFetch('/v1/admin/config'),
-      adminFetch('/v1/admin/patterns'),
-      adminFetch('/v1/admin/business-config'),
-      adminFetch('/v1/admin/product-sku-tier-prices'),
-    ])
-      .then(([cfg, pat, biz, tierData]) => {
-        setConfig(cfg);
-        setPatterns(pat.patterns ?? []);
-        setBusinessConfig(biz.config ?? []);
-        setSkus(tierData.skus ?? []);
-        setTierPrices(tierData.prices ?? []);
-      })
-      .catch((e) => setError(e.message));
+  const [modal, setModal] = useState(null);
+
+  const load = useCallback(
+    () =>
+      Promise.all([
+        adminFetch('/v1/admin/config'),
+        adminFetch('/v1/admin/patterns'),
+        adminFetch('/v1/admin/business-config'),
+        adminFetch('/v1/admin/product-sku-tier-prices'),
+      ])
+        .then(([cfg, pat, biz, tierData]) => {
+          setConfig(cfg);
+          setPatterns(pat.patterns ?? []);
+          setBusinessConfig(biz.config ?? []);
+          setSkus(tierData.skus ?? []);
+          setTierPrices(tierData.prices ?? []);
+        })
+        .catch((e) => setError(e.message)),
+    [],
+  );
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
-  const patchTierPrice = async (skuKey, tierKey, price_usdc) => {
-    setSaveMsg('');
-    await adminFetch(
-      `/v1/admin/product-sku-tier-prices/${encodeURIComponent(skuKey)}/${encodeURIComponent(tierKey)}`,
-      {
-        method: 'PATCH',
-        body: JSON.stringify({ price_usdc: Number(price_usdc) }),
-      },
-    );
-    setSaveMsg(`Updated ${skuKey} / ${tierKey}`);
-    await load();
-  };
+  const closeModal = () => setModal(null);
 
-  const patchConfig = async (key, rawValue) => {
-    setSaveMsg('');
-    let value;
+  const runConfirmedSave = async () => {
+    if (!modal?.execute) return;
+    setModal((m) => ({ ...m, phase: 'saving' }));
     try {
-      value = JSON.parse(rawValue);
-    } catch {
-      value = rawValue;
+      await modal.execute();
+      await load();
+      setSaveMsg(modal.successMessage ?? 'Configuration updated');
+      setModal((m) => ({ ...m, phase: 'success' }));
+    } catch (e) {
+      setModal((m) => ({
+        ...m,
+        phase: 'error',
+        errorMessage: e.message || 'Save failed',
+      }));
     }
-    await adminFetch(`/v1/admin/business-config/${encodeURIComponent(key)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ value }),
-    });
-    setSaveMsg(`Saved ${key}`);
-    await load();
   };
+
+  const openSaveModal = useCallback(
+    ({
+      title,
+      description,
+      currentValue,
+      nextValue,
+      impact,
+      successMessage,
+      execute,
+    }) => {
+      setSaveMsg('');
+      setModal({
+        phase: 'confirm',
+        title,
+        description,
+        currentValue,
+        nextValue,
+        impact,
+        successMessage,
+        execute,
+      });
+    },
+    [],
+  );
+
+  const requestConfigSave = useCallback(
+    (key, value, meta = {}) => {
+      const row = businessConfig.find((c) => c.config_key === key);
+      const type = meta.type ?? CONFIG_FIELD_META[key]?.type ?? 'text';
+      const current = row?.config_value;
+      const label = meta.label ?? CONFIG_FIELD_META[key]?.label ?? key;
+      openSaveModal({
+        title: label,
+        description: meta.hint || `Update ${label} in business_config.`,
+        currentValue: formatDisplayValue(current, type),
+        nextValue: formatDisplayValue(value, type),
+        impact: 'This change applies to the live API within about a minute (config cache).',
+        successMessage: `Saved ${label}`,
+        execute: async () => {
+          await adminFetch(`/v1/admin/business-config/${encodeURIComponent(key)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ value }),
+          });
+        },
+      });
+    },
+    [businessConfig, openSaveModal],
+  );
+
+  const requestTierPriceSave = useCallback(
+    (skuKey, tierKey, priceUsdc) => {
+      const current = tierPrices.find((p) => p.sku_key === skuKey && p.tier_key === tierKey)?.price_usdc;
+      openSaveModal({
+        title: `${skuKey} / ${tierKey} price`,
+        description: 'Update USDC tier price for this SKU.',
+        currentValue: current != null ? `${current} USDC` : '—',
+        nextValue: `${priceUsdc} USDC`,
+        impact: 'New price applies to the next x402 quote and checkout for this tier.',
+        successMessage: `Updated ${skuKey} / ${tierKey}`,
+        execute: async () => {
+          await adminFetch(
+            `/v1/admin/product-sku-tier-prices/${encodeURIComponent(skuKey)}/${encodeURIComponent(tierKey)}`,
+            {
+              method: 'PATCH',
+              body: JSON.stringify({ price_usdc: Number(priceUsdc) }),
+            },
+          );
+        },
+      });
+    },
+    [openSaveModal, tierPrices],
+  );
+
+  const requestSkuToggle = useCallback(
+    (sku) => {
+      const meta = SKU_X402_META[sku.sku_key] ?? { label: sku.sku_key, hint: '' };
+      const nextActive = !sku.is_active;
+      openSaveModal({
+        title: meta.label,
+        description: meta.hint,
+        currentValue: sku.is_active ? 'Enabled' : 'Disabled',
+        nextValue: nextActive ? 'Enabled' : 'Disabled',
+        impact: nextActive
+          ? 'x402 payment and discovery for this product will be turned back on.'
+          : 'This product will be hidden from the frontend and rejected by the API until re-enabled.',
+        successMessage: `${meta.label} ${nextActive ? 'enabled' : 'disabled'}`,
+        execute: async () => {
+          await adminFetch(`/v1/admin/product-skus/${encodeURIComponent(sku.sku_key)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_active: nextActive }),
+          });
+        },
+      });
+    },
+    [openSaveModal],
+  );
 
   if (error) return <div className="admin-error">{error}</div>;
   if (!config) return <div className="admin-loading">Loading config…</div>;
@@ -89,6 +192,9 @@ export default function ConfigPage() {
     (c) => c.config_key === 'access.admin_recipient_unlimited_runs_enabled',
   );
 
+  const x402Skus = X402_SKU_KEYS.map((key) => skus.find((s) => s.sku_key === key)).filter(Boolean);
+  const modalBusy = modal?.phase === 'saving';
+
   return (
     <div className="admin-config-page">
       <header className="admin-page__header">
@@ -96,8 +202,42 @@ export default function ConfigPage() {
         <p className="admin-page__subtitle">
           Engine v{config.meta?.version} · {patterns.length} active patterns
         </p>
-        {saveMsg && <p className="admin-config-page__save-msg" role="status">{saveMsg}</p>}
+        {saveMsg && (
+          <p className="admin-config-page__save-msg" role="status">
+            {saveMsg}
+          </p>
+        )}
       </header>
+
+      <section className="admin-config-section admin-card">
+        <div className="admin-config-section__head">
+          <h2 className="admin-config-section__title">x402 product availability</h2>
+          <p className="admin-config-section__desc">
+            Turn off USDC checkout per product without removing pricing or code. Changes require confirmation.
+          </p>
+        </div>
+        <div className="admin-x402-toggles">
+          {x402Skus.map((sku) => {
+            const meta = SKU_X402_META[sku.sku_key] ?? { label: sku.sku_key, hint: '' };
+            return (
+              <div key={sku.sku_key} className="admin-x402-toggle">
+                <label className="admin-toggle admin-toggle--block">
+                  <input
+                    type="checkbox"
+                    className="admin-toggle__input"
+                    checked={sku.is_active === true}
+                    disabled={modalBusy}
+                    onChange={() => requestSkuToggle(sku)}
+                  />
+                  <span className="admin-toggle__track" aria-hidden="true" />
+                  <span className="admin-toggle__text">{meta.label}</span>
+                </label>
+                {meta.hint && <p className="admin-x402-toggle__hint">{meta.hint}</p>}
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="admin-config-section admin-card">
         <div className="admin-config-section__head">
@@ -106,7 +246,9 @@ export default function ConfigPage() {
             USDC prices per SKU and model tier (x402 on Base). Paying users and agents choose tier at checkout.
           </p>
         </div>
-        {freeEmailTier && <FreeEmailTierSelect row={freeEmailTier} onSave={patchConfig} />}
+        {freeEmailTier && (
+          <FreeEmailTierSelect row={freeEmailTier} onSaveRequest={requestConfigSave} disabled={modalBusy} />
+        )}
         <div className="admin-pricing-matrix">
           <table className="admin-table admin-pricing-matrix__table">
             <thead>
@@ -125,7 +267,8 @@ export default function ConfigPage() {
                   key={s.sku_key}
                   sku={s}
                   prices={tierPrices.filter((p) => p.sku_key === s.sku_key)}
-                  onSave={patchTierPrice}
+                  onSaveRequest={requestTierPriceSave}
+                  disabled={modalBusy}
                 />
               ))}
             </tbody>
@@ -137,7 +280,7 @@ export default function ConfigPage() {
         <div className="admin-config-section__head">
           <h2 className="admin-config-section__title">Commerce settings</h2>
           <p className="admin-config-section__desc">
-            Runtime business rules for access, payments, email, and agent discovery. Booleans save instantly; other fields use Save.
+            Runtime business rules for access, payments, email, and agent discovery. All changes require confirmation.
           </p>
         </div>
         <div className="admin-config-groups">
@@ -147,7 +290,14 @@ export default function ConfigPage() {
               {group.description && <p className="admin-config-group__desc">{group.description}</p>}
               <div className="admin-config-group__fields">
                 {group.rows.map((row) => (
-                  <ConfigFieldEditor key={row.config_key} row={row} onSave={patchConfig} />
+                  <ConfigFieldEditor
+                    key={row.config_key}
+                    row={row}
+                    confirmBeforeSave
+                    autoSaveBoolean={false}
+                    disabled={modalBusy}
+                    onSaveRequest={requestConfigSave}
+                  />
                 ))}
               </div>
             </div>
@@ -171,9 +321,15 @@ export default function ConfigPage() {
             <code>docs/narrative-engine/resend-email-setup.md</code>
           </p>
         </div>
-        {adminNotifyEnabled && <AdminNotifyToggle row={adminNotifyEnabled} onSave={patchConfig} />}
-        {adminUnlimitedRuns && <AdminUnlimitedRunsToggle row={adminUnlimitedRuns} onSave={patchConfig} />}
-        {adminNotifyRecipients && <AdminNotifyRecipients row={adminNotifyRecipients} onSave={patchConfig} />}
+        {adminNotifyEnabled && (
+          <AdminNotifyToggle row={adminNotifyEnabled} onSaveRequest={requestConfigSave} disabled={modalBusy} />
+        )}
+        {adminUnlimitedRuns && (
+          <AdminUnlimitedRunsToggle row={adminUnlimitedRuns} onSaveRequest={requestConfigSave} disabled={modalBusy} />
+        )}
+        {adminNotifyRecipients && (
+          <AdminNotifyRecipients row={adminNotifyRecipients} onSaveRequest={requestConfigSave} disabled={modalBusy} />
+        )}
       </section>
 
       <section className="admin-config-section admin-card">
@@ -221,11 +377,26 @@ export default function ConfigPage() {
           </p>
         )}
       </section>
+
+      <AdminConfirmSaveModal
+        open={Boolean(modal)}
+        phase={modal?.phase}
+        title={modal?.title}
+        description={modal?.description}
+        currentValue={modal?.currentValue}
+        nextValue={modal?.nextValue}
+        impact={modal?.impact}
+        errorMessage={modal?.errorMessage}
+        busy={modalBusy}
+        onConfirm={runConfirmedSave}
+        onCancel={closeModal}
+        onDismiss={closeModal}
+      />
     </div>
   );
 }
 
-function FreeEmailTierSelect({ row, onSave }) {
+function FreeEmailTierSelect({ row, onSaveRequest, disabled }) {
   const raw = row.config_value;
   const current = typeof raw === 'string' ? raw.replace(/"/g, '') : String(raw ?? 'quality');
   const [tier, setTier] = useState(current);
@@ -242,13 +413,25 @@ function FreeEmailTierSelect({ row, onSave }) {
         <select
           className="admin-config-input admin-config-input--select"
           value={tier}
+          disabled={disabled}
           onChange={(e) => setTier(e.target.value)}
         >
           <option value="fast">Fast</option>
           <option value="standard">Standard</option>
           <option value="quality">Quality</option>
         </select>
-        <button type="button" className="admin-btn admin-btn--primary" onClick={() => onSave(row.config_key, JSON.stringify(tier))}>
+        <button
+          type="button"
+          className="admin-btn admin-btn--primary"
+          disabled={disabled || tier === current}
+          onClick={() =>
+            onSaveRequest(row.config_key, tier, {
+              label: 'Complimentary email tier',
+              hint: 'Model tier for verified company-email runs (free).',
+              type: 'select',
+            })
+          }
+        >
           Save
         </button>
       </div>
@@ -256,22 +439,17 @@ function FreeEmailTierSelect({ row, onSave }) {
   );
 }
 
-function SkuTierMatrixRow({ sku, prices, onSave }) {
+function SkuTierMatrixRow({ sku, prices, onSaveRequest, disabled }) {
   const tiers = ['fast', 'standard', 'quality'];
   const [vals, setVals] = useState(() =>
     Object.fromEntries(tiers.map((t) => [t, String(prices.find((p) => p.tier_key === t)?.price_usdc ?? '')])),
   );
-  const [savedTier, setSavedTier] = useState(null);
-
-  const saveTier = async (t) => {
-    await onSave(sku.sku_key, t, vals[t]);
-    setSavedTier(t);
-    setTimeout(() => setSavedTier(null), 2000);
-  };
 
   return (
     <tr>
-      <td><code className="admin-config-field__key">{sku.sku_key}</code></td>
+      <td>
+        <code className="admin-config-field__key">{sku.sku_key}</code>
+      </td>
       <td>{sku.audience}</td>
       <td>{sku.output_scope}</td>
       {tiers.map((t) => (
@@ -283,10 +461,16 @@ function SkuTierMatrixRow({ sku, prices, onSave }) {
               step="0.01"
               min="0"
               value={vals[t]}
+              disabled={disabled}
               onChange={(e) => setVals({ ...vals, [t]: e.target.value })}
             />
-            <button type="button" className="admin-btn admin-btn--compact" onClick={() => saveTier(t)}>
-              {savedTier === t ? 'Saved' : 'Save'}
+            <button
+              type="button"
+              className="admin-btn admin-btn--compact"
+              disabled={disabled}
+              onClick={() => onSaveRequest(sku.sku_key, t, vals[t])}
+            >
+              Save
             </button>
           </div>
         </td>
@@ -295,7 +479,7 @@ function SkuTierMatrixRow({ sku, prices, onSave }) {
   );
 }
 
-function AdminNotifyToggle({ row, onSave }) {
+function AdminNotifyToggle({ row, onSaveRequest, disabled }) {
   const enabled = row.config_value === true || row.config_value === 'true';
   return (
     <label className="admin-toggle admin-toggle--block">
@@ -303,7 +487,13 @@ function AdminNotifyToggle({ row, onSave }) {
         type="checkbox"
         className="admin-toggle__input"
         checked={enabled}
-        onChange={(e) => onSave(row.config_key, JSON.stringify(e.target.checked))}
+        disabled={disabled}
+        onChange={(e) =>
+          onSaveRequest(row.config_key, e.target.checked, {
+            label: 'Send notification emails on run completion',
+            type: 'boolean',
+          })
+        }
       />
       <span className="admin-toggle__track" aria-hidden="true" />
       <span className="admin-toggle__text">Send notification emails on run completion</span>
@@ -311,7 +501,7 @@ function AdminNotifyToggle({ row, onSave }) {
   );
 }
 
-function AdminUnlimitedRunsToggle({ row, onSave }) {
+function AdminUnlimitedRunsToggle({ row, onSaveRequest, disabled }) {
   const enabled = row.config_value === true || row.config_value === 'true';
   return (
     <label className="admin-toggle admin-toggle--block">
@@ -319,7 +509,13 @@ function AdminUnlimitedRunsToggle({ row, onSave }) {
         type="checkbox"
         className="admin-toggle__input"
         checked={enabled}
-        onChange={(e) => onSave(row.config_key, JSON.stringify(e.target.checked))}
+        disabled={disabled}
+        onChange={(e) =>
+          onSaveRequest(row.config_key, e.target.checked, {
+            label: 'Allow notification recipients unlimited free runs',
+            type: 'boolean',
+          })
+        }
       />
       <span className="admin-toggle__track" aria-hidden="true" />
       <span className="admin-toggle__text">Allow notification recipients unlimited free runs</span>
@@ -327,7 +523,7 @@ function AdminUnlimitedRunsToggle({ row, onSave }) {
   );
 }
 
-function AdminNotifyRecipients({ row, onSave }) {
+function AdminNotifyRecipients({ row, onSaveRequest, disabled }) {
   const initial = Array.isArray(row.config_value) ? row.config_value : [];
   const [emails, setEmails] = useState(initial);
   const [newEmail, setNewEmail] = useState('');
@@ -350,7 +546,7 @@ function AdminNotifyRecipients({ row, onSave }) {
         {emails.map((email) => (
           <li key={email} className="admin-recipients__item">
             <span>{email}</span>
-            <button type="button" className="admin-btn admin-btn--compact" onClick={() => removeEmail(email)}>
+            <button type="button" className="admin-btn admin-btn--compact" disabled={disabled} onClick={() => removeEmail(email)}>
               Remove
             </button>
           </li>
@@ -363,11 +559,25 @@ function AdminNotifyRecipients({ row, onSave }) {
           type="email"
           placeholder="Add email address"
           value={newEmail}
+          disabled={disabled}
           onChange={(e) => setNewEmail(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addEmail())}
         />
-        <button type="button" className="admin-btn" onClick={addEmail}>Add</button>
-        <button type="button" className="admin-btn admin-btn--primary" onClick={() => onSave(row.config_key, JSON.stringify(emails))}>
+        <button type="button" className="admin-btn" disabled={disabled} onClick={addEmail}>
+          Add
+        </button>
+        <button
+          type="button"
+          className="admin-btn admin-btn--primary"
+          disabled={disabled}
+          onClick={() =>
+            onSaveRequest(row.config_key, emails, {
+              label: 'Notification recipients',
+              hint: 'Emails that receive internal run-completion notifications.',
+              type: 'tags',
+            })
+          }
+        >
           Save list
         </button>
       </div>

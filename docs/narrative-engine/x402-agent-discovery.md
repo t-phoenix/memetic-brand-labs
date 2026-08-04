@@ -48,12 +48,26 @@ curl -s "https://api.memetic.adpr.work/v1/agent/runs/{run_id}/outputs?scope=card
 
 - [ ] Optional: register in external x402 Bazaar or AgentCash catalog
 
+## Temporarily disabling x402 (admin)
+
+Each commerce product can be turned off independently from **Admin → Configuration → x402 product availability**:
+
+| Toggle | SKU | Effect when disabled |
+|--------|-----|----------------------|
+| Human USDC unlock | `human_unlock` | No wallet UI; `payment_enabled: false` on quote; unlock/start/rerun return `503 sku_unavailable` |
+| Agent — 4 cards | `agent_cards` | Removed from `/v1/capabilities`; analyze with `output_scope=cards` returns `503` |
+| Agent — full pipeline | `agent_full` | Removed from capabilities; analyze with `output_scope=full_pipeline` returns `503` |
+
+Toggles map to `product_skus.is_active` (no migration required). OAuth and company-email access are unaffected. Allow ~60s for API config cache after changes.
+
 ## Human commerce (related)
 
 - [ ] `POST /v1/runs/:id/unlock` — human x402 skip-email unlock (~$0.10 USDC)
 - [ ] `GET /v1/commerce/human-unlock-quote` — price quote without payment
 
 ## SKUs (default tier prices — editable in admin Configuration → Commerce)
+
+Toggle each SKU on/off under **x402 product availability** (`product_skus.is_active`).
 
 | SKU | Tier | USDC |
 |-----|------|------|

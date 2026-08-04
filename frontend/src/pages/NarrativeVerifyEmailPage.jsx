@@ -4,6 +4,7 @@ import SiteNav from '../components/SiteNav';
 import {
   confirmEmailVerification,
   confirmIntakeEmailVerification,
+  getHumanUnlockQuote,
 } from '../lib/narrativeApi';
 import { consumeMagicLinkHash, getSupabaseSessionEmail } from '../lib/magicLinkCallback';
 import sun from '../assets/graphics/figma-v2/mobile-hero-sun.svg';
@@ -92,10 +93,21 @@ export default function NarrativeVerifyEmailPage() {
         if (!cancelled) {
           setStatus('failed');
           setError(err.userMessage || err.message || 'Email verification failed.');
-          setRecoveryActions(err.recoveryActions || [
+          let humanPay = false;
+          try {
+            const q = await getHumanUnlockQuote();
+            humanPay = q.payment_enabled === true;
+          } catch {
+            humanPay = false;
+          }
+          const fallback = [
             { action: 'authorize', label: 'Try again', method: 'authorize' },
-            { action: 'pay_unlock', label: 'Pay with USDC', method: 'authorize_pay' },
-          ]);
+            ...(humanPay ? [{ action: 'pay_unlock', label: 'Pay with USDC', method: 'authorize_pay' }] : []),
+          ];
+          const actions = (err.recoveryActions || fallback).filter(
+            (a) => humanPay || (a.method !== 'x402' && a.method !== 'authorize_pay'),
+          );
+          setRecoveryActions(actions);
         }
       }
     }

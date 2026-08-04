@@ -20,7 +20,8 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
   const apiBase = env.API_PUBLIC_URL ?? `http://localhost:${env.PORT}`;
 
   app.get('/llms.txt', async (_request, reply) => {
-    reply.header('Content-Type', 'text/plain; charset=utf-8').send(buildApiLlmsTxt(apiBase));
+    const text = await buildApiLlmsTxt(apiBase, ctx);
+    reply.header('Content-Type', 'text/plain; charset=utf-8').send(text);
   });
 
   app.get('/.well-known/x402', async () => ({
@@ -38,12 +39,18 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
       ctx.config.x402PayTo(),
       ctx.config.get<boolean>('discovery.bazaar_enabled', true),
     ]);
+
+    const activeAgentKeys: string[] = [];
+    for (const key of AGENT_SKU_KEYS) {
+      if (await ctx.config.isSkuX402Enabled(key)) activeAgentKeys.push(key);
+    }
+
     const skus = (
-      await Promise.all(AGENT_SKU_KEYS.map((key) => ctx.skuPricing.getSku(key)))
-    ).filter((s): s is NonNullable<typeof s> => Boolean(s));
+      await Promise.all(activeAgentKeys.map((key) => ctx.skuPricing.getSku(key)))
+    ).filter((s): s is NonNullable<typeof s> => s != null && s.is_active);
 
     const products = await Promise.all(
-      AGENT_SKU_KEYS.map(async (skuKey) => {
+      activeAgentKeys.map(async (skuKey) => {
         const sku = skus.find((s) => s.sku_key === skuKey);
         if (!sku) return null;
         const model_tiers = await ctx.skuPricing.getTierPricesForSku(skuKey);
@@ -59,27 +66,33 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
       }),
     );
 
+    const agentX402Available = products.filter(Boolean).length > 0 && Boolean(payTo);
+
     return {
       service: serviceName,
       description:
         'Brand positioning and narrative analysis for emerging technology companies. Returns four narrative direction cards or full pipeline diagnostics.',
       version: 'ne-v1.0.0',
-      protocols: ['x402', 'http'],
+      protocols: agentX402Available ? ['x402', 'http'] : ['http'],
       openapi: `${apiBase}/openapi.json`,
       llms: `${apiBase}/llms.txt`,
       tags,
-      payment: {
-        protocol: 'x402',
-        x402_version: 2,
-        network,
-        asset: usdcAddressForNetwork(network),
-        asset_symbol: 'USDC',
-        facilitator_url: facilitatorUrl,
-        pay_to: payTo || null,
-        payment_headers: ['payment-signature', 'x-payment', 'payment'],
-        bazaar_extension: bazaarEnabled,
-        flow: 'POST without payment header → 402 with accepts[] → retry with payment-signature header',
-      },
+      ...(agentX402Available
+        ? {
+            payment: {
+              protocol: 'x402',
+              x402_version: 2,
+              network,
+              asset: usdcAddressForNetwork(network),
+              asset_symbol: 'USDC',
+              facilitator_url: facilitatorUrl,
+              pay_to: payTo || null,
+              payment_headers: ['payment-signature', 'x-payment', 'payment'],
+              bazaar_extension: bazaarEnabled,
+              flow: 'POST without payment header → 402 with accepts[] → retry with payment-signature header',
+            },
+          }
+        : {}),
       products: products.filter(Boolean),
       usage: {
         create:
@@ -118,6 +131,17 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
     const outputScope = (body.output_scope === 'full_pipeline' ? 'full_pipeline' : 'cards') as 'cards' | 'full_pipeline';
     const skuKey = outputScope === 'full_pipeline' ? 'agent_full' : 'agent_cards';
     const modelTier = normalizeModelTier(body.model_tier, 'fast');
+
+    if (!(await ctx.config.isSkuX402Enabled(skuKey))) {
+      return reply.code(503).send({
+        error: {
+          code: 'sku_unavailable',
+          message: 'Product SKU not available',
+          user_message: 'This agent product is temporarily unavailable.',
+          retryable: false,
+        },
+      });
+    }
 
     try {
       const payment = await ctx.x402.requirePayment(request, reply, {
@@ -241,10 +265,51 @@ export async function registerAgentRoutes(app: FastifyInstance, env: Env) {
   });
 }
 
-function buildApiLlmsTxt(apiBase: string) {
-  return `# MBL Narrative Engine API
+function buildApiLlmsTxt(
+  apiBase: string,
+  ctx: Awaited<ReturnType<typeof createCommerceContext>>,
+) {
+  return (async () => {
+    const activeKeys: string[] = [];
+    for (const key of AGENT_SKU_KEYS) {
+      if (await ctx.config.isSkuX402Enabled(key)) activeKeys.push(key);
+    }
+    const payTo = await ctx.config.x402PayTo();
+    const agentX402Available = activeKeys.length > 0 && Boolean(payTo);
 
-> Machine-readable brand positioning analysis for AI agents. Pay-per-call with USDC on Base (x402).
+    const productLines: string[] = [];
+    if (activeKeys.includes('agent_cards')) {
+      productLines.push(
+        '- output_scope=cards — four narrative direction cards',
+        '  - fast: ~$0.25 USDC | standard: ~$0.50 | quality: ~$1.00',
+      );
+    }
+    if (activeKeys.includes('agent_full')) {
+      productLines.push(
+        '- output_scope=full_pipeline — cards + L1–L6 layer diagnostics JSON',
+        '  - fast: ~$2.50 | standard: ~$5.00 | quality: ~$10.00',
+      );
+    }
+
+    const paymentNote = agentX402Available
+      ? '> Machine-readable brand positioning analysis for AI agents. Pay-per-call with USDC on Base (x402).'
+      : '> Machine-readable brand positioning analysis for AI agents. Agent x402 payments are temporarily disabled — see GET /v1/capabilities for availability.';
+
+    const flowSection = agentX402Available
+      ? `## Agent flow
+
+1. GET ${apiBase}/v1/capabilities — list products, prices, payment metadata
+2. POST ${apiBase}/v1/agent/analyze — without payment header returns 402 + x402 accepts[]
+3. Retry POST with \`payment-signature\` (or \`x-payment\` / \`payment\`) header after wallet payment
+4. Poll GET ${apiBase}/v1/agent/runs/{run_id} until status=completed
+5. GET ${apiBase}/v1/agent/runs/{run_id}/outputs?scope=cards|full`
+      : `## Agent flow
+
+Agent x402 checkout is currently disabled. Poll OpenAPI and capabilities for when products return.`;
+
+    return `# MBL Narrative Engine API
+
+${paymentNote}
 
 ## Discovery
 
@@ -252,20 +317,11 @@ function buildApiLlmsTxt(apiBase: string) {
 - OpenAPI: ${apiBase}/openapi.json
 - x402 well-known: ${apiBase}/.well-known/x402
 
-## Agent flow
-
-1. GET ${apiBase}/v1/capabilities — list products, prices, payment metadata
-2. POST ${apiBase}/v1/agent/analyze — without payment header returns 402 + x402 accepts[]
-3. Retry POST with \`payment-signature\` (or \`x-payment\` / \`payment\`) header after wallet payment
-4. Poll GET ${apiBase}/v1/agent/runs/{run_id} until status=completed
-5. GET ${apiBase}/v1/agent/runs/{run_id}/outputs?scope=cards|full
+${flowSection}
 
 ## Products (model_tier affects price — see GET /v1/capabilities)
 
-- output_scope=cards — four narrative direction cards
-  - fast: ~$0.25 USDC | standard: ~$0.50 | quality: ~$1.00
-- output_scope=full_pipeline — cards + L1–L6 layer diagnostics JSON
-  - fast: ~$2.50 | standard: ~$5.00 | quality: ~$10.00
+${productLines.length ? productLines.join('\n') : '- No agent products are currently available for x402 checkout.'}
 
 ## Required body fields
 
@@ -283,4 +339,5 @@ POST ${apiBase}/v1/agent/analyze
   "model_tier": "quality"
 }
 `;
+  })();
 }

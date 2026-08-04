@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { BusinessConfigService } from './BusinessConfigService.js';
 
+import type { RecoveryAction } from '../lib/apiError.js';
+
 export type AccessPrincipal = {
   type: 'privy_user' | 'email_hash' | 'wallet' | 'user_id';
   id: string;
@@ -117,7 +119,7 @@ export class AccessGateService {
     return grant;
   }
 
-  async getAccessStatus(runId: string) {
+  async getAccessStatus(runId: string, humanX402Enabled = true) {
     const { data: run } = await this.db
       .from('engine_runs')
       .select('access_status, access_failure_code, unlock_method, status')
@@ -141,34 +143,44 @@ export class AccessGateService {
       unlock_method: run?.unlock_method,
       unlocked,
       results_email_status: emailDelivery?.status ?? null,
-      recovery_actions: unlocked ? [] : defaultRecoveryActions(run?.access_failure_code),
+      recovery_actions: unlocked ? [] : defaultRecoveryActions(run?.access_failure_code, humanX402Enabled),
     };
   }
 }
 
-function defaultRecoveryActions(failureCode?: string | null) {
-  const base = [
+function defaultRecoveryActions(failureCode?: string | null, humanX402Enabled = true): RecoveryAction[] {
+  const x402: RecoveryAction[] = humanX402Enabled
+    ? [{ action: 'pay_unlock', label: 'Unlock with USDC', method: 'x402' as const }]
+    : [];
+  const x402Instead: RecoveryAction[] = humanX402Enabled
+    ? [{ action: 'pay_unlock', label: 'Unlock with USDC instead', method: 'x402' as const }]
+    : [];
+  const payUsdc: RecoveryAction[] = humanX402Enabled
+    ? [{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' as const }]
+    : [];
+
+  const base: RecoveryAction[] = [
     { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' as const },
     { action: 'use_email', label: 'Use company email', method: 'email' as const },
-    { action: 'pay_unlock', label: 'Unlock with USDC', method: 'x402' as const },
+    ...x402,
   ];
   if (failureCode === 'consumer_domain_blocked') {
     return [
       { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' as const },
       { action: 'change_email', label: 'Try a different company email', method: 'email' as const },
-      { action: 'pay_unlock', label: 'Unlock with USDC instead', method: 'x402' as const },
+      ...x402Instead,
     ];
   }
   if (failureCode === 'magic_link_expired') {
     return [
       { action: 'resend_email', label: 'Resend verification link', method: 'resend' as const },
       { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' as const },
-      { action: 'pay_unlock', label: 'Unlock with USDC', method: 'x402' as const },
+      ...x402,
     ];
   }
   if (failureCode === 'email_free_used') {
     return [
-      { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' as const },
+      ...payUsdc,
       { action: 'use_oauth', label: 'Try Google sign-in', method: 'oauth' as const },
       { action: 'change_email', label: 'Try a different company email', method: 'email' as const },
     ];

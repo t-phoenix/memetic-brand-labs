@@ -14,7 +14,14 @@ function tagsToArray(text) {
     .filter(Boolean);
 }
 
-export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true }) {
+export default function ConfigFieldEditor({
+  row,
+  onSave,
+  onSaveRequest,
+  confirmBeforeSave = false,
+  autoSaveBoolean = true,
+  disabled = false,
+}) {
   const key = row.config_key;
   const meta = CONFIG_FIELD_META[key] ?? {};
   const type = meta.type ?? inferFieldType(key, row.config_value);
@@ -33,18 +40,26 @@ export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true 
 
   const save = (value) => {
     const payload = serialize(value, type);
+    if (confirmBeforeSave && onSaveRequest) {
+      onSaveRequest(key, payload, { label, hint, type });
+      return;
+    }
     onSave(key, JSON.stringify(payload));
     setDirty(false);
   };
 
   const onBooleanChange = (checked) => {
+    if (confirmBeforeSave && onSaveRequest) {
+      onSaveRequest(key, checked, { label, hint, type: 'boolean' });
+      return;
+    }
     setDraft(checked);
     if (autoSaveBoolean) save(checked);
     else setDirty(true);
   };
 
   return (
-    <div className="admin-config-field">
+    <div className={`admin-config-field${disabled ? ' admin-config-field--disabled' : ''}`}>
       <div className="admin-config-field__head">
         <div className="admin-config-field__label">{label}</div>
         <code className="admin-config-field__key">{key}</code>
@@ -57,6 +72,7 @@ export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true 
             type="checkbox"
             className="admin-toggle__input"
             checked={Boolean(draft)}
+            disabled={disabled}
             onChange={(e) => onBooleanChange(e.target.checked)}
           />
           <span className="admin-toggle__track" aria-hidden="true" />
@@ -101,7 +117,7 @@ export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true 
           <button
             type="button"
             className="admin-btn admin-btn--primary admin-config-field__save"
-            disabled={!dirty}
+            disabled={disabled || !dirty}
             onClick={() => save(draft)}
           >
             Save
@@ -124,7 +140,7 @@ export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true 
           <button
             type="button"
             className="admin-btn admin-btn--primary admin-config-field__save"
-            disabled={!dirty}
+            disabled={disabled || !dirty}
             onClick={() => save(draft)}
           >
             Save
@@ -146,7 +162,7 @@ export default function ConfigFieldEditor({ row, onSave, autoSaveBoolean = true 
           <button
             type="button"
             className="admin-btn admin-btn--primary admin-config-field__save"
-            disabled={!dirty}
+            disabled={disabled || !dirty}
             onClick={() => save(draft)}
           >
             Save

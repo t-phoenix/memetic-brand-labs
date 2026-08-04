@@ -2,6 +2,21 @@
  * Admin UI metadata for business_config keys.
  * Falls back to type inference when a key is not listed.
  */
+export const SKU_X402_META = {
+  human_unlock: {
+    label: 'Human USDC unlock (4-card flow)',
+    hint: 'When disabled, users cannot pay with USDC to start or unlock. Google and company email still work.',
+  },
+  agent_cards: {
+    label: 'Agent API — 4 cards (x402)',
+    hint: 'When disabled, agent analyze requests for output_scope=cards return unavailable and are hidden from discovery.',
+  },
+  agent_full: {
+    label: 'Agent API — full pipeline (x402)',
+    hint: 'When disabled, agent analyze requests for output_scope=full_pipeline return unavailable and are hidden from discovery.',
+  },
+};
+
 export const CONFIG_GROUPS = [
   {
     id: 'access',

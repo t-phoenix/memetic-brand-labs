@@ -17,6 +17,15 @@ export type ApiErrorBody = {
   };
 };
 
+export function filterX402RecoveryActions(
+  actions: RecoveryAction[] | undefined,
+  humanX402Enabled: boolean,
+): RecoveryAction[] | undefined {
+  if (!actions || humanX402Enabled) return actions;
+  const filtered = actions.filter((a) => a.method !== 'x402');
+  return filtered.length ? filtered : undefined;
+}
+
 export function apiError(
   code: string,
   message: string,

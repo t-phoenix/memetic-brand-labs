@@ -107,6 +107,16 @@ export class BusinessConfigService {
     return this.get<string>('x402.network', 'eip155:8453');
   }
 
+  /** Whether x402 payment is offered for a commerce SKU (product_skus.is_active). */
+  async isSkuX402Enabled(skuKey: 'human_unlock' | 'agent_cards' | 'agent_full'): Promise<boolean> {
+    const { data } = await this.db.from('product_skus').select('is_active').eq('sku_key', skuKey).maybeSingle();
+    return data?.is_active === true;
+  }
+
+  async isHumanX402Enabled(): Promise<boolean> {
+    return this.isSkuX402Enabled('human_unlock');
+  }
+
   private envFallback<T>(key: string, fallback: T): T {
     const map: Record<string, unknown> = {
       'x402.pay_to': this.env.X402_PAY_TO ?? fallback,

@@ -78,6 +78,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   const [paymentStatusDetail, setPaymentStatusDetail] = useState(null);
 
   const isPreRun = mode === 'pre_run';
+  const paymentEnabled = quote?.payment_enabled === true;
   const title = isPreRun ? 'Verify to start your analysis' : 'Your analysis is ready';
   const subtitle = isPreRun
     ? 'Confirm your identity before we run the Narrative Engine. No LLM processing starts until you verify.'
@@ -192,8 +193,11 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
 
   const handleApiError = (err) => {
     setError(err.userMessage || err.message || 'Something went wrong');
-    setRecoveryActions(err.recoveryActions || []);
+    const actions = err.recoveryActions || [];
+    setRecoveryActions(paymentEnabled ? actions : actions.filter((a) => a.method !== 'x402'));
   };
+
+  const x402Recovery = (actions) => (paymentEnabled ? actions : actions.filter((a) => a.method !== 'x402'));
 
   const completeOAuth = async () => {
     const token = await getAccessToken();
@@ -213,9 +217,11 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   const onOAuth = async () => {
     if (oauthStatus?.oauth_free_used) {
       setError(
-        'Your free Google sign-in was already used. Disconnect and sign in with a different account, or pay with USDC.',
+        paymentEnabled
+          ? 'Your free Google sign-in was already used. Disconnect and sign in with a different account, or pay with USDC.'
+          : 'Your free Google sign-in was already used. Disconnect and sign in with a different account.',
       );
-      setRecoveryActions([{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }]);
+      setRecoveryActions(x402Recovery([{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }]));
       return;
     }
     setBusy(true);
@@ -257,9 +263,11 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
       const status = await refreshOAuthStatus();
       if (status?.oauth_free_used) {
         setError(
-          'This Google account already used its free analysis. Disconnect to use another account, or pay with USDC.',
+          paymentEnabled
+            ? 'This Google account already used its free analysis. Disconnect to use another account, or pay with USDC.'
+            : 'This Google account already used its free analysis. Disconnect to use another account.',
         );
-        setRecoveryActions([{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }]);
+        setRecoveryActions(x402Recovery([{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }]));
         return;
       }
       setBusy(true);
@@ -281,10 +289,12 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
     setError(null);
     if (isConsumerEmail(email)) {
       setError('Personal emails like Gmail cannot be used here. Continue with Google above, or use your company email.');
-      setRecoveryActions([
-        { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
-        { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
-      ]);
+      setRecoveryActions(
+        x402Recovery([
+          { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
+          { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
+        ]),
+      );
       setBusy(false);
       return;
     }
@@ -292,21 +302,27 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
       const status = emailStatus ?? (await refreshEmailStatus(email));
       if (status?.email_free_used) {
         setError(
-          'Your free company email verification was already used. Try a different company email, sign in with Google, or pay with USDC.',
+          paymentEnabled
+            ? 'Your free company email verification was already used. Try a different company email, sign in with Google, or pay with USDC.'
+            : 'Your free company email verification was already used. Try a different company email or sign in with Google.',
         );
-        setRecoveryActions([
-          { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
-          { action: 'use_oauth', label: 'Try Google sign-in', method: 'oauth' },
-          { action: 'change_email', label: 'Try a different company email', method: 'email' },
-        ]);
+        setRecoveryActions(
+          x402Recovery([
+            { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
+            { action: 'use_oauth', label: 'Try Google sign-in', method: 'oauth' },
+            { action: 'change_email', label: 'Try a different company email', method: 'email' },
+          ]),
+        );
         return;
       }
       if (status?.consumer_domain) {
         setError('Personal emails like Gmail cannot be used here. Continue with Google above, or use your company email.');
-        setRecoveryActions([
-          { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
-          { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
-        ]);
+        setRecoveryActions(
+          x402Recovery([
+            { action: 'use_oauth', label: 'Continue with Google', method: 'oauth' },
+            { action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' },
+          ]),
+        );
         return;
       }
       if (isPreRun) {
@@ -386,6 +402,7 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   };
 
   const openWalletPicker = () => {
+    if (!paymentEnabled) return;
     setError(null);
     setWalletPickerOpen(true);
   };
@@ -482,8 +499,8 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
     }
   };
 
-  const priceLabel = quote ? `${quote.price_usdc} USDC` : '~$0.10 USDC';
-  const tierOptions = quote?.tiers ?? [];
+  const priceLabel = paymentEnabled && quote ? `${quote.price_usdc} USDC` : null;
+  const tierOptions = paymentEnabled ? (quote?.tiers ?? []) : [];
   const freeEmailTierLabel = quote?.free_email_tier_label ?? 'Quality';
   const complimentaryEmailNote = `Verified company emails receive our ${freeEmailTierLabel.toLowerCase()}-tier analysis at no charge — we invest in giving you the clearest possible output.`;
   const googleEmail = user?.google?.email || oauthStatus?.email || user?.email?.address;
@@ -500,8 +517,9 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
           {googleEmail && <p className="ne-oauth-status__email">{googleEmail}</p>}
           {googleFreeUsed ? (
             <p className="ne-oauth-status__note">
-              Your free Google analysis was already used. To run another analysis, pay with USDC below — or disconnect
-              and sign in with a different Google account.
+              {paymentEnabled
+                ? 'Your free Google analysis was already used. To run another analysis, pay with USDC below — or disconnect and sign in with a different Google account.'
+                : 'Your free Google analysis was already used. Disconnect and sign in with a different Google account to try again.'}
             </p>
           ) : (
             <p className="ne-oauth-status__note">
@@ -539,7 +557,9 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
   const renderRecovery = () =>
     recoveryActions.length > 0 && (
       <div className="ne-unlock__recovery">
-        {recoveryActions.map((a) => {
+        {recoveryActions
+          .filter((a) => paymentEnabled || a.method !== 'x402')
+          .map((a) => {
           if (a.method === 'oauth' && googleFreeUsed) return null;
           return (
             <button
@@ -593,10 +613,10 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
         step={phase === 'payment_pending' ? 'verifying' : paymentStep}
         statusDetail={paymentStatusDetail}
         error={error}
-        recoveryActions={recoveryActions}
+        recoveryActions={recoveryActions.filter((a) => paymentEnabled || a.method !== 'x402')}
         onRecovery={(a) => {
           if (a.method === 'oauth' && canUseGoogle) onOAuth();
-          else if (a.method === 'x402') openWalletPicker();
+          else if (a.method === 'x402' && paymentEnabled) openWalletPicker();
           else if (a.method === 'email') setPhase('choose');
         }}
       />
@@ -618,13 +638,16 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
             <p className="ne-oauth-status__title">Company email already used</p>
             <p className="ne-oauth-status__email">{email}</p>
             <p className="ne-oauth-status__note">
-              Your free company email verification was already used. To run another analysis, pay with USDC below — or
-              try Google sign-in with a different account.
+              {paymentEnabled
+                ? 'Your free company email verification was already used. To run another analysis, pay with USDC below — or try Google sign-in with a different account.'
+                : 'Your free company email verification was already used. Try Google sign-in with a different account.'}
             </p>
             <div className="ne-oauth-status__actions">
-              <button type="button" className="ne-flow__pill ne-flow__pill--dark" disabled={busy} onClick={openWalletPicker}>
-                Pay with USDC
-              </button>
+              {paymentEnabled && (
+                <button type="button" className="ne-flow__pill ne-flow__pill--dark" disabled={busy} onClick={openWalletPicker}>
+                  Pay with USDC
+                </button>
+              )}
               {canUseGoogle && (
                 <button type="button" className="ne-flow__pill ne-flow__pill--ghost" disabled={busy} onClick={onOAuth}>
                   Try Google sign-in
@@ -654,6 +677,8 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
           </button>
         </form>
 
+        {paymentEnabled && (
+          <>
         <p className="ne-unlock__divider">— or pay with USDC on {getChainName()} —</p>
 
         {tierOptions.length > 0 && (
@@ -720,6 +745,8 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
             Review payment
           </button>
         )}
+          </>
+        )}
 
         {error && (
           <p className="ne-flow__error" role="alert">
@@ -736,14 +763,14 @@ export default function NarrativeAccessPanel({ mode = 'unlock', intake, runId, o
       </div>
 
       <WalletPickerModal
-        open={walletPickerOpen}
+        open={paymentEnabled && walletPickerOpen}
         busy={busy}
         onPick={onPickWallet}
         onCancel={() => setWalletPickerOpen(false)}
       />
 
       <PaymentConfirmationModal
-        open={payModalOpen}
+        open={paymentEnabled && payModalOpen}
         summary={paySummary}
         balance={balance}
         sufficient={sufficient}

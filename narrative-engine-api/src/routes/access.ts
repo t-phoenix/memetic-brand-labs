@@ -12,7 +12,7 @@ import { PrivyAuthService } from '../services/PrivyAuthService.js';
 import { PipelineService } from '../services/PipelineService.js';
 import { IntakeSessionService } from '../services/IntakeSessionService.js';
 import { RunService } from '../services/RunService.js';
-import { apiError, emailDomain, isConsumerDomain } from '../lib/apiError.js';
+import { apiError, emailDomain, filterX402RecoveryActions, isConsumerDomain } from '../lib/apiError.js';
 import { sha256 } from '../utils/hash.js';
 import { PaymentRequiredSent } from '../services/X402PaymentService.js';
 import { normalizeModelTier } from '../services/SkuPricingService.js';
@@ -78,7 +78,8 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
 
   app.get('/v1/runs/:id/access-status', async (request) => {
     const { id } = request.params as { id: string };
-    return ctx.access.getAccessStatus(id);
+    const humanX402Enabled = await ctx.config.isHumanX402Enabled();
+    return ctx.access.getAccessStatus(id, humanX402Enabled);
   });
 
   app.post('/v1/runs/:id/request-email-verification', async (request, reply) => {
@@ -197,6 +198,7 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
     if (!skuRow) {
       return reply.code(503).send({ error: { code: 'sku_unavailable', message: 'SKU not available' } });
     }
+    const humanSkuActive = skuRow.is_active === true;
     const network = await ctx.config.x402Network();
     const payTo = await ctx.config.x402PayTo();
     const { data: tierMeta } = await ctx.db.from('pricing_tiers').select('tier_key, label, price_usdc');
@@ -229,8 +231,8 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
       chain_name: network === 'eip155:8453' ? 'Base' : network,
       asset: 'USDC',
       asset_address: usdcAddressForNetwork(network),
-      pay_to: payTo ?? null,
-      payment_enabled: Boolean(payTo),
+      pay_to: humanSkuActive ? (payTo ?? null) : null,
+      payment_enabled: humanSkuActive && Boolean(payTo),
       resource_path: `${apiBase}/v1/narrative-runs/start`,
       description: 'Narrative Engine analysis (4 direction cards)',
     };
@@ -318,14 +320,20 @@ export async function registerAccessRoutes(app: FastifyInstance, env: Env) {
       }
       try {
         if (await ctx.access.isOAuthFreeUnlockBlocked(user.privyUserId, user.email, ctx.config)) {
+          const humanX402 = await ctx.config.isHumanX402Enabled();
+          const recovery = filterX402RecoveryActions(
+            [{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }],
+            humanX402,
+          );
           return reply.code(403).send({
             error: {
               code: 'oauth_free_used',
               message: 'OAuth free unlock already used',
-              user_message:
-                'Your free Google sign-in was already used on another analysis. Pay with USDC to start a new one.',
+              user_message: humanX402
+                ? 'Your free Google sign-in was already used on another analysis. Pay with USDC to start a new one.'
+                : 'Your free Google sign-in was already used on another analysis.',
               retryable: false,
-              recovery_actions: [{ action: 'pay_unlock', label: 'Pay with USDC', method: 'x402' }],
+              recovery_actions: recovery,
             },
           });
         }
